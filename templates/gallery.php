@@ -82,6 +82,10 @@ $sbcg_book_url = esc_url( $atts['book_url'] );
 				<li class="sbcg-item<?php echo $sbcg_item['wide'] ? ' is-wide' : ''; ?>" data-cats="<?php echo esc_attr( implode( ' ', $sbcg_item['slugs'] ) ); ?>">
 					<a class="sbcg-tile" href="<?php echo esc_url( $sbcg_item['full'] ); ?>" data-caption="<?php echo esc_attr( implode( ' · ', $sbcg_item['labels'] ) ); ?>">
 						<?php
+						if ( 'full' === $sbcg_item['size'] ) :
+							// GIF: plain original file, no srcset (WordPress's resized GIFs are static).
+							printf( '<img src="%s" alt="%s" loading="lazy" decoding="async">', esc_url( $sbcg_item['full'] ), esc_attr( $sbcg_item['alt'] ) );
+						else :
 						echo wp_get_attachment_image(
 							$sbcg_item['id'],
 							$sbcg_item['size'],
@@ -92,6 +96,7 @@ $sbcg_book_url = esc_url( $atts['book_url'] );
 								'sizes'   => $sbcg_item['wide'] ? '(min-width: 1024px) 600px, (min-width: 700px) 66vw, 100vw' : '(min-width: 1024px) 300px, (min-width: 700px) 33vw, 50vw',
 							)
 						);
+						endif;
 						?>
 						<span class="sbcg-tile__label"><?php echo esc_html( implode( ' · ', $sbcg_item['labels'] ) ); ?></span>
 					</a>

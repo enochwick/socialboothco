@@ -16,7 +16,8 @@
 		Array.prototype.forEach.call(root.querySelectorAll('[data-sbcg-modal]'), function (link) {
 			link.addEventListener('click', function (e) {
 				var id = link.getAttribute('data-sbcg-modal');
-				var trigger = id && document.querySelector('.uael-trigger[data-modal="' + id + '"]');
+				var safe = window.CSS && CSS.escape ? CSS.escape(id || '') : (id || '').replace(/[^\w-]/g, '');
+				var trigger = safe && document.querySelector('.uael-trigger[data-modal="' + safe + '"]');
 				if (trigger) {
 					e.preventDefault();
 					trigger.click();

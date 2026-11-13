@@ -28,6 +28,13 @@
 
 .sbcg img { display: block; max-width: 100%; height: auto; }
 
+/* Theme button styles must never override the hidden attribute. */
+.sbcg [hidden] { display: none !important; }
+
+/* Astra underlines every link in page content (.ast-single-post .entry-content a); buttons and photo tiles stay clean. */
+.sbcg a.sbcg-btn,
+.sbcg a.sbcg-tile { text-decoration: none !important; }
+
 .sbcg-wrap {
 	width: 100%;
 	max-width: 1240px;
