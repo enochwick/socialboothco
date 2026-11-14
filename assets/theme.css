@@ -339,13 +339,42 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 .exp-hero .lede { margin-top: 20px; }
 .exp-hero .actions { margin-top: 32px; }
 .exp-hero__photo img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 24px; }
-.steps { display: grid; gap: 0 48px; margin-top: 56px !important; counter-reset: step; }
-@media (min-width: 800px) { .steps { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1100px) { .steps { grid-template-columns: repeat(3, 1fr); } }
-.steps li { counter-increment: step; padding: 28px 0 36px; border-top: 2px solid var(--navy); }
-.sbc .steps h3 { display: flex; gap: 14px; align-items: baseline; font-size: 24px; font-weight: 700; letter-spacing: -.02em; }
-.steps h3::before { content: counter(step); font-size: 15px; font-weight: 600; color: var(--berry); }
-.steps p { margin-top: 10px; color: var(--muted); max-width: 40ch; }
+/* How it works: sticky intro + vertical timeline of step cards */
+.hiw { display: grid; gap: 48px; }
+@media (min-width: 960px) { .hiw { grid-template-columns: .85fr 1.15fr; gap: 80px; align-items: start; } .hiw-intro { position: sticky; top: 32px; } }
+.hiw-facts { display: grid; gap: 10px; margin: 28px 0 32px !important; }
+.hiw-facts li { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 500; }
+.hiw-facts li::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--berry); box-shadow: 0 0 0 4px rgba(157, 26, 79, .12); }
+
+.hiw-list { position: relative; display: grid; gap: 14px; }
+.hiw-list::before {
+	content: ""; position: absolute; left: 23px; top: 28px; bottom: 28px; width: 2px; border-radius: 2px;
+	background: linear-gradient(to bottom, var(--berry), rgba(157, 26, 79, .15));
+}
+.hiw-step { position: relative; display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 20px; align-items: start; }
+.hiw-node {
+	position: relative; z-index: 1; display: grid; place-items: center; width: 48px; height: 48px; margin-top: 14px;
+	border-radius: 16px; background: #fff; color: var(--berry);
+	box-shadow: 0 0 0 1px var(--line), 0 6px 16px -8px rgba(157, 26, 79, .35);
+}
+.hiw-step:first-child .hiw-node { background: var(--berry); color: #fff; box-shadow: 0 8px 20px -8px rgba(157, 26, 79, .6); }
+.hiw-card {
+	padding: 22px 24px; border: 1px solid var(--line); border-radius: 20px;
+	background: linear-gradient(180deg, #fff, #fcfafa);
+	box-shadow: 0 1px 2px rgba(26, 44, 55, .04), 0 12px 32px -24px rgba(26, 44, 55, .25);
+}
+.hiw-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.hiw-num { font: 600 13px/1 var(--head); color: var(--berry); letter-spacing: .01em; }
+.hiw-when { padding: 5px 10px; border-radius: 999px; background: var(--blush); font-size: 12px; font-weight: 500; line-height: 1.2; color: var(--muted); }
+.sbc .hiw-card h3 { font: 700 21px/1.2 var(--head); letter-spacing: -.02em; }
+.hiw-card p { margin-top: 8px !important; font-size: 15px; color: var(--muted); max-width: 52ch; }
+@media (max-width: 599px) {
+	.hiw-step { grid-template-columns: 40px minmax(0, 1fr); gap: 14px; }
+	.hiw-node { width: 40px; height: 40px; border-radius: 13px; margin-top: 18px; }
+	.hiw-node svg { width: 19px; height: 19px; }
+	.hiw-list::before { left: 19px; }
+	.hiw-card { padding: 18px; }
+}
 .story { display: grid; gap: 32px; }
 @media (min-width: 900px) { .story { grid-template-columns: 1.1fr 1fr; gap: 80px; align-items: start; } }
 .story-text p { font-size: 17px; color: var(--muted); }
@@ -354,7 +383,7 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 48px; }
 @media (min-width: 900px) { .photo-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
 .photo-grid img { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 16px; }
-.more-link { margin-top: 40px; }
+.sbc .more-link { display: flex; justify-content: center; margin-top: 48px; }
 
 /* Gallery page: blend the gallery plugin into the theme */
 .gallery-body .sbcg-moments { padding-top: 0; background: transparent; }
