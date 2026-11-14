@@ -29,6 +29,19 @@ List fields take one item per line, with parts separated by `|`. Menus can be as
 
 Every "Check your date" button has the class `sbc-book` and opens Amelia's booking popup for category **1** (changeable in the Customizer). If Amelia is off, it links to `/check-availability/`. There are no consultation buttons; the theme also strips any left in page content.
 
+## SEO
+
+`inc/seo.php` works with Yoast SEO:
+
+- **Titles and descriptions.** Pages still on Yoast's generic "Page - Social Booth Co" title get a written one (Experience, Gallery, FAQ, Agreement, Check Availability), and pages with no meta description get one. Anything you set in Yoast for a page wins, except the homepage description, which is replaced only when it's over 160 characters.
+- **One H1 per page.** Agreement (Elementor, starts at an H2) has its first heading promoted to H1. Check Availability gets a visually hidden H1.
+- **Local business data.** The homepage and city pages output `LocalBusiness` structured data (phone, email, price range, the cities in "Areas served", Thumbtack link). No star ratings: Google ignores self-published ones.
+- **Leftover template content.** The demo blog posts, their category/tag/author/date archives and the Get a Quote page redirect (301) to the homepage and Check Availability, and are left out of Yoast's sitemaps. When a real blog starts, add `add_filter( 'sbc_blog_enabled', '__return_true' );` (e.g. with the Code Snippets plugin) to turn this off.
+
+### City pages
+
+Pages → Add New, title like **Photo Booth Rental in Frisco** (the city is the text after "in"), and under Template pick **City landing page**. In the content, write two or three sentences specific to that city (venues you've worked, neighborhoods, travel). The rest (packages, reviews, photos, FAQs) comes from the homepage. Keep the content unique per city; copies of the same text don't rank.
+
 ## Launch checklist
 
 1. Go to Deployer for Git → **Install Theme**. Enter `https://github.com/enochwick/socialboothco`, with branch `theme`.

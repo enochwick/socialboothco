@@ -69,24 +69,7 @@ foreach ( array_filter( array_map( 'absint', explode( ',', (string) sbc_mod( 'he
 	<?php endif; ?>
 </section>
 
-<section class="sec sec--white">
-	<div class="wrap">
-		<h2 class="h2"><?php echo esc_html( sbc_mod( 'features_title' ) ); ?></h2>
-		<div class="feat">
-			<?php
-			// Icons follow the order of the features: sharing, design, lighting, gallery.
-			$sbc_feat_icons = array( 'send', 'pen', 'light', 'gallery' );
-			foreach ( sbc_lines( 'features', 2 ) as $sbc_fi => $sbc_f ) :
-				?>
-				<article class="feat-card feat-card--<?php echo (int) $sbc_fi % 4 + 1; ?>">
-					<span class="feat-icon" aria-hidden="true"><?php sbc_icon( isset( $sbc_feat_icons[ $sbc_fi ] ) ? $sbc_feat_icons[ $sbc_fi ] : 'spark' ); ?></span>
-					<h3><?php echo esc_html( $sbc_f[0] ); ?></h3>
-					<p><?php echo esc_html( $sbc_f[1] ); ?></p>
-				</article>
-			<?php endforeach; ?>
-		</div>
-	</div>
-</section>
+<?php get_template_part( 'parts/features' ); ?>
 
 <section class="sec" id="pricing">
 	<div class="wrap">
@@ -98,45 +81,9 @@ foreach ( array_filter( array_map( 'absint', explode( ',', (string) sbc_mod( 'he
 
 <?php sbc_reviews_section(); ?>
 
-<section class="sec sec--white">
-	<div class="wrap">
-		<h2 class="h2"><?php echo esc_html( sbc_mod( 'events_title' ) ); ?></h2>
-		<p class="intro"><?php echo esc_html( sbc_mod( 'events_intro' ) ); ?></p>
-		<div class="ev">
-			<?php
-			for ( $sbc_i = 1; $sbc_i <= 4; $sbc_i++ ) :
-				$sbc_ev = array_pad( array_map( 'trim', explode( '|', sbc_mod( "event{$sbc_i}" ) ) ), 2, '' );
-				if ( '' === $sbc_ev[0] ) {
-					continue;
-				}
-				?>
-				<figure class="ev-card ev-card--<?php echo (int) $sbc_i; ?>">
-					<?php echo sbc_image( sbc_mod( "event{$sbc_i}_photo" ), 'large', array( 'alt' => '', 'sizes' => '(min-width: 900px) 40vw, 100vw' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-					<figcaption>
-						<h3><?php echo esc_html( $sbc_ev[0] ); ?></h3>
-						<?php if ( $sbc_ev[1] ) : ?>
-							<p><?php echo esc_html( $sbc_ev[1] ); ?></p>
-						<?php endif; ?>
-					</figcaption>
-				</figure>
-			<?php endfor; ?>
-		</div>
-		<?php sbc_moments(); ?>
-	</div>
-</section>
+<?php get_template_part( 'parts/events' ); ?>
 
-<section class="sec">
-	<div class="wrap faq-split">
-		<div>
-			<h2 class="h2"><?php esc_html_e( 'Good to know.', 'socialboothco' ); ?></h2>
-			<p class="intro">
-				<?php esc_html_e( 'Quick answers before you book.', 'socialboothco' ); ?>
-				<a href="<?php echo esc_url( home_url( '/faq/' ) ); ?>"><?php esc_html_e( 'Read all FAQs', 'socialboothco' ); ?></a>
-			</p>
-		</div>
-		<?php sbc_faq_list( 4 ); ?>
-	</div>
-</section>
+<?php get_template_part( 'parts/faq-preview' ); ?>
 
 <?php
 sbc_closing();

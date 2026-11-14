@@ -5,13 +5,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SBC_THEME_VERSION', '1.4.0' );
+define( 'SBC_THEME_VERSION', '1.5.0' );
 
 require get_template_directory() . '/inc/content.php';
 require get_template_directory() . '/inc/customizer.php';
 require get_template_directory() . '/inc/booking.php';
 require get_template_directory() . '/inc/template-tags.php';
 require get_template_directory() . '/inc/performance.php';
+require get_template_directory() . '/inc/seo.php';
 
 add_action( 'after_setup_theme', 'sbc_setup' );
 function sbc_setup() {
@@ -85,7 +86,7 @@ function sbc_is_theme_layout() {
 	if ( is_front_page() || is_404() || is_search() || is_home() || is_archive() ) {
 		return true;
 	}
-	if ( is_page( array( 'experience', 'faq', 'gallery' ) ) ) {
+	if ( is_page( array( 'experience', 'faq', 'gallery' ) ) || 'templates/city-landing.php' === get_page_template_slug( get_queried_object_id() ) ) {
 		return true;
 	}
 	return is_singular() && ! sbc_is_elementor_page();

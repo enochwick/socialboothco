@@ -57,7 +57,7 @@ function sbc_defaults() {
 		'upgrades'         => "Premium backdrop | From $95 | Sequin walls, arches and luxury textures.\nExtra booth time | $120/hr | Keep the booth running so guests can capture even more.\nGuest book experience | $125 | Guests add prints and messages to a keepsake book you take home.\nCustom event branding | Ask us | Fully customized overlays, templates and screen experiences.\nGuest survey insights | Ask us | Collect guest feedback and engagement data at corporate activations.",
 
 		// Home: events.
-		'events_title'     => 'Designed for every celebration.',
+		'events_title'     => 'Photo booths for weddings, corporate events and parties',
 		'events_intro'     => 'Whether it’s 50 guests or 500, we bring the energy.',
 		'event1'           => 'Weddings | Romantic, timeless, unforgettable.',
 		'event1_photo'     => 2540,
