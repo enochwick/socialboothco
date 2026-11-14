@@ -367,3 +367,34 @@ function sbc_stamp( $text, $class = '' ) {
 	</svg>
 	<?php
 }
+
+/**
+ * Gallery plugin: add the photos from our Thumbtack profile (bundled in the theme). They show
+ * under "All" only, mixed in after the first set of photos.
+ */
+add_filter(
+	'sbcg_items',
+	function ( $items ) {
+		$base  = get_template_directory_uri() . '/assets/img/events/';
+		$extra = array(
+			array( 'morning-props-1024.jpg', __( 'Kids in matching blue shirts posing with props at the photo booth', 'socialboothco' ), __( 'Props', 'socialboothco' ) ),
+			array( 'booth-tap-to-start-1024.jpg', __( 'The Social Booth Co photo booth showing “Tap to start”', 'socialboothco' ), __( 'The booth', 'socialboothco' ) ),
+			array( 'morning-print-strip-600.jpg', __( 'A printed photo booth strip from a Social Booth Co event', 'socialboothco' ), __( 'Prints', 'socialboothco' ) ),
+			array( 'morning-frame-1024.jpg', __( 'Guests posing with a frame prop at the photo booth', 'socialboothco' ), __( 'Guests', 'socialboothco' ) ),
+		);
+		foreach ( $extra as $photo ) {
+			$items[] = array(
+				'id'     => 0,
+				'slugs'  => array( 'thumbtack' ),
+				'labels' => array( $photo[2] ),
+				'alt'    => $photo[1],
+				'full'   => $base . $photo[0],
+				'size'   => 'full',
+				'wide'   => false,
+				'extra'  => true,
+			);
+		}
+		return $items;
+	},
+	20
+);
