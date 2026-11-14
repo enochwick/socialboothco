@@ -5,12 +5,13 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SBC_THEME_VERSION', '1.0.0' );
+define( 'SBC_THEME_VERSION', '1.1.0' );
 
 require get_template_directory() . '/inc/content.php';
 require get_template_directory() . '/inc/customizer.php';
 require get_template_directory() . '/inc/booking.php';
 require get_template_directory() . '/inc/template-tags.php';
+require get_template_directory() . '/inc/performance.php';
 
 add_action( 'after_setup_theme', 'sbc_setup' );
 function sbc_setup() {
@@ -50,21 +51,20 @@ function sbc_assets() {
 	$dir = get_template_directory();
 	$uri = get_template_directory_uri();
 
-	wp_enqueue_style( 'sbc-fonts', 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&family=Urbanist:wght@500;600;700;800&display=swap', array(), null );
+	// Fonts are self-hosted in assets/fonts and declared at the top of theme.css.
 	wp_enqueue_style( 'sbc-theme', $uri . '/assets/theme.css', array(), SBC_THEME_VERSION . '.' . filemtime( $dir . '/assets/theme.css' ) );
-	wp_enqueue_script( 'sbc-theme', $uri . '/assets/theme.js', array(), SBC_THEME_VERSION . '.' . filemtime( $dir . '/assets/theme.js' ), true );
+	wp_enqueue_script( 'sbc-theme', $uri . '/assets/theme.js', array(), SBC_THEME_VERSION . '.' . filemtime( $dir . '/assets/theme.js' ), array( 'in_footer' => true, 'strategy' => 'defer' ) );
 }
 
-add_filter( 'wp_resource_hints', 'sbc_resource_hints', 10, 2 );
-function sbc_resource_hints( $urls, $relation ) {
-	if ( 'preconnect' === $relation ) {
-		$urls[] = 'https://fonts.googleapis.com';
-		$urls[] = array(
-			'href'        => 'https://fonts.gstatic.com',
-			'crossorigin' => 'anonymous',
-		);
+/**
+ * Preload the two fonts used above the fold so the headline renders in the brand face right away.
+ */
+add_action( 'wp_head', 'sbc_preload_fonts', 1 );
+function sbc_preload_fonts() {
+	$base = get_template_directory_uri() . '/assets/fonts/';
+	foreach ( array( 'urbanist-500-800.woff2', 'poppins-400.woff2' ) as $file ) {
+		printf( '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n", esc_url( $base . $file ) );
 	}
-	return $urls;
 }
 
 /**
