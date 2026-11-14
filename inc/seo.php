@@ -32,7 +32,7 @@ function sbc_seo_pages() {
 			'description' => 'Answers about booking a photo booth in DFW: space needed, deposits, setup time, prints, online galleries and the areas we serve.',
 		),
 		'corporate-holiday-parties' => array(
-			'description' => 'Photo booth for office holiday parties in Dallas–Fort Worth. Your logo on every photo, instant sharing and hands-off setup. Packages from $450.',
+			'description' => 'Photo booth for office holiday parties in Dallas–Fort Worth. Your logo on every photo, instant sharing and hands-off setup. Packages from $495.',
 		),
 		'agreement'                 => array(
 			'title'       => 'Photo Booth Rental Agreement & Terms | Social Booth Co',
@@ -53,7 +53,7 @@ function sbc_seo_current() {
 		if ( sbc_is_city_page() ) {
 			$city = sbc_city_name();
 			return array(
-				'description' => sprintf( 'Photo booth rental in %s by Social Booth Co: instant sharing, custom overlays and studio lighting for weddings, parties and corporate events. From $450.', $city ),
+				'description' => sprintf( 'Photo booth rental in %s by Social Booth Co: instant sharing, custom overlays and studio lighting for weddings, parties and corporate events. From $495.', $city ),
 			);
 		}
 		$slug  = get_post_field( 'post_name', get_queried_object_id() );
@@ -263,7 +263,7 @@ add_action(
 			'email'       => sbc_mod( 'email' ),
 			'image'       => get_template_directory_uri() . '/screenshot.png',
 			'logo'        => get_template_directory_uri() . '/assets/img/logo-dark.png',
-			'priceRange'  => '$450–$950',
+			'priceRange'  => '$495–$950',
 			'address'     => array(
 				'@type'           => 'PostalAddress',
 				'addressRegion'   => 'TX',

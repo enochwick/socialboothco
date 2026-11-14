@@ -47,7 +47,14 @@
 			</div>
 			<div>
 				<h2 class="footer-h"><?php esc_html_e( 'Areas we serve', 'socialboothco' ); ?></h2>
-				<p><?php echo esc_html( sbc_mod( 'areas' ) ); ?></p>
+				<?php
+				// "DFW Metroplex" leads the list here only; the plain city list also feeds structured data.
+				$sbc_areas = trim( (string) sbc_mod( 'areas' ) );
+				if ( 0 !== stripos( $sbc_areas, 'DFW' ) ) {
+					$sbc_areas = 'DFW Metroplex, ' . $sbc_areas;
+				}
+				?>
+				<p><?php echo esc_html( $sbc_areas ); ?></p>
 			</div>
 		</div>
 		<div class="footer-legal">

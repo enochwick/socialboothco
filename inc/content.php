@@ -25,7 +25,7 @@ function sbc_defaults() {
 		// Home: hero.
 		'hero_tagline'     => 'Serving the Dallas–Fort Worth Metroplex',
 		'hero_title'       => 'The photo booth your guests won’t stop talking about.',
-		'hero_lede'        => 'Interactive photo booth experiences for Dallas–Fort Worth events, with instant sharing, custom designs and studio lighting. Packages from $450.',
+		'hero_lede'        => 'Interactive photo booth experiences for Dallas–Fort Worth events, with instant sharing, custom designs and studio lighting. Packages from $495.',
 		'hero_photos'      => '2915, 2916, 2877, 2400, 2507, 2882, 2883, 2856, 2540, 2881, 2861, 2876',
 
 		// Home: features.
@@ -39,22 +39,25 @@ function sbc_defaults() {
 		'pkg_price_label'  => 'Starting at',
 		// Wording matches the original site's packages.
 		'pkg1_name'        => 'The Social Booth',
-		'pkg1_price'       => '$450',
+		'pkg1_price'       => '$495',
 		'pkg1_best'        => 'Best for: intimate events, birthday parties, showers, and casual celebrations',
-		'pkg1_features'    => "2 Hours of Booth Experience\nPhotos, GIFs, and Boomerangs\nInstant share via Email, SMS, and AirDrop\nLive Event Gallery\nCustom Photo Overlay (Names, Date, Branding)\nProfessional Lighting\nBooth Attendant\nSetup and Breakdown",
-		'pkg1_note'        => '*Prints available as add-on',
+		'pkg1_features'    => "3 Hours of Booth Experience\nPhotos, GIFs, and Boomerangs\nInstant share via Email, SMS, and AirDrop\nLive Event Gallery\nCustom Photo Overlay (Names, Date, Branding)\nProfessional Lighting\nBooth Attendant\nSetup and Breakdown",
+		'pkg1_note'        => '*Instant prints available as a $150 add-on',
 		'pkg2_name'        => 'The Party Booth',
 		'pkg2_price'       => '$650',
 		'pkg2_best'        => 'Best for: Weddings, larger parties, and events where guests want instant prints',
-		'pkg2_features'    => "Everything in The Social Booth, plus:\n3 Hours of Booth Experience\nPrint Package Included (Limited Prints)\nFully Custom-Branded Photo & Print Design\nVideo capture\nProp Collection",
+		'pkg2_features'    => "Everything in The Social Booth, plus:\nUnlimited Instant Prints\nStandard Backdrop Included\nFully Custom-Branded Photo & Print Design\nVideo Capture\nProp Collection",
 		'pkg2_note'        => '*Add-ons Available.',
 		'pkg3_name'        => 'Premier Experience',
 		'pkg3_price'       => '$950',
 		'pkg3_best'        => 'Best for: Weddings, corporate events, and premium celebrations',
-		'pkg3_features'    => "Everything in The Party Booth, plus:\n5 Hours of Booth Experience\nUnlimited Instant Prints\nSlow-motion Video\nPremium Backdrop Upgrade (Sequin or Arch)\nPremium Event Customization\nPriority Planning Support\nCustom Photo Overlay",
+		'pkg3_features'    => "Everything in The Party Booth, plus:\n5 Hours of Booth Experience\nPremium Backdrop Upgrade (Sequin or Arch)\nGuest Book Experience\nSlow-motion Video\nPremium Event Customization\nPriority Planning Support",
 		'pkg3_note'        => '*Add-ons Available.',
 		'pkg_popular'      => '2',
-		'upgrades'         => "Premium backdrop | From $95 | Sequin walls, arches and luxury textures.\nExtra booth time | $120/hr | Keep the booth running so guests can capture even more.\nGuest book experience | $125 | Guests add prints and messages to a keepsake book you take home.\nCustom event branding | Ask us | Fully customized overlays, templates and screen experiences.\nGuest survey insights | Ask us | Collect guest feedback and engagement data at corporate activations.",
+		// Offers shown below the packages. One per line: Title | Details. {holiday_year} becomes the
+		// upcoming holiday season's year (this year until October 1, then next year).
+		'offers'           => "Weekday & Sunday events | 10% off any package for events Monday–Thursday or Sunday.\nHoliday party early bird | Book your {holiday_year} holiday party by October 1 and save 10%.",
+		'upgrades'         => "Instant prints | $150 | Unlimited instant prints for The Social Booth.\nPremium backdrop | From $95 | Sequin walls, arches and luxury textures.\nExtra booth time | $120/hr | Keep the booth running so guests can capture even more.\nGuest book experience | $125 | Guests add prints and messages to a keepsake book you take home. Included with Premier Experience.\nCustom event branding | Ask us | Fully customized overlays, templates and screen experiences.\nGuest survey insights | Ask us | Collect guest feedback and engagement data at corporate activations.",
 
 		// Home: events.
 		'events_title'     => 'Photo booths for weddings, corporate events and parties',
@@ -164,4 +167,34 @@ function sbc_replace_old_phone( $text ) {
 	}
 	$text = preg_replace( '/tel:\+?1?\D{0,2}323\D{0,2}961\D{0,2}5519/', 'tel:+14692692793', $text );
 	return preg_replace( '/(?<!\d)(?:\+?1[\s.\-]?)?\(?323\)?[\s.\-]?961[\s.\-]?5519(?!\d)/', '+1 469 269 2793', $text );
+}
+
+/**
+ * One-time pricing update (November 2026): 3-hour starter at $495, unlimited prints in
+ * The Party Booth, guest book in Premier. Saved Customizer values for these fields would
+ * otherwise keep showing the old packages, so they're cleared once and the new defaults apply.
+ * Edits made in the Customizer after this keep working as usual.
+ */
+add_action( 'after_setup_theme', 'sbc_migrate_pricing_2026' );
+function sbc_migrate_pricing_2026() {
+	if ( get_option( 'sbc_pricing_2026_11' ) ) {
+		return;
+	}
+	foreach ( array( 'pkg1_price', 'pkg1_features', 'pkg1_note', 'pkg2_features', 'pkg3_features', 'upgrades' ) as $key ) {
+		remove_theme_mod( 'sbc_' . $key );
+	}
+	$lede = get_theme_mod( 'sbc_hero_lede' );
+	if ( is_string( $lede ) && false !== strpos( $lede, '$450' ) ) {
+		set_theme_mod( 'sbc_hero_lede', str_replace( '$450', '$495', $lede ) );
+	}
+	update_option( 'sbc_pricing_2026_11', 1, false );
+}
+
+/**
+ * Year of the upcoming holiday season for the early-bird offer: this year until October 1,
+ * then next year.
+ */
+function sbc_holiday_year() {
+	$year = (int) wp_date( 'Y' );
+	return (int) wp_date( 'md' ) <= 1001 ? $year : $year + 1;
 }

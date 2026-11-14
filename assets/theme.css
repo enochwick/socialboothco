@@ -954,3 +954,19 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 @media (prefers-reduced-motion: reduce) {
 	.city-strip, .city-stamp, .city-hero__spots, .city-hero__spots li, .city-hero__lede, .city-hero__actions { animation: none !important; }
 }
+
+/* Offers below the packages: two dashed "coupon" cards. */
+.sbc .offers { display: grid; gap: 12px; margin: 32px 0 0; padding: 0; list-style: none; }
+@media (min-width: 800px) { .sbc .offers { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
+.sbc .offer {
+	display: flex;
+	align-items: flex-start;
+	gap: 14px;
+	padding: 18px 20px;
+	border: 1.5px dashed var(--berry-a35);
+	border-radius: 18px;
+	background: var(--plan-blush);
+}
+.offer-icon { display: grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 12px; color: var(--white); background: var(--berry); }
+.sbc .offer-title { display: block; font-family: var(--head); font-size: 17px; font-weight: 700; letter-spacing: -.01em; color: var(--navy); }
+.sbc .offer-text { display: block; margin-top: 2px; font-size: 14px; color: var(--muted); }

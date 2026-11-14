@@ -57,6 +57,7 @@ function sbc_customize_register( $wp_customize ) {
 				'pkg_popular'     => array( 'select', __( '“Most popular” package', 'socialboothco' ), '', array( '0' => __( 'None', 'socialboothco' ), '1' => '1', '2' => '2', '3' => '3' ) ),
 				'packages_note'   => array( 'textarea', __( 'Note below the packages', 'socialboothco' ) ),
 				'upgrades'       => array( 'textarea', __( 'Upgrades', 'socialboothco' ), __( 'One per line: Name | Price | Description', 'socialboothco' ) ),
+				'offers'         => array( 'textarea', __( 'Offers', 'socialboothco' ), __( 'One per line: Title | Details. {holiday_year} becomes the upcoming holiday season’s year.', 'socialboothco' ) ),
 			),
 		),
 		'sbc_events'   => array(

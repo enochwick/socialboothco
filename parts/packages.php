@@ -83,6 +83,23 @@ $sbc_label    = sbc_mod( 'pkg_price_label' );
 	<p class="plans-note"><?php echo esc_html( sbc_mod( 'packages_note' ) ); ?></p>
 <?php endif; ?>
 
+<?php $sbc_offers = sbc_lines( 'offers', 2 ); ?>
+<?php if ( $sbc_offers ) : ?>
+	<ul class="offers">
+		<?php foreach ( $sbc_offers as $sbc_o ) : ?>
+			<li class="offer">
+				<span class="offer-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></span>
+				<span>
+					<strong class="offer-title"><?php echo esc_html( $sbc_o[0] ); ?></strong>
+					<?php if ( $sbc_o[1] ) : ?>
+						<span class="offer-text"><?php echo esc_html( str_replace( '{holiday_year}', (string) sbc_holiday_year(), $sbc_o[1] ) ); ?></span>
+					<?php endif; ?>
+				</span>
+			</li>
+		<?php endforeach; ?>
+	</ul>
+<?php endif; ?>
+
 <?php $sbc_upgrades = sbc_lines( 'upgrades', 3 ); ?>
 <?php if ( $sbc_upgrades ) : ?>
 	<div class="upgrades">
