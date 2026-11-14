@@ -33,6 +33,58 @@
 		});
 	}
 
+	/* Experience "How it works": lock the section while scrolling moves only the timeline,
+	   then release to the next section. Desktop/tablet only; phones keep a normal scroll. */
+	var pin = document.querySelector('[data-hiw-pin]');
+	if (pin && window.matchMedia) {
+		var mqPin = window.matchMedia('(min-width: 960px) and (min-height: 620px)');
+		var viewport = pin.querySelector('.hiw-viewport');
+		var list = pin.querySelector('.hiw-list');
+		var steps = Array.prototype.slice.call(list.children);
+		var overflow = 0;
+		var PACE = 1.6; // page pixels scrolled per pixel of timeline movement (calmer pacing)
+		var ticking = false;
+
+		var reset = function () {
+			pin.classList.remove('is-pinned');
+			pin.style.height = '';
+			list.style.transform = '';
+			list.style.removeProperty('--p');
+			steps.forEach(function (s) { s.classList.remove('is-active'); });
+		};
+
+		var update = function () {
+			ticking = false;
+			if (!pin.classList.contains('is-pinned')) return;
+			var total = pin.offsetHeight - window.innerHeight;
+			var p = total > 0 ? Math.min(1, Math.max(0, -pin.getBoundingClientRect().top / total)) : 0;
+			list.style.transform = 'translate3d(0,' + (-p * overflow).toFixed(1) + 'px,0)';
+			list.style.setProperty('--p', Math.max(0.04, p).toFixed(3));
+			// Active step follows progress: step 1 at the start, the last step at the end.
+			var active = Math.min(steps.length - 1, Math.floor(p * steps.length));
+			steps.forEach(function (s, i) { s.classList.toggle('is-active', i === active); });
+		};
+
+		var layout = function () {
+			reset();
+			if (!mqPin.matches) return;
+			pin.classList.add('is-pinned');
+			overflow = Math.max(0, list.scrollHeight - viewport.clientHeight);
+			if (overflow < 40) { reset(); return; } // everything already fits: no need to lock
+			pin.style.height = Math.round(window.innerHeight + overflow * PACE) + 'px';
+			update();
+		};
+
+		window.addEventListener('scroll', function () {
+			if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+		}, { passive: true });
+		var resizeT;
+		window.addEventListener('resize', function () { clearTimeout(resizeT); resizeT = setTimeout(layout, 150); });
+		if (mqPin.addEventListener) mqPin.addEventListener('change', layout);
+		layout();
+		if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+	}
+
 	/* Booking links are real links to the fallback page. When Amelia's popup is on the page,
 	   it opens from the same click, so stop the browser from also navigating away. */
 	document.addEventListener('click', function (e) {

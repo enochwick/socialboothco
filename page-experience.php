@@ -43,7 +43,8 @@ $sbc_grid  = array( 2915, 2916, 2883, 2877, 2881, 2882, 2856, 2861 );
 	</div>
 </section>
 
-<section class="sec sec--white">
+<section class="sec sec--white hiw-pin" data-hiw-pin>
+	<div class="hiw-sticky">
 	<div class="wrap hiw">
 		<div class="hiw-intro">
 			<h2 class="h2"><?php esc_html_e( 'How it works.', 'socialboothco' ); ?></h2>
@@ -56,6 +57,7 @@ $sbc_grid  = array( 2915, 2916, 2883, 2877, 2881, 2882, 2856, 2861 );
 			<?php sbc_button( __( 'Check your date', 'socialboothco' ), 'book', 'berry' ); ?>
 		</div>
 
+		<div class="hiw-viewport">
 		<ol class="hiw-list">
 			<?php foreach ( $sbc_steps as $sbc_n => $sbc_step ) : ?>
 				<li class="hiw-step">
@@ -78,6 +80,8 @@ $sbc_grid  = array( 2915, 2916, 2883, 2877, 2881, 2882, 2856, 2861 );
 				</li>
 			<?php endforeach; ?>
 		</ol>
+		</div>
+	</div>
 	</div>
 </section>
 

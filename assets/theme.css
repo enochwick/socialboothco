@@ -347,9 +347,15 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 .hiw-facts li::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--berry); box-shadow: 0 0 0 4px rgba(157, 26, 79, .12); }
 
 .hiw-list { position: relative; display: grid; gap: 14px; }
-.hiw-list::before {
+/* Timeline track + filled progress (full when not pinned; follows scroll when pinned). */
+.hiw-list::before,
+.hiw-list::after {
 	content: ""; position: absolute; left: 23px; top: 28px; bottom: 28px; width: 2px; border-radius: 2px;
-	background: linear-gradient(to bottom, var(--berry), rgba(157, 26, 79, .15));
+}
+.hiw-list::before { background: rgba(157, 26, 79, .14); }
+.hiw-list::after {
+	background: linear-gradient(to bottom, var(--berry), rgba(157, 26, 79, .45));
+	transform: scaleY(var(--p, 1)); transform-origin: top;
 }
 .hiw-step { position: relative; display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 20px; align-items: start; }
 .hiw-node {
@@ -357,7 +363,10 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 	border-radius: 16px; background: #fff; color: var(--berry);
 	box-shadow: 0 0 0 1px var(--line), 0 6px 16px -8px rgba(157, 26, 79, .35);
 }
-.hiw-step:first-child .hiw-node { background: var(--berry); color: #fff; box-shadow: 0 8px 20px -8px rgba(157, 26, 79, .6); }
+.hiw-node, .hiw-card { transition: background-color .3s var(--ease), color .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease); }
+.hiw-step.is-active .hiw-node,
+.hiw-pin:not(.is-pinned) .hiw-step:first-child .hiw-node { background: var(--berry); color: #fff; box-shadow: 0 8px 20px -8px rgba(157, 26, 79, .6); }
+.hiw-step.is-active .hiw-card { border-color: rgba(157, 26, 79, .32); box-shadow: 0 1px 2px rgba(26, 44, 55, .04), 0 18px 40px -24px rgba(157, 26, 79, .35); }
 .hiw-card {
 	padding: 22px 24px; border: 1px solid var(--line); border-radius: 20px;
 	background: linear-gradient(180deg, #fff, #fcfafa);
@@ -368,6 +377,22 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 .hiw-when { padding: 5px 10px; border-radius: 999px; background: var(--blush); font-size: 12px; font-weight: 500; line-height: 1.2; color: var(--muted); }
 .sbc .hiw-card h3 { font: 700 21px/1.2 var(--head); letter-spacing: -.02em; }
 .hiw-card p { margin-top: 8px !important; font-size: 15px; color: var(--muted); max-width: 52ch; }
+/* Pinned mode (desktop/tablet, added by theme.js): the section locks to the screen while
+   only the timeline moves; the page continues once the last step is reached. */
+.hiw-pin.is-pinned { padding: 0; }
+.hiw-pin.is-pinned .hiw-sticky { position: sticky; top: 0; display: flex; align-items: center; height: 100vh; height: 100svh; }
+.hiw-pin.is-pinned .hiw { width: 100%; align-items: center; }
+.hiw-pin.is-pinned .hiw-intro { position: static; }
+.hiw-pin.is-pinned .hiw-viewport {
+	height: calc(100svh - 140px);
+	overflow: hidden;
+	-webkit-mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
+	mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
+}
+.hiw-pin.is-pinned .hiw-list { padding: 28px 0; will-change: transform; }
+.hiw-pin.is-pinned .hiw-list::before,
+.hiw-pin.is-pinned .hiw-list::after { top: 56px; bottom: 56px; }
+
 @media (max-width: 599px) {
 	.hiw-step { grid-template-columns: 40px minmax(0, 1fr); gap: 14px; }
 	.hiw-node { width: 40px; height: 40px; border-radius: 13px; margin-top: 18px; }
