@@ -38,6 +38,7 @@ foreach ( array_filter( array_map( 'absint', explode( ',', (string) sbc_mod( 'he
 	</div>
 
 	<?php if ( $sbc_photos ) : ?>
+		<?php sbc_stamp( 'SOCIAL BOOTH CO · DFW METROPLEX', 'hero-stamp' ); ?>
 		<div class="mq-strip" aria-hidden="true">
 			<div class="mq-track">
 				<?php

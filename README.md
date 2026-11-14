@@ -40,7 +40,7 @@ Every "Check your date" button has the class `sbc-book` and opens Amelia's booki
 
 ### City pages
 
-Pages → Add New, title like **Photo Booth Rental in Frisco** (the city is the text after "in"), and under Template pick **City landing page**. In the content, write two or three sentences specific to that city (venues you've worked, neighborhoods, travel). The rest (packages, reviews, photos, FAQs) comes from the homepage.
+Pages → Add New, title like **Photo Booth Rental in Frisco** (the city is the text after "in"), and under Template pick **City landing page**. In the content, write two or three sentences specific to that city (venues you've worked, neighborhoods, travel). They appear beside the "A photo booth experience" heading. The rest (packages, reviews, photos, FAQs) comes from the homepage.
 
 The hero is themed per city: the city name as a giant outline behind the headline, a photo-strip print with the city on its caption, a spinning city stamp, and chips for local neighborhoods. Neighborhoods come from `sbc_city_spots()` in `inc/seo.php` (Frisco, Plano, McKinney, Dallas, Fort Worth, Arlington, Irving, Richardson, Denton, Allen, Prosper, Southlake, Carrollton, Garland); other cities show the rest of "Areas served". The print uses the page's featured image first, then homepage hero photos, rotated so each city gets a different set. Keep the content unique per city; copies of the same text don't rank.
 

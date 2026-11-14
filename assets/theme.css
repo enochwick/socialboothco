@@ -296,7 +296,8 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 	padding: 4px; border: 1px solid var(--line); border-radius: 24px; background: var(--paper);
 }
 .plan--berry { --plan-base: var(--plan-berry); --plan-a: var(--berry); --plan-b: var(--berry-tint); --plan-mark: var(--berry); }
-.plan--navy { --plan-base: var(--plan-grey); --plan-a: var(--navy); --plan-b: var(--plan-grey-2); --plan-mark: var(--navy); }
+/* .plan--blush is kept for package cards saved inside page content (e.g. the corporate page). */
+.plan--navy, .plan--blush { --plan-base: var(--plan-grey); --plan-a: var(--navy); --plan-b: var(--plan-grey-2); --plan-mark: var(--navy); }
 .plan.is-popular { border-color: var(--berry-a35); box-shadow: 0 24px 48px -28px var(--berry-a45); }
 
 .plan-top {
@@ -306,7 +307,7 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 .plan-blob { position: absolute; z-index: -1; border-radius: 999px; filter: blur(48px); pointer-events: none; }
 .plan-blob--a { top: -56px; right: -56px; width: 210px; height: 210px; background: var(--plan-a); opacity: .45; }
 .plan-blob--b { top: 33%; left: -40px; width: 240px; height: 240px; background: var(--plan-b); opacity: .35; }
-.plan--navy .plan-blob--a { opacity: .22; }
+.plan--navy .plan-blob--a, .plan--blush .plan-blob--a { opacity: .22; }
 .plan-grain { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; opacity: .35; mix-blend-mode: overlay; pointer-events: none; }
 
 .plan-body { display: flex; flex-direction: column; gap: 18px; }
@@ -324,6 +325,8 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 .plan--berry .btn--dark:hover { background: var(--berry-deep); }
 .sbc .btn--soft { background: var(--white-a78); color: var(--navy); box-shadow: 0 1px 2px var(--ink-a08); }
 .sbc .btn--soft:hover { background: var(--white); color: var(--navy); }
+.sbc .plan--blush .btn--soft { background: var(--navy); color: var(--white); box-shadow: none; }
+.sbc .plan--blush .btn--soft:hover { background: var(--navy-hover); color: var(--white); }
 
 .plan-details { display: flex; flex: 1; flex-direction: column; gap: 20px; padding: 22px 14px 10px; }
 .plan-features { display: grid; gap: 11px; }
@@ -847,6 +850,9 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 	position: relative;
 	overflow: hidden;
 	margin-top: calc(var(--header-h) * -1);
+	display: flex;
+	align-items: center;
+	min-height: clamp(640px, calc(100svh + 56px), 1150px); /* full screen, running a little past the fold */
 	padding: calc(var(--header-h) + 32px) 0 56px;
 	color: var(--white);
 	background:
@@ -938,9 +944,10 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 	animation: city-spin 24s linear infinite;
 }
 @media (min-width: 1000px) { .city-stamp { left: calc(50% - 130px - 64px); width: 128px; height: 128px; } }
-.city-stamp__ring { font-family: var(--head); font-weight: 700; font-size: 11px; letter-spacing: .12em; fill: currentColor; }
+.stamp__ring { font-family: var(--head); font-weight: 700; font-size: 11px; letter-spacing: .12em; fill: currentColor; }
 @keyframes city-print { from { opacity: 0; transform: translateY(40px) rotate(-2deg); } }
 @keyframes city-spin { to { transform: rotate(348deg); } }
+.city-hero > .wrap { width: 100%; }
 @media (max-width: 999px) {
 	.city-hero__grid { gap: 32px; }
 	.city-hero__art { padding: 8px 0 8px; }
@@ -970,3 +977,30 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 .offer-icon { display: grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 12px; color: var(--white); background: var(--berry); }
 .sbc .offer-title { display: block; font-family: var(--head); font-size: 17px; font-weight: 700; letter-spacing: -.01em; color: var(--navy); }
 .sbc .offer-text { display: block; margin-top: 2px; font-size: 14px; color: var(--muted); }
+
+/* City page text sits beside the features heading on wide screens. */
+.feat-head { display: grid; gap: 16px; }
+@media (min-width: 1000px) { .feat-head { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: end; } }
+.sbc .feat-intro p { max-width: 58ch; color: var(--muted); font-size: 1.05rem; }
+.sbc .feat-intro p + p { margin-top: 12px; }
+
+/* Homepage: the stamp sits on the right, just above the sliding photos. */
+.sbc .mq-hero { --strip-h: clamp(300px, 46svh, 520px); }
+.hero-stamp {
+	position: absolute;
+	z-index: 3;
+	right: max(var(--gutter), 6vw);
+	bottom: calc(var(--strip-h) * .98);
+	width: 120px;
+	height: 120px;
+	color: var(--white);
+	opacity: .92;
+	filter: drop-shadow(0 6px 14px var(--black-a20));
+	animation: city-spin 24s linear infinite;
+	pointer-events: none;
+}
+@media (max-width: 700px) {
+	.sbc .mq-hero { --strip-h: clamp(320px, 50svh, 440px); }
+	.hero-stamp { width: 80px; height: 80px; right: 12px; bottom: calc(var(--strip-h) * .8); }
+}
+@media (prefers-reduced-motion: reduce) { .hero-stamp { animation: none; } }

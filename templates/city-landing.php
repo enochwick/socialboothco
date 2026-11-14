@@ -83,31 +83,23 @@ $sbc_letter = function_exists( 'mb_strtoupper' ) ? mb_strtoupper( $sbc_short ) :
 						<span class="city-strip__brand"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span>
 					</div>
 				</div>
-				<svg class="city-stamp" viewBox="0 0 120 120">
-					<defs><path id="city-stamp-path" d="M60 60 m-44 0 a44 44 0 1 1 88 0 a44 44 0 1 1 -88 0"/></defs>
-					<circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" stroke-width="1.5"/>
-					<circle cx="60" cy="60" r="31" fill="none" stroke="currentColor" stroke-width="1"/>
-					<text class="city-stamp__ring"><textPath href="#city-stamp-path" textLength="270"><?php echo esc_html( $sbc_letter . ' · TEXAS · PHOTO BOOTH · ' ); ?></textPath></text>
-					<path d="M60 42 l4.6 9.4 10.4 1.5 -7.5 7.3 1.8 10.3 -9.3 -4.9 -9.3 4.9 1.8 -10.3 -7.5 -7.3 10.4 -1.5z" fill="currentColor"/>
-				</svg>
+				<?php sbc_stamp( $sbc_letter . ' · TEXAS · PHOTO BOOTH', 'city-stamp' ); ?>
 			</div>
 		<?php endif; ?>
 	</div>
 </header>
 
 <?php
+// The page's own text (the city-specific sentences) becomes the intro of the features section.
+$sbc_local = '';
 while ( have_posts() ) :
 	the_post();
-	if ( '' !== trim( get_the_content() ) ) :
-		?>
-		<section class="sec sec--tight city-local">
-			<div class="wrap prose"><?php the_content(); ?></div>
-		</section>
-		<?php
-	endif;
+	if ( '' !== trim( get_the_content() ) ) {
+		$sbc_local = apply_filters( 'the_content', get_the_content() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals
+	}
 endwhile;
 
-get_template_part( 'parts/features' );
+get_template_part( 'parts/features', null, array( 'intro' => $sbc_local ) );
 ?>
 
 <section class="sec" id="pricing">

@@ -8,7 +8,7 @@
 defined( 'ABSPATH' ) || exit;
 
 $sbc_packages = sbc_packages();
-$sbc_palettes = array( 'blush', 'berry', 'navy' );
+$sbc_palettes = array( 'navy', 'berry', 'navy' ); // The first and last cards share the grey look.
 $sbc_label    = sbc_mod( 'pkg_price_label' );
 ?>
 

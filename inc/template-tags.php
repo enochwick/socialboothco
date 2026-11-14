@@ -349,3 +349,21 @@ function sbc_animate_content_hero_title( $content ) {
 		1
 	);
 }
+
+/**
+ * Round rubber-stamp badge with text running around the ring and a star in the middle.
+ * It spins slowly (paused for reduced motion). Decorative only.
+ */
+function sbc_stamp( $text, $class = '' ) {
+	$id   = wp_unique_id( 'sbc-stamp-' );
+	$text = rtrim( $text ) . ' · ';
+	?>
+	<svg class="stamp<?php echo $class ? ' ' . esc_attr( $class ) : ''; ?>" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+		<defs><path id="<?php echo esc_attr( $id ); ?>" d="M60 60 m-44 0 a44 44 0 1 1 88 0 a44 44 0 1 1 -88 0"/></defs>
+		<circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" stroke-width="1.5"/>
+		<circle cx="60" cy="60" r="31" fill="none" stroke="currentColor" stroke-width="1"/>
+		<text class="stamp__ring"><textPath href="#<?php echo esc_attr( $id ); ?>" textLength="272" lengthAdjust="spacingAndGlyphs"><?php echo esc_html( $text ); ?></textPath></text>
+		<path d="M60 42 l4.6 9.4 10.4 1.5 -7.5 7.3 1.8 10.3 -9.3 -4.9 -9.3 4.9 1.8 -10.3 -7.5 -7.3 10.4 -1.5z" fill="currentColor"/>
+	</svg>
+	<?php
+}
