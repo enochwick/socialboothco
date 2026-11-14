@@ -25,6 +25,10 @@ $sbc_total = count( $sbc_backdrops );
 				<p class="intro"><?php echo esc_html( sbc_mod( 'backdrops_intro' ) ); ?></p>
 			</div>
 			<div class="backdrops-nav" data-scroller-nav hidden>
+				<button class="backdrops-btn backdrops-toggle" type="button" data-scroller-toggle aria-controls="sbc-backdrops-track" aria-label="<?php esc_attr_e( 'Pause scrolling', 'socialboothco' ); ?>" data-label-pause="<?php esc_attr_e( 'Pause scrolling', 'socialboothco' ); ?>" data-label-play="<?php esc_attr_e( 'Play scrolling', 'socialboothco' ); ?>" hidden>
+					<svg class="ico-pause" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+					<svg class="ico-play" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+				</button>
 				<button class="backdrops-btn" type="button" data-scroller-prev aria-controls="sbc-backdrops-track" aria-label="<?php esc_attr_e( 'Previous backdrops', 'socialboothco' ); ?>">
 					<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg>
 				</button>
@@ -35,7 +39,7 @@ $sbc_total = count( $sbc_backdrops );
 		</div>
 
 		<?php /* A focusable, labelled scroll region: arrow keys, trackpads and swipes all scroll it natively. */ ?>
-		<ul class="backdrops-track" id="sbc-backdrops-track" role="list" tabindex="0" aria-label="<?php echo esc_attr( sprintf( /* translators: %d: number of backdrops */ __( '%d backdrop options. Scroll sideways to see more.', 'socialboothco' ), $sbc_total ) ); ?>" data-scroller>
+		<ul class="backdrops-track" id="sbc-backdrops-track" role="list" tabindex="0" aria-label="<?php echo esc_attr( sprintf( /* translators: %d: number of backdrops */ __( '%d backdrop options. Scroll sideways to see more.', 'socialboothco' ), $sbc_total ) ); ?>" data-scroller data-scroller-auto="3000">
 			<?php foreach ( $sbc_backdrops as $sbc_n => $sbc_id ) : ?>
 				<?php
 				$sbc_alt = trim( (string) get_post_meta( $sbc_id, '_wp_attachment_image_alt', true ) );

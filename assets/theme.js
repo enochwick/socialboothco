@@ -164,30 +164,70 @@
 		if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
 	}
 
-	/* Backdrop scroller: the round buttons page through it; they hide when everything fits and
-	   dim at either end. Swiping, trackpads and arrow keys use the browser's own scrolling. */
+	/* Backdrop scroller. It moves on by one backdrop every few seconds and loops back at the end.
+	   It waits while the pointer is over it, while it has keyboard focus, while it's off screen or the
+	   tab is hidden, and stops for good once someone swipes it or presses pause. No auto-scroll with
+	   reduced motion. The arrows page through it; swipes, trackpads and arrow keys scroll natively. */
 	document.querySelectorAll('[data-scroller]').forEach(function (track) {
 		var section = track.closest('section');
 		var nav = section && section.querySelector('[data-scroller-nav]');
 		if (!nav) return;
 		var prev = nav.querySelector('[data-scroller-prev]');
 		var next = nav.querySelector('[data-scroller-next]');
-		var page = function () { return Math.max(track.clientWidth * 0.8, 200); };
+		var toggle = nav.querySelector('[data-scroller-toggle]');
 		var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		var motion = still ? 'auto' : 'smooth';
+		var page = function () { return Math.max(track.clientWidth * 0.8, 200); };
+		var step = function () {
+			var item = track.firstElementChild;
+			var gap = parseFloat(window.getComputedStyle(track).columnGap) || 0;
+			return item ? item.getBoundingClientRect().width + gap : page();
+		};
+		var maxScroll = function () { return track.scrollWidth - track.clientWidth; };
 		var sync = function () {
-			var max = track.scrollWidth - track.clientWidth;
+			var max = maxScroll();
 			nav.hidden = max < 8;
 			prev.disabled = track.scrollLeft < 8;
 			next.disabled = track.scrollLeft > max - 8;
 		};
-		prev.addEventListener('click', function () { track.scrollBy({ left: -page(), behavior: still ? 'auto' : 'smooth' }); });
-		next.addEventListener('click', function () { track.scrollBy({ left: page(), behavior: still ? 'auto' : 'smooth' }); });
+		prev.addEventListener('click', function () { track.scrollBy({ left: -page(), behavior: motion }); });
+		next.addEventListener('click', function () { track.scrollBy({ left: page(), behavior: motion }); });
 		var raf = 0;
 		track.addEventListener('scroll', function () {
 			if (!raf) raf = window.requestAnimationFrame(function () { raf = 0; sync(); });
 		}, { passive: true });
 		window.addEventListener('resize', sync);
 		sync();
+
+		var delay = parseInt(track.getAttribute('data-scroller-auto'), 10);
+		if (!delay || still || !toggle) return;
+		var stopped = false, hovering = false, focused = false, onScreen = false;
+		var setStopped = function (v) {
+			stopped = v;
+			toggle.classList.toggle('is-paused', v);
+			toggle.setAttribute('aria-label', toggle.getAttribute(v ? 'data-label-play' : 'data-label-pause'));
+		};
+		toggle.hidden = false;
+		toggle.addEventListener('click', function () { setStopped(!stopped); });
+		track.addEventListener('mouseenter', function () { hovering = true; });
+		track.addEventListener('mouseleave', function () { hovering = false; });
+		section.addEventListener('focusin', function (e) { if (e.target !== toggle) focused = true; });
+		section.addEventListener('focusout', function () { focused = false; });
+		// A swipe or drag means the visitor has taken over.
+		track.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse') setStopped(true); }, { passive: true });
+		if ('IntersectionObserver' in window) {
+			new IntersectionObserver(function (entries) { onScreen = entries[0].isIntersecting; }, { threshold: 0.3 }).observe(track);
+		} else {
+			onScreen = true;
+		}
+		window.setInterval(function () {
+			if (stopped || hovering || focused || !onScreen || document.hidden) return;
+			if (track.scrollLeft >= maxScroll() - 8) {
+				track.scrollTo({ left: 0, behavior: motion });
+			} else {
+				track.scrollBy({ left: step(), behavior: motion });
+			}
+		}, delay);
 	});
 
 	/* Booking links are real links to the fallback page. When Amelia's popup is on the page,

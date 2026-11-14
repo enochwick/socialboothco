@@ -1011,6 +1011,9 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 .backdrops-head > div:first-child { flex: 1 1 320px; min-width: 0; }
 .backdrops-nav { display: flex; gap: 10px; }
 .backdrops-nav[hidden] { display: none; }
+.sbc .backdrops-toggle[hidden] { display: none; }
+.backdrops-toggle .ico-play, .backdrops-toggle.is-paused .ico-pause { display: none; }
+.backdrops-toggle.is-paused .ico-play { display: block; }
 .sbc .backdrops-btn {
 	display: grid; place-items: center;
 	width: 48px; height: 48px;
@@ -1051,7 +1054,8 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 .sbc .backdrops-count { margin-top: 18px; font-size: 14px; color: var(--muted); }
 @media (max-width: 999px) { .backdrops-item { flex-basis: calc((100% - 2 * 14px - 2 * var(--gutter)) / 3.25); } }
 @media (max-width: 699px) {
-	.backdrops-nav { display: none; } /* Phones swipe; the peeking card shows there's more. */
+	.sbc [data-scroller-prev], .sbc [data-scroller-next] { display: none; } /* Phones swipe; the peeking card shows there's more. Pause stays. */
+	.backdrops-head { align-items: center; }
 	.sbc .backdrops-track { gap: 12px; }
 	.backdrops-item { flex-basis: calc((100% - 12px - 2 * var(--gutter)) / 2.2); border-radius: 16px; }
 }
