@@ -150,6 +150,21 @@ function sbc_packages() {
 }
 
 /**
+ * "How it works" on /experience/ (also part of the chat assistant's knowledge).
+ * Title, text, when it happens (from the site's own copy and FAQ), icon.
+ */
+function sbc_experience_steps() {
+	return array(
+		array( __( 'Secure your date', 'socialboothco' ), __( 'Send your inquiry and we’ll confirm availability within 24 hours. Once approved, your date is officially reserved.', 'socialboothco' ), __( 'Within 24 hours', 'socialboothco' ), 'calendar' ),
+		array( __( 'Design and planning', 'socialboothco' ), __( 'We create a custom overlay for your event style. You review and approve, and we finalize every detail, including the print layout if selected.', 'socialboothco' ), __( 'Before your event', 'socialboothco' ), 'pen' ),
+		array( __( 'Event setup', 'socialboothco' ), __( 'We arrive early for full setup, calibration and testing, so everything is ready before guests arrive.', 'socialboothco' ), __( '45–60 min before', 'socialboothco' ), 'tool' ),
+		array( __( 'Event time', 'socialboothco' ), __( 'Guests tap, pose and share. Photos are delivered instantly, and printed on site if your package includes prints.', 'socialboothco' ), __( 'During your event', 'socialboothco' ), 'camera' ),
+		array( __( 'Instant delivery', 'socialboothco' ), __( 'Guests get their digital photos right away. You receive a complete online gallery after the event to view and download.', 'socialboothco' ), __( 'Instantly', 'socialboothco' ), 'send' ),
+		array( __( 'Teardown', 'socialboothco' ), __( 'We pack up discreetly and leave the space exactly as we found it.', 'socialboothco' ), __( 'After your event', 'socialboothco' ), 'check' ),
+	);
+}
+
+/**
  * Photos removed from the site everywhere (Media Library IDs): homepage, gallery and page content.
  * 5076 = social-booth-co-event-05.
  */

@@ -29,6 +29,32 @@ List fields take one item per line, with parts separated by `|`. Menus can be as
 
 Every "Check your date" button has the class `sbc-book` and opens Amelia's booking popup for category **1** (changeable in the Customizer). If Amelia is off, it links to `/check-availability/`. There are no consultation buttons; the theme also strips any left in page content.
 
+## Chat assistant
+
+An "Ask us" button (bottom right, every page) opens a chat that answers questions from the site's own content: packages, upgrades, offers, FAQ, event types, the Experience steps, city pages and other published pages such as the Agreement. It never makes up prices or availability. For dates it points to "Check your date", which opens the Amelia popup from inside the chat. Questions it can't answer get handed to the team's email and phone.
+
+**Turning it on.** Add your Anthropic API key to `wp-config.php` (above "That's all, stop editing!"). Never put it in the theme or in git:
+
+```php
+define( 'SBC_ANTHROPIC_API_KEY', 'sk-ant-...' );
+```
+
+Without the key, the button doesn't show. Optional settings in the same file: `SBC_CHAT_MODEL` (default `claude-opus-5-5`) and `SBC_CHAT_EMAIL` (default `memories@socialboothco.com`).
+
+**Transcripts.** Every conversation is saved under **Chats** in the WordPress admin. Once a chat has had no new message for 5 minutes, the full transcript is emailed to memories@socialboothco.com. If the visitor comes back and keeps chatting, you get an "Updated website chat" email with the whole conversation.
+
+**On-time emails.** WordPress only runs scheduled tasks when someone loads the site, and LiteSpeed serves most visits from cache, so emails can run late on quiet days. To fix that, add a server cron job in hPanel/cPanel (Advanced → Cron Jobs) that runs every minute:
+
+```
+wget -q -O - "https://socialboothco.com/wp-cron.php?doing_wp_cron" >/dev/null 2>&1
+```
+
+Emails go out through WordPress's normal mail (the same path Forminator and Amelia use). If they land in spam, set up an SMTP plugin.
+
+**How answers are found.** The site content is split into small pieces and indexed. For each question, the best-matching pieces (plus the business basics) go to Claude with instructions to answer only from them. The index rebuilds automatically when you save the Customizer or any page. Content lives in `inc/chat.php`. To add synonyms (e.g. so "photo strip" finds prints), edit `sbc_chat_terms()`.
+
+**Limits and cost.** Each visitor gets 20 messages per 10 minutes and 40 per conversation, and the whole site gets 500 messages a day. Each reply costs a cent or two in API usage.
+
 ## SEO
 
 `inc/seo.php` works with Yoast SEO:

@@ -5,7 +5,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SBC_THEME_VERSION', '1.8.1' );
+define( 'SBC_THEME_VERSION', '1.9.0' );
 
 require get_template_directory() . '/inc/content.php';
 require get_template_directory() . '/inc/customizer.php';
@@ -13,6 +13,7 @@ require get_template_directory() . '/inc/booking.php';
 require get_template_directory() . '/inc/template-tags.php';
 require get_template_directory() . '/inc/performance.php';
 require get_template_directory() . '/inc/seo.php';
+require get_template_directory() . '/inc/chat.php';
 
 add_action( 'after_setup_theme', 'sbc_setup' );
 function sbc_setup() {
