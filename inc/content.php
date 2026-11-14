@@ -38,21 +38,22 @@ function sbc_defaults() {
 		'packages_intro'   => 'Simple packages, elevated experiences. Check your date and we’ll send a custom quote for your celebration.',
 		'packages_note'    => 'Every package includes an attendant, professional lighting, a custom overlay, setup and breakdown.',
 		'pkg_price_label'  => 'Starting at',
+		// Wording matches the original site's packages.
 		'pkg1_name'        => 'The Social Booth',
 		'pkg1_price'       => '$450',
-		'pkg1_best'        => 'Best for intimate events, birthday parties, showers and casual celebrations.',
-		'pkg1_features'    => "2 hours of booth experience\nPhotos, GIFs and boomerangs\nInstant share by email, SMS and AirDrop\nLive event gallery\nCustom photo overlay (names, date, branding)\nProfessional lighting\nBooth attendant\nSetup and breakdown",
-		'pkg1_note'        => 'Prints available as an add-on.',
+		'pkg1_best'        => 'Best for: intimate events, birthday parties, showers, and casual celebrations',
+		'pkg1_features'    => "2 Hours of Booth Experience\nPhotos, GIFs, and Boomerangs\nInstant share via Email, SMS, and AirDrop\nLive Event Gallery\nCustom Photo Overlay (Names, Date, Branding)\nProfessional Lighting\nBooth Attendant\nSetup and Breakdown",
+		'pkg1_note'        => '*Prints available as add-on',
 		'pkg2_name'        => 'The Party Booth',
 		'pkg2_price'       => '$650',
-		'pkg2_best'        => 'Best for weddings, larger parties and events where guests want instant prints.',
-		'pkg2_features'    => "Everything in The Social Booth\n3 hours of booth experience\nPrint package (limited prints)\nFully custom-branded photo and print design\nVideo capture\nProp collection",
-		'pkg2_note'        => 'Add-ons available.',
+		'pkg2_best'        => 'Best for: Weddings, larger parties, and events where guests want instant prints',
+		'pkg2_features'    => "Everything in The Social Booth, plus:\n3 Hours of Booth Experience\nPrint Package Included (Limited Prints)\nFully Custom-Branded Photo & Print Design\nVideo capture\nProp Collection",
+		'pkg2_note'        => '*Add-ons Available.',
 		'pkg3_name'        => 'Premier Experience',
 		'pkg3_price'       => '$950',
-		'pkg3_best'        => 'Best for weddings, corporate events and premium celebrations.',
-		'pkg3_features'    => "Everything in The Party Booth\n5 hours of booth experience\nUnlimited instant prints\nSlow-motion video\nPremium backdrop (sequin or arch)\nPremium event customization\nPriority planning support",
-		'pkg3_note'        => 'Add-ons available.',
+		'pkg3_best'        => 'Best for: Weddings, corporate events, and premium celebrations',
+		'pkg3_features'    => "Everything in The Party Booth, plus:\n5 Hours of Booth Experience\nUnlimited Instant Prints\nSlow-motion Video\nPremium Backdrop Upgrade (Sequin or Arch)\nPremium Event Customization\nPriority Planning Support\nCustom Photo Overlay",
+		'pkg3_note'        => '*Add-ons Available.',
 		'pkg_popular'      => '2',
 		'upgrades'         => "Premium backdrop | From $95 | Sequin walls, arches and luxury textures.\nExtra booth time | $120/hr | Keep the booth running so guests can capture even more.\nGuest book experience | $125 | Guests add prints and messages to a keepsake book you take home.\nCustom event branding | Ask us | Fully customized overlays, templates and screen experiences.\nGuest survey insights | Ask us | Collect guest feedback and engagement data at corporate activations.",
 
@@ -67,6 +68,15 @@ function sbc_defaults() {
 		'event3_photo'     => 2915,
 		'event4'           => 'Graduations and private celebrations | Milestone moments, proud smiles.',
 		'event4_photo'     => 2304,
+
+		// Home: moments from our events (photo grid; carousel on phones).
+		'moments_title'    => 'Moments from our events',
+		'moments_photos'   => '5073, 5072, 5074, 5076, 5078, 5077, 5079, 5080',
+
+		// Reviews (Thumbtack). Shown below the packages on the homepage and on pages that list packages.
+		'reviews_title'    => 'Want to hear from past clients?',
+		'reviews_text'     => 'See our reviews on Thumbtack.',
+		'reviews_url'      => 'https://www.thumbtack.com/tx/frisco/photo-booth-rentals/social-booth-co/service/573233401389367325',
 
 		// FAQ (used on the FAQ page; the first four also appear on the homepage).
 		'faq'              => "What types of events do you service?\nWe provide photo booth experiences for weddings, corporate events, private parties, quinceañeras, brand activations and special celebrations throughout the Dallas–Fort Worth area. If your event isn’t on that list, email us at memories@socialboothco.com and we’ll make it happen.\n\nHow far in advance should I book?\nWe recommend booking 3–6 weeks in advance, especially during peak wedding and holiday seasons. Reach out anytime and we’ll check availability for your date.\n\nHow much space do you need?\nOur setup is compact and flexible. A space of about 8×8 feet gives guests room to pose comfortably.\n\nWhat is required to reserve a date?\nA signed agreement and a deposit secure your event date. The remaining balance is due before the event.\n\nDo you require a deposit to book?\nYes. A 30% deposit reserves your event date, with the remaining balance due 7 days before the event.\n\nDo you provide an attendant?\nYes. A professional booth attendant handles setup, helps guests and keeps everything running smoothly throughout your event.\n\nDo you offer printing?\nYes. Instant photo printing is available as an add-on or included with select packages. Guests receive high-quality prints within seconds.\n\nCan you customize the photo design?\nAbsolutely. We create custom overlays and photo templates that match your event theme, wedding design or brand identity.\n\nWhat types of photos can guests take?\nPhotos, GIFs, boomerangs and short videos, so there’s something fun for every guest.\n\nIs there an online gallery after the event?\nYes. After the event you’ll get access to the complete digital gallery, where every photo, GIF and video can be viewed and downloaded.\n\nDo you travel outside Dallas–Fort Worth?\nWe currently serve Dallas, Fort Worth and the surrounding DFW areas, and we’re excited to expand to more locations soon.\n\nHow long does setup take?\nWe typically arrive 45–60 minutes before the event to set up and test the booth.",

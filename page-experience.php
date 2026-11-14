@@ -103,7 +103,10 @@ $sbc_grid  = array( 2915, 2916, 2883, 2877, 2881, 2882, 2856, 2861 );
 		<div class="photo-grid">
 			<?php
 			foreach ( $sbc_grid as $sbc_id ) {
-				echo sbc_image( $sbc_id, 'medium_large', array( 'sizes' => '(min-width: 900px) 25vw, 50vw' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+				$sbc_img = sbc_image( $sbc_id, 'medium_large', array( 'sizes' => '(min-width: 900px) 25vw, 50vw' ) );
+				if ( $sbc_img ) {
+					echo '<figure class="photo-grid__item">' . $sbc_img . '</figure>'; // phpcs:ignore WordPress.Security.EscapeOutput
+				}
 			}
 			?>
 		</div>

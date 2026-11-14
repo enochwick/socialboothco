@@ -180,11 +180,9 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 	gap: 16px;
 	width: max-content;
 	height: 100%;
-	padding-right: 16px; /* matches the gap so -50% lands exactly on the second set */
-	animation: sbc-marquee 60s linear infinite;
+	padding-right: 16px; /* matches the gap so one set's width is an exact loop length */
+	will-change: transform;
 }
-.mq-hero.is-paused .mq-track { animation-play-state: paused; }
-@keyframes sbc-marquee { from { transform: translateX(-50%); } to { transform: translateX(0); } }
 .mq-card { flex: none; height: 74%; aspect-ratio: 3 / 4; transform: rotate(-2deg); }
 .mq-card--alt { transform: rotate(5deg); }
 .mq-card img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 16px; box-shadow: 0 14px 30px -14px rgba(26, 44, 55, .45); background: var(--line); }
@@ -213,9 +211,7 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 .mq-hero.is-paused .mq-ico-pause { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-	.mq-track { animation: none !important; transform: translateX(-12%); }
 	.mq-word, .mq-tag, .mq-lede, .mq-actions { animation: none !important; }
-	.mq-toggle { display: none; }
 }
 
 /* Features */
@@ -444,4 +440,219 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 
 @media (prefers-reduced-motion: reduce) {
 	*, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* ===================================================================
+   Nov 2026 refresh: header on scroll, gradient hero, feature cards,
+   reviews, moments carousel, image hover zoom, builder page width.
+   =================================================================== */
+
+:root { --header-h: 84px; --top-offset: var(--wp-admin--admin-bar--height, 0px); }
+html { scroll-padding-top: calc(var(--header-h) + 16px); }
+
+/* Header: sticky; turns brand berry with white logo/menu/button once you scroll. */
+.site-header {
+	position: sticky;
+	top: var(--top-offset);
+	z-index: 50;
+	background: transparent;
+	transition: background-color .3s var(--ease), box-shadow .3s var(--ease), color .3s var(--ease);
+}
+.site-header .wrap { min-height: var(--header-h); }
+.sbc .logo-img { width: 196px; height: auto; }
+@media (max-width: 599px) { .sbc .logo-img { width: 176px; } }
+.site-header .logo-img--light { display: none; }
+.site-header--on-dark,
+.site-header.is-scrolled { color: #fff; }
+.site-header--on-dark .logo-img--dark,
+.site-header.is-scrolled .logo-img--dark { display: none; }
+.site-header--on-dark .logo-img--light,
+.site-header.is-scrolled .logo-img--light { display: block; }
+.site-header.is-scrolled { background: var(--berry); box-shadow: 0 10px 30px -18px rgba(117, 14, 64, .8); }
+.site-header--on-dark .sbc-book.header-cta,
+.site-header.is-scrolled .sbc-book.header-cta { background: #fff; color: var(--berry); }
+.site-header--on-dark .sbc-book.header-cta:hover,
+.site-header.is-scrolled .sbc-book.header-cta:hover { background: var(--berry-deep); color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .55); }
+.site-header .sbc :focus-visible, .site-header.is-scrolled :focus-visible, .site-header--on-dark :focus-visible { outline-color: #fff; }
+
+/* Hamburger: rounded rectangle with wider lines (not a circle). */
+.site-header .menu-btn,
+.mobile-menu .menu-btn { width: 52px; height: 44px; border-radius: 12px; border-width: 1.5px; }
+.site-header--on-dark .menu-btn:hover,
+.site-header.is-scrolled .menu-btn:hover { background: #fff; color: var(--berry); }
+
+/* Homepage hero on a brand gradient; it runs up behind the transparent header. */
+.mq-hero {
+	margin-top: calc(var(--header-h) * -1);
+	padding-top: var(--header-h);
+	min-height: clamp(600px, 100svh, 1100px); /* fills the screen, but never stretches on very tall displays */
+	color: #fff;
+	background:
+		radial-gradient(60% 55% at 85% 12%, rgba(245, 163, 194, .35), transparent 70%),
+		radial-gradient(55% 60% at 8% 85%, rgba(26, 44, 55, .65), transparent 70%),
+		linear-gradient(135deg, #b0215c 0%, #9d1a4f 38%, #6a1241 70%, #2a2238 100%);
+}
+.sbc .mq-hero .mq-title { color: #fff; }
+.sbc .mq-hero .mq-tag { border-color: rgba(255, 255, 255, .28); background: rgba(255, 255, 255, .12); color: rgba(255, 255, 255, .92); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.sbc .mq-hero .mq-lede { color: rgba(255, 255, 255, .84); }
+.sbc .mq-hero .btn--berry { background: #fff; color: var(--berry); }
+.sbc .mq-hero .btn--line { border-color: rgba(255, 255, 255, .7); color: #fff; }
+/* Hover: white text on the brand color. */
+.sbc .mq-hero .btn--berry:hover { background: var(--berry-deep); color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .55); }
+.sbc .mq-hero .btn--line:hover { background: var(--berry-deep); border-color: var(--berry-deep); color: #fff; }
+.sbc .mq-hero :focus-visible { outline-color: #fff; }
+.mq-hero .mq-toggle { border-color: rgba(255, 255, 255, .35); background: rgba(255, 255, 255, .16); color: #fff; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.mq-hero .mq-toggle:hover { background: #fff; color: var(--berry); }
+.mq-card img { box-shadow: 0 18px 36px -16px rgba(0, 0, 0, .55); }
+
+/* Photo strip: draggable on desktop and mobile; vertical page scroll still works on touch. */
+.mq-strip { cursor: grab; touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+.mq-strip.is-dragging { cursor: grabbing; }
+.mq-strip img { -webkit-user-drag: none; pointer-events: none; }
+
+/* Pinned "How it works" sits below the sticky header. */
+.hiw-pin.is-pinned .hiw-sticky { top: calc(var(--top-offset) + var(--header-h)); height: calc(100svh - var(--header-h) - var(--top-offset)); }
+.hiw-pin.is-pinned .hiw-viewport { height: calc(100svh - var(--header-h) - var(--top-offset) - 96px); }
+
+/* Feature cards under the hero */
+.feat { gap: 16px; }
+@media (min-width: 800px) { .feat { gap: 20px; } }
+.feat-card {
+	position: relative;
+	overflow: hidden;
+	isolation: isolate;
+	padding: 28px 24px 26px;
+	border: 1px solid var(--line);
+	border-radius: 24px;
+	background: #fff;
+	box-shadow: 0 1px 2px rgba(26, 44, 55, .04), 0 18px 40px -30px rgba(26, 44, 55, .35);
+}
+.feat-card::before {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	top: -60px;
+	right: -60px;
+	width: 180px;
+	height: 180px;
+	border-radius: 50%;
+	background: var(--feat-glow, rgba(245, 163, 194, .45));
+	filter: blur(40px);
+}
+.feat-card--2 { --feat-glow: rgba(253, 206, 170, .55); }
+.feat-card--3 { --feat-glow: rgba(185, 203, 216, .65); }
+.feat-card--4 { --feat-glow: rgba(157, 26, 79, .25); }
+.feat-icon {
+	display: grid;
+	place-items: center;
+	width: 52px;
+	height: 52px;
+	margin-bottom: 22px;
+	border-radius: 16px;
+	color: #fff;
+	background: linear-gradient(140deg, #c02a67, var(--berry) 55%, #5b1039);
+	box-shadow: 0 10px 22px -10px rgba(157, 26, 79, .7), inset 0 1px 0 rgba(255, 255, 255, .25);
+	transform: rotate(-6deg);
+}
+.feat-card:nth-child(even) .feat-icon { transform: rotate(5deg); }
+.feat-icon svg { transform: rotate(6deg); }
+.sbc .feat-card h3 { padding-top: 0; border-top: 0; font-size: 21px; }
+.feat-card p { margin-top: 10px !important; }
+
+/* Package lead-in line ("Everything in …, plus:") */
+.plan-features .plan-lead { display: block; font-size: 13px; font-weight: 600; color: var(--muted); }
+
+/* Reviews (Thumbtack) */
+.sbc-reviews { padding: 0 0 88px; }
+@media (min-width: 1000px) { .sbc-reviews { padding-bottom: 120px; } }
+#pricing { padding-bottom: 56px; }
+.reviews-card {
+	position: relative;
+	overflow: hidden;
+	isolation: isolate;
+	display: grid;
+	gap: 28px;
+	align-items: center;
+	padding: 32px 24px;
+	border-radius: 28px;
+	color: #fff;
+	background: linear-gradient(135deg, #1a2c37 0%, #24394a 55%, #3a1d33 100%);
+}
+@media (min-width: 820px) { .reviews-card { grid-template-columns: 1.4fr 1fr; gap: 48px; padding: 48px 56px; } }
+.reviews-glow { position: absolute; z-index: -1; right: -80px; top: -120px; width: 360px; height: 360px; border-radius: 50%; background: rgba(157, 26, 79, .55); filter: blur(70px); }
+.reviews-stars, .reviews-badge-stars { display: flex; gap: 4px; color: #ffc53d; }
+.sbc .reviews-title { margin-top: 18px; font: 700 clamp(1.8rem, 1.2rem + 2.2vw, 2.75rem)/1.08 var(--head); letter-spacing: -.035em; color: #fff; }
+.sbc .reviews-text { margin-top: 10px; color: rgba(255, 255, 255, .78); font-size: 17px; }
+.sbc .reviews-btn { margin-top: 26px; background: #fff; color: var(--navy); }
+.sbc .reviews-btn:hover { background: var(--berry); color: #fff; }
+.reviews-badge {
+	display: grid;
+	justify-items: center;
+	gap: 10px;
+	padding: 28px 24px;
+	border-radius: 22px;
+	background: #fff;
+	color: var(--navy);
+	text-align: center;
+	text-decoration: none;
+	transform: rotate(2deg);
+	box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .6);
+	transition: transform .3s var(--ease);
+}
+.reviews-badge:hover { transform: rotate(0deg) translateY(-2px); }
+.reviews-badge:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+.reviews-mark { width: 56px; height: 56px; }
+.reviews-badge-label { font-size: 13px; color: var(--muted); }
+.reviews-wordmark { width: 154px; height: auto; }
+.reviews-badge-stars svg { width: 20px; height: 20px; }
+
+/* Reviews inside page content (e.g. the corporate page): full section width, not the text column. */
+.sbc .prose > .sbc-reviews { max-width: none; margin-top: 0; padding-top: 24px; }
+.sbc .wrap.prose > .sbc-reviews > .wrap { padding: 0; }
+
+/* Moments from our events: grid on desktop, swipe carousel with a peek on phones. */
+.moments { margin-top: 72px; }
+.moments-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; }
+.sbc .moments-title { font: 700 26px/1.2 var(--head); letter-spacing: -.02em; }
+.moments-track { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 22px !important; }
+.moments-item { margin: 0; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 18px; background: var(--line); }
+.moments-item img { display: block; width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 699px) {
+	.moments-track {
+		display: flex;
+		gap: 12px;
+		margin-inline: calc(var(--gutter) * -1);
+		padding-inline: var(--gutter);
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scroll-padding-inline: var(--gutter);
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+	}
+	.moments-track::-webkit-scrollbar { display: none; }
+	.moments-item { flex: 0 0 78%; scroll-snap-align: start; border-radius: 16px; }
+}
+@media (min-width: 700px) and (max-width: 999px) { .moments-track { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* Smooth zoom on hover for photos across the site. */
+.mq-card { overflow: hidden; border-radius: 16px; }
+.photo-grid__item { margin: 0; overflow: hidden; border-radius: 16px; }
+.photo-grid__item img { border-radius: 0; }
+.exp-hero__photo { overflow: hidden; border-radius: 24px; }
+.exp-hero__photo img { border-radius: 0; }
+.ev-card img, .moments-item img, .photo-grid__item img, .exp-hero__photo img, .mq-card img { transition: transform .7s var(--ease); }
+@media (hover: hover) {
+	.ev-card:hover img, .moments-item:hover img, .photo-grid__item:hover img, .exp-hero__photo:hover img, .mq-card:hover img { transform: scale(1.07); }
+}
+
+/* Elementor-built pages (Agreement, Thank you…) stay within the site's width and margins. */
+.builder-content { max-width: 1280px; margin: 0 auto; padding: 24px var(--gutter) 80px; }
+.builder-content .e-con,
+.builder-content .e-con-inner,
+.builder-content .elementor-section .elementor-container { --padding-left: 0px; --padding-right: 0px; --content-width: 100%; max-width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
+.builder-content .elementor-widget-container { padding-left: 0 !important; padding-right: 0 !important; }
+.builder-content .elementor-widget-heading .elementor-heading-title { overflow-wrap: anywhere; }
+
+@media (prefers-reduced-motion: reduce) {
+	.ev-card img, .moments-item img, .photo-grid__item img, .exp-hero__photo img, .mq-card img, .reviews-badge { transition: none !important; transform: none !important; }
 }

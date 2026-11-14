@@ -72,6 +72,16 @@ function sbc_customize_register( $wp_customize ) {
 				'event3_photo' => array( 'image', __( 'Event 3 photo', 'socialboothco' ) ),
 				'event4'       => array( 'text', __( 'Event 4 (Title | Words)', 'socialboothco' ) ),
 				'event4_photo' => array( 'image', __( 'Event 4 photo', 'socialboothco' ) ),
+				'moments_title'  => array( 'text', __( 'Moments heading', 'socialboothco' ) ),
+				'moments_photos' => array( 'textarea', __( 'Moments photos (Media Library IDs)', 'socialboothco' ), __( 'Comma-separated attachment IDs. Shown as a grid on desktop and a swipeable carousel on phones.', 'socialboothco' ) ),
+			),
+		),
+		'sbc_reviews'  => array(
+			'title'  => __( 'Reviews (Thumbtack)', 'socialboothco' ),
+			'fields' => array(
+				'reviews_title' => array( 'text', __( 'Heading', 'socialboothco' ) ),
+				'reviews_text'  => array( 'text', __( 'Text', 'socialboothco' ) ),
+				'reviews_url'   => array( 'url', __( 'Thumbtack profile link (leave empty to hide the section)', 'socialboothco' ) ),
 			),
 		),
 		'sbc_faq'      => array(

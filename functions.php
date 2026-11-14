@@ -5,7 +5,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SBC_THEME_VERSION', '1.1.0' );
+define( 'SBC_THEME_VERSION', '1.2.0' );
 
 require get_template_directory() . '/inc/content.php';
 require get_template_directory() . '/inc/customizer.php';

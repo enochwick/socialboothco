@@ -10,9 +10,9 @@
 <?php wp_body_open(); ?>
 <a class="skip-link" href="#content"><?php esc_html_e( 'Skip to content', 'socialboothco' ); ?></a>
 
-<header class="site-header">
+<header class="site-header<?php echo is_front_page() ? ' site-header--on-dark' : ''; ?>" data-site-header>
 	<div class="wrap">
-		<a class="logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" aria-label="<?php echo esc_attr( get_bloginfo( 'name' ) . ' ' . __( 'home', 'socialboothco' ) ); ?>"><?php sbc_logo( 'dark' ); ?></a>
+		<a class="logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" aria-label="<?php echo esc_attr( get_bloginfo( 'name' ) . ' ' . __( 'home', 'socialboothco' ) ); ?>"><?php sbc_logo( 'dark' ); ?><?php sbc_logo( 'light' ); ?></a>
 
 		<nav class="nav" aria-label="<?php esc_attr_e( 'Main', 'socialboothco' ); ?>">
 			<?php
@@ -32,7 +32,7 @@
 			<?php sbc_button( __( 'Check your date', 'socialboothco' ), 'book', 'berry', 'header-cta' ); ?>
 			<button class="menu-btn" type="button" aria-haspopup="dialog" aria-controls="mobile-menu" data-menu-open>
 				<span class="screen-reader-text"><?php esc_html_e( 'Open menu', 'socialboothco' ); ?></span>
-				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+				<svg width="26" height="18" viewBox="0 0 26 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M2 2h22M2 9h22M2 16h22"/></svg>
 			</button>
 		</div>
 	</div>
