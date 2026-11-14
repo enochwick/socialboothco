@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 function sbc_defaults() {
 	return array(
 		// Contact.
-		'phone'            => '+1 323 961 5519',
+		'phone'            => '+1 469 269 2793',
 		'email'            => 'memories@socialboothco.com',
 		'areas'            => 'Dallas, Fort Worth, Plano, Frisco, McKinney, Arlington, Irving, Garland, Richardson, Carrollton and Denton.',
 		'about'            => 'A modern photo booth experience designed to bring energy, connection and unforgettable moments to your event.',
@@ -20,7 +20,6 @@ function sbc_defaults() {
 
 		// Booking (Amelia).
 		'booking_category' => '1',
-		'consult_category' => '4',
 		'booking_fallback' => '/check-availability/',
 
 		// Home: hero.
@@ -71,7 +70,7 @@ function sbc_defaults() {
 
 		// Home: moments from our events (photo grid; carousel on phones).
 		'moments_title'    => 'Moments from our events',
-		'moments_photos'   => '5073, 5072, 5074, 5076, 5078, 5077, 5079, 5080',
+		'moments_photos'   => '4981, 5072, 5074, 5075, 4976, 5077, 5079, 5081',
 
 		// Reviews (Thumbtack). Shown below the packages on the homepage and on pages that list packages.
 		'reviews_title'    => 'Want to hear from past clients?',
@@ -94,7 +93,8 @@ function sbc_mod( $key ) {
 	$defaults = sbc_defaults();
 	$default  = isset( $defaults[ $key ] ) ? $defaults[ $key ] : '';
 	$value    = get_theme_mod( 'sbc_' . $key, $default );
-	return ( '' === $value || null === $value ) ? $default : $value;
+	$value    = ( '' === $value || null === $value ) ? $default : $value;
+	return is_string( $value ) ? sbc_replace_old_phone( $value ) : $value;
 }
 
 /**
@@ -144,4 +144,24 @@ function sbc_packages() {
 		);
 	}
 	return $packages;
+}
+
+/**
+ * Photos removed from the site everywhere (Media Library IDs): homepage, gallery and page content.
+ * 5076 = social-booth-co-event-05.
+ */
+function sbc_removed_photo_ids() {
+	return array( 5076 );
+}
+
+/**
+ * The old 323 number becomes the current one, wherever it still appears (saved settings,
+ * page content built in WordPress or Elementor).
+ */
+function sbc_replace_old_phone( $text ) {
+	if ( false === strpos( $text, '323' ) ) {
+		return $text;
+	}
+	$text = preg_replace( '/tel:\+?1?\D{0,2}323\D{0,2}961\D{0,2}5519/', 'tel:+14692692793', $text );
+	return preg_replace( '/(?<!\d)(?:\+?1[\s.\-]?)?\(?323\)?[\s.\-]?961[\s.\-]?5519(?!\d)/', '+1 469 269 2793', $text );
 }

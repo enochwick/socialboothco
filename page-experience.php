@@ -30,7 +30,7 @@ $sbc_grid  = array( 2915, 2916, 2883, 2877, 2881, 2882, 2856, 2861 );
 <section class="exp-hero">
 	<div class="wrap">
 		<div class="exp-hero__text">
-			<h1><?php esc_html_e( 'The experience, elevated.', 'socialboothco' ); ?></h1>
+			<?php sbc_animated_title( __( 'The experience, elevated.', 'socialboothco' ) ); ?>
 			<p class="lede"><?php esc_html_e( 'A modern photo booth designed to entertain guests and capture unforgettable moments, from the first tap on the screen to the instant share.', 'socialboothco' ); ?></p>
 			<div class="actions">
 				<?php sbc_button( __( 'Check your date', 'socialboothco' ), 'book', 'berry' ); ?>

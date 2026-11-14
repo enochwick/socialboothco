@@ -16,7 +16,10 @@ while ( have_posts() ) :
 		<div class="builder-content"><?php the_content(); ?></div>
 		<?php
 	else :
-		sbc_page_intro( get_the_title() );
+		// Content that brings its own hero (e.g. the corporate landing page) skips the title band.
+		if ( false === strpos( get_post_field( 'post_content', get_the_ID() ), 'sbc-hero' ) ) {
+			sbc_page_intro( get_the_title() );
+		}
 		?>
 		<div class="wrap prose"><?php the_content(); ?></div>
 		<?php

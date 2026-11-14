@@ -27,12 +27,7 @@ List fields take one item per line, with parts separated by `|`. Menus can be as
 
 ## Booking
 
-The theme turns two kinds of link into Amelia booking popups:
-
-- `sbc-book`, used by every "Check your date" button. It opens Amelia category **1**.
-- `sbc-consult`, used by every "Book a consultation" button. It opens Amelia category **4**.
-
-Both category IDs can be changed in the Customizer. If Amelia is off, "Check your date" goes to `/check-availability/` and "Book a consultation" opens an email.
+Every "Check your date" button has the class `sbc-book` and opens Amelia's booking popup for category **1** (changeable in the Customizer). If Amelia is off, it links to `/check-availability/`. There are no consultation buttons; the theme also strips any left in page content.
 
 ## Launch checklist
 
@@ -40,7 +35,7 @@ Both category IDs can be changed in the Customizer. If Amelia is off, "Check you
 2. Go to Appearance → Themes, find **Social Booth Co** and click **Live Preview**. Check the pages before activating.
 3. Click **Activate**.
 4. Go to LiteSpeed Cache → **Purge All**.
-5. Click "Check your date" and "Book a consultation" on the live site to confirm both Amelia popups open.
+5. Click "Check your date" on the live site to confirm the Amelia popup opens.
 
 ## Speed
 

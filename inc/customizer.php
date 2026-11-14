@@ -102,7 +102,6 @@ function sbc_customize_register( $wp_customize ) {
 				'closing_title'    => array( 'text', __( 'Closing call-to-action heading', 'socialboothco' ) ),
 				'closing_text'     => array( 'textarea', __( 'Closing call-to-action text', 'socialboothco' ) ),
 				'booking_category' => array( 'text', __( 'Amelia category ID for “Check your date”', 'socialboothco' ) ),
-				'consult_category' => array( 'text', __( 'Amelia category ID for “Book a consultation”', 'socialboothco' ) ),
 				'booking_fallback' => array( 'text', __( 'Fallback booking page if Amelia is unavailable', 'socialboothco' ) ),
 			),
 		),

@@ -2,10 +2,9 @@
 /**
  * Amelia booking popups.
  *
- * Any element with the class `sbc-book` opens Amelia's step-by-step booking form for the
- * booking category; `sbc-consult` opens the consultation category. Both are Amelia's own
- * popups (trigger + in_dialog), so nothing else is needed. The buttons are real links to
- * the fallback page, so they still work if Amelia is deactivated.
+ * Any element with the class `sbc-book` (every "Check your date" button) opens Amelia's
+ * step-by-step booking form for the booking category, as Amelia's own popup. The buttons are
+ * real links to the fallback page, so they still work if Amelia is deactivated.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -21,8 +20,7 @@ function sbc_booking_forms() {
 	}
 
 	$forms = array(
-		'sbc-book'    => (int) sbc_mod( 'booking_category' ),
-		'sbc-consult' => (int) sbc_mod( 'consult_category' ),
+		'sbc-book' => (int) sbc_mod( 'booking_category' ),
 	);
 
 	echo '<div class="sbc-amelia" hidden>';

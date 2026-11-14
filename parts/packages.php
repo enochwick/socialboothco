@@ -98,6 +98,5 @@ $sbc_label    = sbc_mod( 'pkg_price_label' );
 				</li>
 			<?php endforeach; ?>
 		</ul>
-		<p class="upgrades-help"><?php esc_html_e( 'Not sure which package fits?', 'socialboothco' ); ?> <?php sbc_button( __( 'Book a quick consultation', 'socialboothco' ), 'consult', 'text' ); ?></p>
 	</div>
 <?php endif; ?>

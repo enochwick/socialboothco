@@ -38,7 +38,7 @@ $sbc_schema = array(
 				<li><a href="tel:<?php echo esc_attr( preg_replace( '/[^\d+]/', '', sbc_mod( 'phone' ) ) ); ?>"><?php echo esc_html( sbc_mod( 'phone' ) ); ?></a></li>
 				<li><a href="mailto:<?php echo esc_attr( antispambot( sbc_mod( 'email' ) ) ); ?>"><?php echo esc_html( antispambot( sbc_mod( 'email' ) ) ); ?></a></li>
 			</ul>
-			<?php sbc_button( __( 'Book a consultation', 'socialboothco' ), 'consult', 'line' ); ?>
+			<?php sbc_button( __( 'Check your date', 'socialboothco' ), 'book', 'berry' ); ?>
 		</aside>
 		<?php sbc_faq_list(); ?>
 	</div>

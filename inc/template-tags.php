@@ -49,7 +49,6 @@ function sbc_closing() {
 				<p><?php echo esc_html( sbc_mod( 'closing_text' ) ); ?></p>
 				<div class="actions">
 					<?php sbc_button( __( 'Check your date', 'socialboothco' ), 'book', 'berry' ); ?>
-					<?php sbc_button( __( 'Book a consultation', 'socialboothco' ), 'consult', 'line-light' ); ?>
 				</div>
 			</div>
 		</div>
@@ -83,7 +82,7 @@ function sbc_page_intro( $title, $lede = '' ) {
 	?>
 	<header class="page-intro">
 		<div class="wrap">
-			<h1><?php echo esc_html( $title ); ?></h1>
+			<?php sbc_animated_title( $title ); ?>
 			<?php if ( $lede ) : ?>
 				<p class="lede"><?php echo esc_html( $lede ); ?></p>
 			<?php endif; ?>
@@ -102,6 +101,7 @@ function sbc_icon( $name ) {
 		'light'   => '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
 		'gallery' => '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
 		'spark'   => '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/>',
+		'check'   => '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16.5 9.5"/>',
 	);
 	$path = isset( $paths[ $name ] ) ? $paths[ $name ] : $paths['spark'];
 	echo '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' . $path . '</svg>'; // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG.
@@ -159,7 +159,7 @@ function sbc_insert_reviews_after_packages( $content ) {
 	if ( is_front_page() || ! is_singular( 'page' ) || ! in_the_loop() || ! is_main_query() ) {
 		return $content;
 	}
-	if ( false !== strpos( $content, 'sbc-reviews' ) ) {
+	if ( false !== strpos( $content, 'class="sbc-reviews"' ) ) {
 		return $content;
 	}
 	$plans = strpos( $content, 'class="plans"' );
@@ -189,17 +189,163 @@ function sbc_moments() {
 	}
 	?>
 	<div class="moments">
-		<div class="moments-head">
-			<h3 id="sbc-moments-title" class="moments-title"><?php echo esc_html( sbc_mod( 'moments_title' ) ); ?></h3>
-			<a class="btn btn--text" href="<?php echo esc_url( home_url( '/gallery/' ) ); ?>"><?php esc_html_e( 'See the full gallery', 'socialboothco' ); ?></a>
-		</div>
+		<h3 id="sbc-moments-title" class="moments-title"><?php echo esc_html( sbc_mod( 'moments_title' ) ); ?></h3>
 		<ul class="moments-track" role="list">
-			<?php foreach ( $ids as $id ) : ?>
+			<?php
+			foreach ( $ids as $id ) :
+				// Cropping a wide photo into the tall 4:5 tile needs a proportionally wider file to stay sharp.
+				$meta  = wp_get_attachment_metadata( $id );
+				$ratio = ( ! empty( $meta['width'] ) && ! empty( $meta['height'] ) ) ? max( 1, ( $meta['width'] / $meta['height'] ) / 0.8 ) : 1;
+				$sizes = sprintf( '(min-width: 1000px) %1$dvw, (min-width: 700px) %2$dvw, %3$dvw', ceil( 25 * $ratio ), ceil( 33 * $ratio ), ceil( 78 * $ratio ) );
+				?>
 				<li class="moments-item">
-					<?php echo sbc_image( $id, 'medium_large', array( 'alt' => __( 'Guests at a Social Booth Co photo booth event in Dallas–Fort Worth', 'socialboothco' ), 'sizes' => '(min-width: 900px) 25vw, 80vw' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					<?php echo sbc_image( $id, 'large', array( 'alt' => __( 'Guests at a Social Booth Co photo booth event in Dallas–Fort Worth', 'socialboothco' ), 'sizes' => $sizes ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				</li>
 			<?php endforeach; ?>
 		</ul>
+		<p class="moments-more"><a class="btn btn--line" href="<?php echo esc_url( home_url( '/gallery/' ) ); ?>"><?php esc_html_e( 'See the full gallery', 'socialboothco' ); ?></a></p>
 	</div>
 	<?php
+}
+
+/**
+ * Clean up content built in WordPress or Elementor (e.g. /corporate-holiday-parties/):
+ * current phone number, no consultation buttons, no removed photos, no duplicate reviews line,
+ * and feature lists shown as the same cards as the homepage.
+ */
+add_filter( 'the_content', 'sbc_clean_page_content', 15 );
+function sbc_clean_page_content( $content ) {
+	if ( is_admin() || '' === $content ) {
+		return $content;
+	}
+	$content = sbc_replace_old_phone( $content );
+
+	// Consultation buttons/links (only "Check your date" stays). A paragraph that exists only for
+	// the consultation link ("Not sure which package fits? …") goes with it.
+	$content = preg_replace( '#<p\b[^>]*>(?:(?!</p>).)*?\bsbc-consult\b(?:(?!</p>).)*?</p>#s', '', $content );
+	$content = preg_replace( '#<a\b[^>]*\bsbc-consult\b[^>]*>.*?</a>#s', '', $content );
+
+	// The old one-line "Want to hear from past clients?" link; the full reviews section replaces it.
+	$content = preg_replace( '#<p\b[^>]*class="[^"]*\bupgrades-help\b[^"]*\bsbc-reviews\b[^"]*"[^>]*>.*?</p>#s', '', $content );
+
+	// Photos removed site-wide.
+	foreach ( sbc_removed_photo_ids() as $id ) {
+		$file = get_attached_file( $id );
+		if ( ! $file ) {
+			continue;
+		}
+		$stem    = preg_quote( pathinfo( preg_replace( '/-scaled(?=\.\w+$)/', '', $file ), PATHINFO_FILENAME ), '#' );
+		$content = preg_replace( '#<figure\b[^>]*>(?:(?!</figure>).)*?' . $stem . '(?:-\d+x\d+)?(?:-scaled)?\.\w+(?:(?!</figure>).)*?</figure>#s', '', $content );
+	}
+
+	// Feature lists (<div class="feat"><div><h3>…</h3><p>…</p></div>…) become homepage-style cards.
+	if ( false !== strpos( $content, 'class="feat"' ) ) {
+		$content = preg_replace_callback(
+			'#<div class="feat">(.*?)</div>(?:\s*</p>)?\s*</div>(?:\s*</p>)?\s*</section>#s',
+			function ( $m ) {
+				$n     = 0;
+				$cards = preg_replace_callback(
+					'#<div>\s*<h3>(.*?)</h3>\s*<p>(.*?)</p>(?:\s*</p>)*\s*</div>#s',
+					function ( $c ) use ( &$n ) {
+						$n++;
+						$title = wp_strip_all_tags( $c[1] );
+						$icon  = 'spark';
+						foreach ( array( 'logo' => 'pen', 'design' => 'pen', 'brand' => 'pen', 'shar' => 'send', 'light' => 'light', 'gallery' => 'gallery', 'hands' => 'check', 'planner' => 'check', 'setup' => 'check' ) as $word => $name ) {
+							if ( false !== stripos( $title, $word ) ) {
+								$icon = $name;
+								break;
+							}
+						}
+						ob_start();
+						sbc_icon( $icon );
+						$svg = ob_get_clean();
+						return '<article class="feat-card feat-card--' . ( ( $n - 1 ) % 4 + 1 ) . '"><span class="feat-icon" aria-hidden="true">' . $svg . '</span><h3>' . $c[1] . '</h3><p>' . $c[2] . '</p></article>';
+					},
+					$m[1]
+				);
+				return '<div class="feat">' . $cards . '</div></div></section>';
+			},
+			$content
+		);
+	}
+	return $content;
+}
+
+/**
+ * Gallery plugin: hide photos removed site-wide.
+ */
+add_filter(
+	'sbcg_items',
+	function ( $items ) {
+		$removed = sbc_removed_photo_ids();
+		return array_values(
+			array_filter(
+				$items,
+				function ( $item ) use ( $removed ) {
+					return ! in_array( (int) $item['id'], $removed, true );
+				}
+			)
+		);
+	}
+);
+
+/**
+ * Hero strip and Moments: drop removed photos even if they're still listed in the Customizer.
+ */
+add_filter(
+	'theme_mod_sbc_hero_photos',
+	'sbc_strip_removed_ids'
+);
+add_filter(
+	'theme_mod_sbc_moments_photos',
+	'sbc_strip_removed_ids'
+);
+function sbc_strip_removed_ids( $value ) {
+	if ( ! is_string( $value ) || '' === $value ) {
+		return $value;
+	}
+	$ids = array_filter( array_map( 'absint', explode( ',', $value ) ) );
+	return implode( ', ', array_diff( $ids, sbc_removed_photo_ids() ) );
+}
+
+/**
+ * Page title whose words rise in one by one (same intro as the homepage hero).
+ */
+function sbc_animated_words( $text ) {
+	$out = '';
+	foreach ( preg_split( '/\s+/u', trim( $text ) ) as $i => $word ) {
+		$out .= '<span class="mq-word" style="--i:' . (int) $i . '" aria-hidden="true">' . esc_html( $word ) . '</span> ';
+	}
+	return trim( $out );
+}
+
+function sbc_animated_title( $title, $class = '' ) {
+	printf(
+		'<h1%s aria-label="%s">%s</h1>',
+		$class ? ' class="' . esc_attr( $class ) . '"' : '',
+		esc_attr( $title ),
+		sbc_animated_words( $title ) // phpcs:ignore WordPress.Security.EscapeOutput -- escaped per word.
+	);
+}
+
+/**
+ * Hero titles inside page content (e.g. the corporate page) get the same word-by-word intro.
+ */
+add_filter( 'the_content', 'sbc_animate_content_hero_title', 16 );
+function sbc_animate_content_hero_title( $content ) {
+	if ( is_admin() || false === strpos( $content, 'sbc-hero' ) ) {
+		return $content;
+	}
+	return preg_replace_callback(
+		'#<h1([^>]*)>([^<]+)</h1>#',
+		function ( $m ) {
+			$text = trim( html_entity_decode( $m[2], ENT_QUOTES, 'UTF-8' ) );
+			if ( false !== strpos( $m[1], 'aria-label' ) ) {
+				return $m[0];
+			}
+			return '<h1' . $m[1] . ' aria-label="' . esc_attr( $text ) . '">' . sbc_animated_words( $text ) . '</h1>';
+		},
+		$content,
+		1
+	);
 }

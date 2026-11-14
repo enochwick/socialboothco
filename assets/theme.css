@@ -656,3 +656,79 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 @media (prefers-reduced-motion: reduce) {
 	.ev-card img, .moments-item img, .photo-grid__item img, .exp-hero__photo img, .mq-card img, .reviews-badge { transition: none !important; transform: none !important; }
 }
+
+/* ===================================================================
+   Nov 14 round: hero strip rises behind the buttons, readable hero
+   buttons, mobile card carousels, borderless hamburger, no left peek.
+   (Selectors are specific enough to win over older Additional CSS.)
+   =================================================================== */
+
+/* Hero: bigger photo strip that rises up behind the buttons, faded at the top. */
+.sbc .mq-hero .mq-hero__content { position: relative; z-index: 2; }
+.sbc .mq-hero .mq-strip {
+	z-index: 1;
+	height: clamp(300px, 46svh, 520px);
+	margin-top: -110px;
+	-webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, .2) 20%, rgba(0, 0, 0, .7) 36%, #000 50%, #000 90%, transparent 100%);
+	mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, .2) 20%, rgba(0, 0, 0, .7) 36%, #000 50%, #000 90%, transparent 100%);
+}
+.sbc .mq-hero .mq-card { height: 84%; }
+.sbc .mq-hero .mq-card img { border: 0; border-radius: 16px; }
+@media (max-width: 700px) {
+	/* A little more hero on phones: taller strip that reaches further down. */
+	.sbc .mq-hero { min-height: clamp(640px, 108svh, 900px); }
+	.sbc .mq-hero .mq-strip { height: clamp(320px, 50svh, 440px); margin-top: -8px; } /* photos start below the buttons on phones */
+}
+
+/* Hero buttons stay readable on the gradient: white primary, dark-glass secondary. */
+.sbc .mq-hero .mq-actions .btn--line {
+	background: rgba(24, 24, 27, .3);
+	border-color: rgba(255, 255, 255, .85);
+	color: #fff;
+	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(6px);
+}
+.sbc .mq-hero .mq-actions .btn--line:hover { background: var(--berry-deep); border-color: var(--berry-deep); color: #fff; }
+
+/* Mobile header: hamburger without a frame. */
+@media (max-width: 959px) {
+	.site-header .menu-btn,
+	.mobile-menu .menu-btn { border: 0; width: 48px; background: transparent; }
+	.site-header .menu-btn:hover,
+	.mobile-menu .menu-btn:hover { background: rgba(255, 255, 255, .14); }
+	.site-header:not(.site-header--on-dark):not(.is-scrolled) .menu-btn:hover,
+	.mobile-menu .menu-btn:hover { background: rgba(34, 34, 37, .06); color: inherit; }
+}
+
+/* Phones: the four feature cards (homepage and pages like corporate) become a swipe carousel. */
+@media (max-width: 699px) {
+	.sbc .feat {
+		display: flex;
+		gap: var(--gutter);
+		margin-inline: calc(var(--gutter) * -1);
+		padding: 4px var(--gutter) 12px;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scroll-padding-inline: var(--gutter);
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+	}
+	.sbc .feat::-webkit-scrollbar { display: none; }
+	.sbc .feat > .feat-card { flex: 0 0 82%; scroll-snap-align: start; }
+
+	/* Carousels: full-bleed track with the gap equal to the side margin, so after a swipe
+	   nothing peeks in on the left. (.sbc prefix beats the generic list reset.) */
+	.sbc .moments-track {
+		gap: var(--gutter);
+		margin-left: calc(var(--gutter) * -1);
+		margin-right: calc(var(--gutter) * -1);
+		padding-left: var(--gutter);
+		padding-right: var(--gutter);
+	}
+
+	/* Thumbtack badge sits straight on phones. */
+	.reviews-badge, .reviews-badge:hover { transform: none; }
+}
+
+/* "See the full gallery" as a pill under the Moments photos. */
+.sbc .moments-more { display: flex; justify-content: center; margin-top: 28px; }
