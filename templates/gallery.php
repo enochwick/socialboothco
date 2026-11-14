@@ -79,7 +79,7 @@ $sbcg_book_url = esc_url( $atts['book_url'] );
 
 			<ul class="sbcg-grid" role="list">
 				<?php foreach ( $items as $sbcg_item ) : ?>
-				<li class="sbcg-item<?php echo $sbcg_item['wide'] ? ' is-wide' : ''; ?>" data-cats="<?php echo esc_attr( implode( ' ', $sbcg_item['slugs'] ) ); ?>">
+				<li class="sbcg-item<?php echo $sbcg_item['wide'] ? ' is-wide' : ''; ?>" data-cats="<?php echo esc_attr( implode( ' ', $sbcg_item['slugs'] ) ); ?>"<?php echo empty( $sbcg_item['extra'] ) ? '' : ' data-extra'; ?>>
 					<a class="sbcg-tile" href="<?php echo esc_url( $sbcg_item['full'] ); ?>" data-caption="<?php echo esc_attr( implode( ' · ', $sbcg_item['labels'] ) ); ?>">
 						<?php
 						if ( 'full' === $sbcg_item['size'] ) :

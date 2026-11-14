@@ -42,17 +42,36 @@
 		var ROWS = parseInt(root.getAttribute('data-rows'), 10) || 3;
 		var rows = ROWS;
 
+		/* Photos per batch are measured on the desktop grid (4 columns), so phones and tablets show
+		   the same photos as desktop, then fill out their last row so only whole rows appear. */
+		var DESKTOP_COLS = parseInt(root.getAttribute('data-desktop-cols'), 10) || 4;
+
 		function render(animateFrom) {
 			var shown = 0;
 			var total = 0;
-			var cells = 0; // wide photos take 2 cells
 			var cols = columns();
-			var limitCells = rows * cols;
+			var limit = rows * DESKTOP_COLS; // in desktop cells; wide photos take 2
+			var deskCells = 0;
+			var cells = 0; // cells on the current grid
+			var filling = false; // past the desktop batch, only completing the last row
 			items.forEach(function (item) {
 				var ok = matches(item);
 				if (ok) total++;
-				var size = item.classList.contains('is-wide') && cols > 1 ? 2 : 1;
-				var visible = ok && cells + size <= limitCells;
+				var wide = item.classList.contains('is-wide');
+				var deskSize = wide ? 2 : 1;
+				var size = wide && cols > 1 ? 2 : 1;
+				var visible = false;
+				if (ok && !filling) {
+					if (deskCells + deskSize <= limit) {
+						visible = true;
+						deskCells += deskSize;
+					} else {
+						filling = true;
+					}
+				}
+				if (ok && filling && !visible && cells % cols !== 0 && size <= cols - (cells % cols)) {
+					visible = true;
+				}
 				if (visible) {
 					shown++;
 					cells += size;
@@ -102,12 +121,22 @@
 			});
 		}
 
-		/* Shuffle on every visit, keeping photos of the same kind (category) apart:
-		   no matching neighbor to the left or directly above. */
+		/* Shuffle once a day (same order on every device that day), keeping photos of the same kind
+		   (category) apart on the desktop grid: no matching neighbor to the left or directly above.
+		   Extra photos (data-extra, e.g. from the theme) join after the first batch, spread out. */
 		(function shuffle() {
-			var pool = items.slice();
+			var d = new Date();
+			var seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+			var rand = function () { // mulberry32
+				seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+				var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+				t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+				return ((t ^ t >>> 14) >>> 0) / 4294967296;
+			};
+			var extras = items.filter(function (it) { return it.hasAttribute('data-extra'); });
+			var pool = items.filter(function (it) { return !it.hasAttribute('data-extra'); });
 			for (var i = pool.length - 1; i > 0; i--) {
-				var j = Math.floor(Math.random() * (i + 1));
+				var j = Math.floor(rand() * (i + 1));
 				var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
 			}
 			var cats = function (it) { return (it.getAttribute('data-cats') || '').split(' ').filter(Boolean); };
@@ -116,7 +145,7 @@
 				var cb = cats(b);
 				return cats(a).some(function (c) { return cb.indexOf(c) !== -1; });
 			};
-			var cols = columns();
+			var cols = DESKTOP_COLS;
 			var out = [];
 			while (pool.length) {
 				var prev = out[out.length - 1], above = out[out.length - cols];
@@ -129,6 +158,16 @@
 				}
 				out.push(pool.splice(pick === -1 ? 0 : pick, 1)[0]);
 			}
+			// First batch = the photos desktop shows before "View More Moments".
+			var first = 0, cells = 0;
+			while (first < out.length) {
+				var size = out[first].classList.contains('is-wide') ? 2 : 1;
+				if (cells + size > ROWS * cols) break;
+				cells += size; first++;
+			}
+			extras.forEach(function (it, n) {
+				out.splice(Math.min(out.length, first + n * 3 + 1), 0, it);
+			});
 			out.forEach(function (it) { grid.appendChild(it); });
 			items = out;
 		})();
