@@ -7,7 +7,7 @@
  * Setup: add the API key to wp-config.php (never to the theme):
  *     define( 'SBC_ANTHROPIC_API_KEY', 'sk-ant-...' );
  * Optional:
- *     define( 'SBC_CHAT_MODEL', 'claude-opus-5-5' );          // model used for replies
+ *     define( 'SBC_CHAT_MODEL', 'claude-haiku-5-5' );         // model used for replies (cheapest; 'claude-opus-5-5' for the strongest)
  *     define( 'SBC_CHAT_EMAIL', 'memories@socialboothco.com' ); // where transcripts go
  * Without a key the chat button doesn't appear.
  *
@@ -33,7 +33,7 @@ function sbc_chat_api_key() {
 }
 
 function sbc_chat_model() {
-	return defined( 'SBC_CHAT_MODEL' ) && SBC_CHAT_MODEL ? (string) SBC_CHAT_MODEL : 'claude-opus-5-5';
+	return defined( 'SBC_CHAT_MODEL' ) && SBC_CHAT_MODEL ? (string) SBC_CHAT_MODEL : 'claude-haiku-5-5';
 }
 
 function sbc_chat_email() {

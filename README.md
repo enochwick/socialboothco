@@ -39,7 +39,7 @@ An "Ask us" button (bottom right, every page) opens a chat that answers question
 define( 'SBC_ANTHROPIC_API_KEY', 'sk-ant-...' );
 ```
 
-Without the key, the button doesn't show. Optional settings in the same file: `SBC_CHAT_MODEL` (default `claude-opus-5-5`) and `SBC_CHAT_EMAIL` (default `memories@socialboothco.com`).
+Without the key, the button doesn't show. Optional settings in the same file: `SBC_CHAT_MODEL` (default `claude-haiku-5-5`, the cheapest model; use `claude-opus-5-5` for the strongest answers) and `SBC_CHAT_EMAIL` (default `memories@socialboothco.com`).
 
 **Transcripts.** Every conversation is saved under **Chats** in the WordPress admin. Once a chat has had no new message for 5 minutes, the full transcript is emailed to memories@socialboothco.com. If the visitor comes back and keeps chatting, you get an "Updated website chat" email with the whole conversation.
 
@@ -53,7 +53,7 @@ Emails go out through WordPress's normal mail (the same path Forminator and Amel
 
 **How answers are found.** The site content is split into small pieces and indexed. For each question, the best-matching pieces (plus the business basics) go to Claude with instructions to answer only from them. The index rebuilds automatically when you save the Customizer or any page. Content lives in `inc/chat.php`. To add synonyms (e.g. so "photo strip" finds prints), edit `sbc_chat_terms()`.
 
-**Limits and cost.** Each visitor gets 20 messages per 10 minutes and 40 per conversation, and the whole site gets 500 messages a day. Each reply costs a cent or two in API usage.
+**Limits and cost.** Each visitor gets 20 messages per 10 minutes and 40 per conversation, and the whole site gets 500 messages a day. Each reply costs a fraction of a cent in API usage (about $1 per 1,000 replies).
 
 ## SEO
 
