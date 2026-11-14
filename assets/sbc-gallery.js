@@ -3,13 +3,11 @@
 	'use strict';
 
 	function init(root) {
-		var perPage = parseInt(root.getAttribute('data-per-page'), 10) || 24;
 		var items = Array.prototype.slice.call(root.querySelectorAll('.sbcg-item'));
 		var chips = Array.prototype.slice.call(root.querySelectorAll('.sbcg-chip'));
 		var moreBtn = root.querySelector('[data-sbcg-more]');
 		var countEl = root.querySelector('[data-sbcg-count]');
 		var filter = '*';
-		var limit = perPage;
 
 		/* "Check Your Date" opens the existing Elementor/UAEL Amelia popup if it's on the page;
 		   otherwise the link's normal href is followed. */
@@ -40,19 +38,24 @@
 			return n > 0 ? n : 1;
 		}
 
+		/* Show whole rows only: 3 rows at first, then 3 more per "View More Moments". */
+		var ROWS = parseInt(root.getAttribute('data-rows'), 10) || 3;
+		var rows = ROWS;
+
 		function render(animateFrom) {
 			var shown = 0;
 			var total = 0;
 			var cells = 0; // wide photos take 2 cells
 			var cols = columns();
+			var limitCells = rows * cols;
 			items.forEach(function (item) {
 				var ok = matches(item);
 				if (ok) total++;
-				// Past the page limit, keep going only until the last row is full (no lonely photo + empty gap).
-				var visible = ok && (shown < limit || cells % cols !== 0);
+				var size = item.classList.contains('is-wide') && cols > 1 ? 2 : 1;
+				var visible = ok && cells + size <= limitCells;
 				if (visible) {
 					shown++;
-					cells += item.classList.contains('is-wide') && cols > 1 ? 2 : 1;
+					cells += size;
 					if (item.hidden && shown > animateFrom) {
 						item.classList.remove('is-entering');
 						void item.offsetWidth; // restart animation
@@ -70,16 +73,13 @@
 		var resizeTimer;
 		window.addEventListener('resize', function () {
 			clearTimeout(resizeTimer);
-			resizeTimer = setTimeout(function () {
-				limit = Math.max(limit, visibleCount);
-				render(Infinity);
-			}, 150);
+			resizeTimer = setTimeout(function () { render(Infinity); }, 150);
 		});
 
 		chips.forEach(function (chip) {
 			chip.addEventListener('click', function () {
 				filter = chip.getAttribute('data-filter');
-				limit = perPage;
+				rows = ROWS;
 				chips.forEach(function (c) {
 					var on = c === chip;
 					c.classList.toggle('is-active', on);
@@ -92,16 +92,46 @@
 		if (moreBtn) {
 			moreBtn.addEventListener('click', function () {
 				var before = visibleCount;
-				limit = visibleCount + perPage;
+				var wasVisible = matching().filter(function (it) { return !it.hidden; });
+				rows += ROWS;
 				render(before);
 				// Move focus to the first newly revealed photo for keyboard users.
-				var list = matching();
-				if (list[before]) {
-					var tile = list[before].querySelector('.sbcg-tile');
-					if (tile) tile.focus({ preventScroll: true });
-				}
+				var first = matching().filter(function (it) { return !it.hidden && wasVisible.indexOf(it) === -1; })[0];
+				var tile = first && first.querySelector('.sbcg-tile');
+				if (tile) tile.focus({ preventScroll: true });
 			});
 		}
+
+		/* Shuffle on every visit, keeping photos of the same kind (category) apart:
+		   no matching neighbor to the left or directly above. */
+		(function shuffle() {
+			var pool = items.slice();
+			for (var i = pool.length - 1; i > 0; i--) {
+				var j = Math.floor(Math.random() * (i + 1));
+				var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+			}
+			var cats = function (it) { return (it.getAttribute('data-cats') || '').split(' ').filter(Boolean); };
+			var shares = function (a, b) {
+				if (!a || !b) return false;
+				var cb = cats(b);
+				return cats(a).some(function (c) { return cb.indexOf(c) !== -1; });
+			};
+			var cols = columns();
+			var out = [];
+			while (pool.length) {
+				var prev = out[out.length - 1], above = out[out.length - cols];
+				var pick = -1;
+				for (var k = 0; k < pool.length; k++) {
+					if (!shares(pool[k], prev) && !shares(pool[k], above)) { pick = k; break; }
+				}
+				if (pick === -1) {
+					for (k = 0; k < pool.length; k++) { if (!shares(pool[k], prev)) { pick = k; break; } }
+				}
+				out.push(pool.splice(pick === -1 ? 0 : pick, 1)[0]);
+			}
+			out.forEach(function (it) { grid.appendChild(it); });
+			items = out;
+		})();
 
 		render(Infinity);
 
