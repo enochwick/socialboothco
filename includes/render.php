@@ -100,7 +100,7 @@ function sbcg_build_item( $post ) {
 	$labels = wp_list_pluck( $terms, 'name' );
 	$alt    = trim( (string) get_post_meta( $post->ID, '_wp_attachment_image_alt', true ) );
 	if ( '' === $alt ) {
-		$alt = sprintf( 'Social Booth Co. photo booth – %s', implode( ', ', $labels ) );
+		$alt = sprintf( 'Social Booth Co photo booth photo from a Dallas–Fort Worth event (%s)', strtolower( implode( ', ', $labels ) ) );
 	}
 
 	return array(

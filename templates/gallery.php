@@ -64,7 +64,7 @@ $sbcg_book_url = esc_url( $atts['book_url'] );
 	<section id="sbcg-moments" class="sbcg-moments" aria-labelledby="sbcg-moments-title">
 		<div class="sbcg-wrap">
 			<header class="sbcg-head">
-				<h2 id="sbcg-moments-title" class="sbcg-h2">The Moments</h2>
+				<h2 id="sbcg-moments-title" class="sbcg-h2">Photo booth photos from DFW events</h2>
 				<p class="sbcg-count" aria-live="polite"><span data-sbcg-count><?php echo count( $items ); ?></span> photos</p>
 			</header>
 
