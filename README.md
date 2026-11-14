@@ -33,13 +33,15 @@ Every "Check your date" button has the class `sbc-book` and opens Amelia's booki
 
 An "Ask us" button (bottom right, every page) opens a chat that answers questions from the site's own content: packages, upgrades, offers, FAQ, event types, the Experience steps, city pages and other published pages such as the Agreement. It never makes up prices or availability. For dates it points to "Check your date", which opens the Amelia popup from inside the chat. Questions it can't answer get handed to the team's email and phone.
 
-**Turning it on.** Add your Anthropic API key to `wp-config.php` (above "That's all, stop editing!"). Never put it in the theme or in git:
+**Turning it on.** The chat runs on Google Gemini (`gemini-3.8-flash`). Create a key in [Google AI Studio](https://aistudio.google.com/apikey) and add it to `wp-config.php`, above "That's all, stop editing!". Never put it in the theme or in git. The key is only read on the server and sent to Google in a request header. It never reaches the browser.
 
 ```php
-define( 'SBC_ANTHROPIC_API_KEY', 'sk-ant-...' );
+define( 'SBC_GEMINI_API_KEY', 'your-key' );
 ```
 
-Without the key, the button doesn't show. Optional settings in the same file: `SBC_CHAT_MODEL` (default `claude-haiku-5-5`, the cheapest model; use `claude-opus-5-5` for the strongest answers) and `SBC_CHAT_EMAIL` (default `memories@socialboothco.com`).
+Without the key, the button doesn't show. Optional settings in the same file: `SBC_CHAT_MODEL` (default `gemini-3.8-flash`; must be a `gemini-` model) and `SBC_CHAT_EMAIL` (default `memories@socialboothco.com`, also where alerts go).
+
+**Turn on billing for the key's Google Cloud project.** On Google's free tier, Google may use chats to improve its products, and human reviewers may read them. Chats here include visitors' names, emails and phone numbers. With billing on (paid tier), Google doesn't use them for that. Then set a budget alert in Google Cloud Billing.
 
 **Transcripts.** Every conversation is saved under **Chats** in the WordPress admin. Once a chat has had no new message for 5 minutes, the full transcript is emailed to memories@socialboothco.com. If the visitor comes back and keeps chatting, you get an "Updated website chat" email with the whole conversation.
 
@@ -51,9 +53,11 @@ wget -q -O - "https://socialboothco.com/wp-cron.php?doing_wp_cron" >/dev/null 2>
 
 Emails go out through WordPress's normal mail (the same path Forminator and Amelia use). If they land in spam, set up an SMTP plugin.
 
-**How answers are found.** The site content is split into small pieces and indexed. For each question, the best-matching pieces (plus the business basics) go to Claude with instructions to answer only from them. The index rebuilds automatically when you save the Customizer or any page. Content lives in `inc/chat.php`. To add synonyms (e.g. so "photo strip" finds prints), edit `sbc_chat_terms()`.
+**How answers are found.** The site content is split into small pieces and indexed. For each question, the best-matching pieces (plus the business basics) go to Gemini with instructions to answer only from them. The index rebuilds automatically when you save the Customizer or any page. Content lives in `inc/chat.php`. To add synonyms (e.g. so "photo strip" finds prints), edit `sbc_chat_terms()`.
 
-**Limits and cost.** Each visitor gets 20 messages per 10 minutes and 40 per conversation, and the whole site gets 500 messages a day. Each reply costs a fraction of a cent in API usage (about $1 per 1,000 replies).
+**Limits and cost.** Each visitor can send 20 messages per 10 minutes, start 5 new chats per hour, and send 40 messages per chat. The whole site gets 2,000 messages a day. Messages are cut to 800 characters, and only the last 20 messages of a chat go to Gemini. Check current Gemini pricing at [ai.google.dev/pricing](https://ai.google.dev/pricing).
+
+**If it stops answering.** After 3 failed replies in a row (wrong key, billing off, quota used up), memories@socialboothco.com gets a "Website chat is not answering" email, at most once every 6 hours. Visitors see the phone number and email in the meantime.
 
 ## SEO
 

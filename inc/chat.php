@@ -1,14 +1,15 @@
 <?php
 /**
  * Chat assistant: answers visitor questions from the site's own content (retrieval-augmented),
- * using Claude. Every conversation is saved under "Chat transcripts" in the admin and emailed
+ * using Google Gemini. Every conversation is saved under "Chats" in the admin and emailed
  * to the team once it has been quiet for five minutes.
  *
- * Setup: add the API key to wp-config.php (never to the theme):
- *     define( 'SBC_ANTHROPIC_API_KEY', 'sk-ant-...' );
+ * Setup: add the Gemini API key to wp-config.php (never to the theme). It is only read here
+ * on the server and sent to Google in a request header; it never reaches the browser.
+ *     define( 'SBC_GEMINI_API_KEY', 'your-key' );
  * Optional:
- *     define( 'SBC_CHAT_MODEL', 'claude-haiku-5-5' );         // model used for replies (cheapest; 'claude-opus-5-5' for the strongest)
- *     define( 'SBC_CHAT_EMAIL', 'memories@socialboothco.com' ); // where transcripts go
+ *     define( 'SBC_CHAT_MODEL', 'gemini-3.8-flash' );          // Gemini model used for replies
+ *     define( 'SBC_CHAT_EMAIL', 'memories@socialboothco.com' ); // where transcripts and alerts go
  * Without a key the chat button doesn't appear.
  *
  * Knowledge comes from the Customizer content (packages, upgrades, offers, FAQ, events…),
@@ -22,18 +23,21 @@ const SBC_CHAT_MAX_CHARS     = 800;  // Longest visitor message accepted.
 const SBC_CHAT_MAX_TURNS     = 40;   // Visitor messages per conversation.
 const SBC_CHAT_HISTORY       = 20;   // Most recent messages sent to the model.
 const SBC_CHAT_IP_LIMIT      = 20;   // Messages per visitor per 10 minutes.
-const SBC_CHAT_DAILY_LIMIT   = 500;  // Messages per day across the whole site (cost guard).
+const SBC_CHAT_DAILY_LIMIT   = 2000; // Messages per day across the whole site (cost guard).
+const SBC_CHAT_NEW_PER_IP    = 5;    // New conversations per visitor per hour (stops transcript-email floods).
+const SBC_CHAT_ALERT_AFTER   = 3;    // Failed replies in a row before the team gets an alert email.
 const SBC_CHAT_TOP_K         = 6;    // Knowledge chunks retrieved per question.
 
 function sbc_chat_api_key() {
-	if ( defined( 'SBC_ANTHROPIC_API_KEY' ) && SBC_ANTHROPIC_API_KEY ) {
-		return (string) SBC_ANTHROPIC_API_KEY;
-	}
-	return (string) getenv( 'ANTHROPIC_API_KEY' );
+	return defined( 'SBC_GEMINI_API_KEY' ) && SBC_GEMINI_API_KEY ? (string) SBC_GEMINI_API_KEY : '';
 }
 
+/**
+ * The Gemini model. A non-Gemini value left in wp-config (e.g. an old Claude model name) is ignored.
+ */
 function sbc_chat_model() {
-	return defined( 'SBC_CHAT_MODEL' ) && SBC_CHAT_MODEL ? (string) SBC_CHAT_MODEL : 'claude-haiku-5-5';
+	$model = defined( 'SBC_CHAT_MODEL' ) ? (string) SBC_CHAT_MODEL : '';
+	return preg_match( '/^gemini-[a-z0-9.\-]+$/', $model ) ? $model : 'gemini-3.8-flash';
 }
 
 function sbc_chat_email() {
@@ -290,7 +294,7 @@ function sbc_chat_retrieve( $query ) {
 }
 
 /* -------------------------------------------------------------------------
- * Claude
+ * Gemini
  * ---------------------------------------------------------------------- */
 
 function sbc_chat_instructions() {
@@ -307,10 +311,11 @@ How to answer:
 }
 
 /**
- * Ask Claude for the next reply. $messages: array of array( 'role' => user|assistant, 'text' => '' ).
+ * Ask Gemini for the next reply. $messages: array of array( 'role' => user|assistant, 'text' => '' ).
  *
- * Plain WordPress HTTP is used for the Messages API: this theme is deployed straight from git
- * with no Composer step, so the Anthropic PHP SDK (and its dependencies) isn't available here.
+ * Uses the Gemini API's generateContent endpoint over plain WordPress HTTP (the theme deploys
+ * straight from git, with no Composer step for an SDK). The key travels only in the
+ * x-goog-api-key header, so it never appears in URLs or logs.
  */
 function sbc_chat_ask( $messages ) {
 	$recent = array_slice( $messages, -SBC_CHAT_HISTORY );
@@ -347,61 +352,73 @@ function sbc_chat_ask( $messages ) {
 		$knowledge[] = sprintf( "[%d] %s (%s)\n%s", $n + 1, $chunk[0], $chunk[2], $chunk[1] );
 	}
 
-	$model = sbc_chat_model();
-	$body  = array(
-		'model'         => $model,
-		'max_tokens'    => 4096,
-		'output_config' => array( 'effort' => 'low' ),
-		'system'        => array(
-			array( 'type' => 'text', 'text' => sbc_chat_instructions() ),
-			array( 'type' => 'text', 'text' => 'Today is ' . wp_date( 'l, F j, Y' ) . ".\n\nSite knowledge:\n\n" . implode( "\n\n", $knowledge ) ),
-		),
-		'messages'      => $turns,
-	);
-	$headers = array(
-		'x-api-key'         => sbc_chat_api_key(),
-		'anthropic-version' => '2026-10-21',
-		'content-type'      => 'application/json',
-	);
-	// If a reply is declined by a safety check, the API retries it on a suitable model in the same call.
-	if ( in_array( $model, array( 'claude-opus-5-5', 'claude-opus-5', 'claude-sonnet-5-5', 'claude-fable-5-2', 'claude-fable-5-1' ), true ) ) {
-		$body['fallbacks']         = 'default';
-		$headers['anthropic-beta'] = 'server-side-fallback-2026-07-01';
+	$contents = array();
+	foreach ( $turns as $turn ) {
+		$contents[] = array(
+			'role'  => 'assistant' === $turn['role'] ? 'model' : 'user',
+			'parts' => array( array( 'text' => $turn['content'] ) ),
+		);
 	}
 
+	$body = array(
+		'systemInstruction' => array(
+			'parts' => array(
+				array( 'text' => sbc_chat_instructions() ),
+				array( 'text' => 'Today is ' . wp_date( 'l, F j, Y' ) . ".\n\nSite knowledge:\n\n" . implode( "\n\n", $knowledge ) ),
+			),
+		),
+		'contents'          => $contents,
+		// Short chat replies: low thinking keeps answers fast. Sampling settings are left at the
+		// model defaults (Gemini 3.6 Flash and newer ignore temperature).
+		'generationConfig'  => array(
+			'maxOutputTokens' => 2048,
+			'thinkingConfig'  => array( 'thinkingLevel' => 'low' ),
+		),
+	);
+
 	$response = wp_remote_post(
-		'https://api.anthropic.com/v1/messages',
+		'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode( sbc_chat_model() ) . ':generateContent',
 		array(
 			'timeout' => 45,
-			'headers' => $headers,
+			'headers' => array(
+				'x-goog-api-key' => sbc_chat_api_key(),
+				'Content-Type'   => 'application/json',
+			),
 			'body'    => wp_json_encode( $body ),
 		)
 	);
 	if ( is_wp_error( $response ) ) {
 		error_log( 'SBC chat: request failed: ' . $response->get_error_message() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-		return $response;
+		return new WP_Error( 'sbc_chat_http', 'Could not reach Gemini: ' . $response->get_error_message() );
 	}
 	$code = (int) wp_remote_retrieve_response_code( $response );
 	$data = json_decode( wp_remote_retrieve_body( $response ), true );
 	if ( 200 !== $code || ! is_array( $data ) ) {
-		$type = isset( $data['error']['type'] ) ? $data['error']['type'] : 'unknown';
-		$msg  = isset( $data['error']['message'] ) ? $data['error']['message'] : '';
-		error_log( "SBC chat: API error {$code} {$type}: {$msg}" ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-		return new WP_Error( 'sbc_chat_api', 'API error ' . $code );
+		$status = isset( $data['error']['status'] ) ? $data['error']['status'] : 'unknown';
+		$msg    = isset( $data['error']['message'] ) ? mb_substr( (string) $data['error']['message'], 0, 300 ) : '';
+		error_log( "SBC chat: Gemini API error {$code} {$status}: {$msg}" ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
+		return new WP_Error( 'sbc_chat_api', "Gemini API error {$code} {$status}" . ( $msg ? ": {$msg}" : '' ) );
 	}
 
-	if ( isset( $data['stop_reason'] ) && 'refusal' === $data['stop_reason'] ) {
-		return 'I can only help with questions about Social Booth Co and your event. Is there anything about our packages or booking I can help with?';
+	// Blocked by Gemini's safety filters, either the question or the answer.
+	$declined = 'I can only help with questions about Social Booth Co and your event. Is there anything about our packages or booking I can help with?';
+	if ( ! empty( $data['promptFeedback']['blockReason'] ) ) {
+		return $declined;
+	}
+	$candidate = isset( $data['candidates'][0] ) ? $data['candidates'][0] : array();
+	$finish    = isset( $candidate['finishReason'] ) ? (string) $candidate['finishReason'] : '';
+	if ( in_array( $finish, array( 'SAFETY', 'PROHIBITED_CONTENT', 'BLOCKLIST', 'SPII', 'RECITATION' ), true ) ) {
+		return $declined;
 	}
 
 	$text = '';
-	foreach ( (array) ( isset( $data['content'] ) ? $data['content'] : array() ) as $block ) {
-		if ( isset( $block['type'], $block['text'] ) && 'text' === $block['type'] ) {
-			$text .= $block['text'];
+	foreach ( (array) ( isset( $candidate['content']['parts'] ) ? $candidate['content']['parts'] : array() ) as $part ) {
+		if ( isset( $part['text'] ) && empty( $part['thought'] ) ) { // Skip the model's own reasoning parts.
+			$text .= $part['text'];
 		}
 	}
 	$text = trim( str_replace( array( '**', '__' ), '', $text ) );
-	return '' === $text ? new WP_Error( 'sbc_chat_empty', 'Empty reply.' ) : $text;
+	return '' === $text ? new WP_Error( 'sbc_chat_empty', 'Empty reply from Gemini (' . ( $finish ? $finish : 'no candidates' ) . ').' ) : $text;
 }
 
 /* -------------------------------------------------------------------------
@@ -530,6 +547,14 @@ function sbc_chat_handle( WP_REST_Request $request ) {
 
 	$post_id = sbc_chat_find( $session );
 	if ( ! $post_id ) {
+		// Each new conversation becomes a transcript email, so cap how many one visitor can start.
+		$new_key = 'sbc_chat_new_' . sbc_chat_visitor_hash();
+		$started = (int) get_transient( $new_key );
+		if ( $started >= SBC_CHAT_NEW_PER_IP ) {
+			return new WP_REST_Response( array( 'reply' => 'You’ve started a few chats already! Pick up in your existing one, or reach us at ' . sbc_mod( 'email' ) . ' or ' . sbc_mod( 'phone' ) . '.' ), 429 );
+		}
+		set_transient( $new_key, $started + 1, HOUR_IN_SECONDS );
+
 		$page    = esc_url_raw( (string) $request->get_param( 'page' ) );
 		$post_id = wp_insert_post(
 			array(
@@ -560,6 +585,9 @@ function sbc_chat_handle( WP_REST_Request $request ) {
 	$ok         = ! is_wp_error( $reply );
 	if ( $ok ) {
 		$messages[] = array( 'role' => 'assistant', 'text' => $reply, 'time' => time() );
+		sbc_chat_track_success();
+	} else {
+		sbc_chat_track_failure( $reply->get_error_message() );
 	}
 
 	update_post_meta( $post_id, '_sbc_messages', wp_slash( $messages ) );
@@ -570,11 +598,44 @@ function sbc_chat_handle( WP_REST_Request $request ) {
 }
 
 /**
+ * A visitor's IP, hashed with the site salt so raw IPs are never stored.
+ */
+function sbc_chat_visitor_hash() {
+	$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+	return md5( $ip . wp_salt( 'nonce' ) );
+}
+
+/**
+ * Failed replies in a row. After SBC_CHAT_ALERT_AFTER of them the team gets one email
+ * (at most every 6 hours), e.g. when the key is wrong, billing lapsed or the quota ran out.
+ */
+function sbc_chat_track_failure( $error ) {
+	$fails = (int) get_transient( 'sbc_chat_fails' ) + 1;
+	set_transient( 'sbc_chat_fails', $fails, DAY_IN_SECONDS );
+	if ( $fails < SBC_CHAT_ALERT_AFTER || get_transient( 'sbc_chat_alerted' ) ) {
+		return;
+	}
+	set_transient( 'sbc_chat_alerted', 1, 6 * HOUR_IN_SECONDS );
+
+	$body  = "The chat assistant on " . home_url( '/' ) . " has failed to answer {$fails} times in a row, so visitors are seeing the \"reach us at\" message instead of answers.\n\n";
+	$body .= 'Last error: ' . preg_replace( '/[\r\n]+/', ' ', (string) $error ) . "\n";
+	$body .= 'Time: ' . wp_date( 'l, F j, Y \a\t g:i a' ) . "\n\n";
+	$body .= "Things to check:\n- SBC_GEMINI_API_KEY in wp-config.php is correct and the key is still active in Google AI Studio.\n- Billing is on for the key's Google Cloud project and the quota or spend cap isn't used up.\n- Google's status page, if errors mention UNAVAILABLE or 5xx.\n\nYou'll get at most one of these every 6 hours while it keeps failing.\n";
+	wp_mail( sbc_chat_email(), 'Website chat is not answering', $body, array( 'Content-Type: text/plain; charset=UTF-8' ) );
+}
+
+function sbc_chat_track_success() {
+	if ( get_transient( 'sbc_chat_fails' ) ) {
+		delete_transient( 'sbc_chat_fails' );
+		delete_transient( 'sbc_chat_alerted' );
+	}
+}
+
+/**
  * Per-visitor (hashed IP, sliding 10 minutes) and site-wide daily caps.
  */
 function sbc_chat_rate_ok() {
-	$ip    = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-	$key   = 'sbc_chat_ip_' . md5( $ip . wp_salt( 'nonce' ) );
+	$key   = 'sbc_chat_ip_' . sbc_chat_visitor_hash();
 	$day   = 'sbc_chat_day_' . wp_date( 'Ymd' );
 	$count = (int) get_transient( $key );
 	$total = (int) get_transient( $day );
@@ -754,7 +815,7 @@ function sbc_chat_markup() {
 
 			<p class="chat-foot">
 				<a class="sbc-book" href="<?php echo esc_url( sbc_booking_url() ); ?>" data-chat-book><?php esc_html_e( 'Check your date', 'socialboothco' ); ?></a>
-				<span><?php esc_html_e( 'Chats are saved so our team can follow up.', 'socialboothco' ); ?></span>
+				<span><?php esc_html_e( 'Quotes and dates are confirmed by our team. Chats are saved so we can follow up.', 'socialboothco' ); ?></span>
 			</p>
 		</section>
 	</div>
