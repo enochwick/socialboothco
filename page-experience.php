@@ -24,7 +24,6 @@ $sbc_step_icons = array(
 	'send'     => '<path d="M21 3 10.5 13.5"/><path d="M21 3l-6.5 18-4-7.5L3 9.5z"/>',
 	'check'    => '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16.5 9.5"/>',
 );
-$sbc_grid  = array( 2915, 2916, 2883, 2877, 2881, 2882, 2856, 2861 );
 ?>
 
 <section class="exp-hero">
@@ -100,15 +99,49 @@ $sbc_grid  = array( 2915, 2916, 2883, 2877, 2881, 2882, 2856, 2861 );
 	<div class="wrap">
 		<h2 class="h2"><?php esc_html_e( 'Tap. Pose. Share.', 'socialboothco' ); ?></h2>
 		<p class="intro"><?php esc_html_e( 'An effortless photo booth your guests will use all night.', 'socialboothco' ); ?></p>
-		<div class="photo-grid">
-			<?php
-			foreach ( $sbc_grid as $sbc_id ) {
-				$sbc_img = sbc_image( $sbc_id, 'medium_large', array( 'sizes' => '(min-width: 900px) 25vw, 50vw' ) );
-				if ( $sbc_img ) {
-					echo '<figure class="photo-grid__item">' . $sbc_img . '</figure>'; // phpcs:ignore WordPress.Security.EscapeOutput
+		<?php
+		// Bento: a mix of photos from our Thumbtack profile (bundled in the theme) and the Media Library.
+		$sbc_ev    = get_template_directory_uri() . '/assets/img/events/';
+		$sbc_bento = array(
+			array( 'file' => array( 'morning-props-640.jpg', 'morning-props-1024.jpg', 640, 853 ), 'alt' => __( 'Kids in matching blue shirts posing with props at the photo booth', 'socialboothco' ), 'tag' => __( 'Pose', 'socialboothco' ) ),
+			array( 'file' => array( 'morning-print-strip-380.jpg', 'morning-print-strip-600.jpg', 380, 1140 ), 'alt' => __( 'A printed photo booth strip from the event', 'socialboothco' ), 'tag' => __( 'Share', 'socialboothco' ) ),
+			array( 'id' => 2915 ),
+			array( 'file' => array( 'booth-tap-to-start-640.jpg', 'booth-tap-to-start-1024.jpg', 640, 640 ), 'alt' => __( 'The Social Booth Co booth showing “Tap to start”', 'socialboothco' ), 'tag' => __( 'Tap', 'socialboothco' ) ),
+			array( 'id' => 2916 ),
+			array( 'file' => array( 'morning-frame-640.jpg', 'morning-frame-1024.jpg', 640, 853 ), 'alt' => __( 'Guests posing with a frame prop at the booth', 'socialboothco' ) ),
+			array( 'id' => 2882 ),
+			array( 'id' => 2856 ),
+		);
+		?>
+		<div class="bento">
+			<?php foreach ( $sbc_bento as $sbc_bi => $sbc_tile ) : ?>
+				<?php
+				if ( isset( $sbc_tile['id'] ) ) {
+					$sbc_img = sbc_image( $sbc_tile['id'], 'medium_large', array( 'sizes' => '(min-width: 900px) 25vw, 50vw' ) );
+				} else {
+					list( $sbc_small, $sbc_large, $sbc_w, $sbc_h ) = $sbc_tile['file'];
+					$sbc_img = sprintf(
+						'<img src="%1$s" srcset="%1$s %3$dw, %2$s %4$dw" sizes="(min-width: 900px) %5$s, 60vw" width="%3$d" height="%6$d" alt="%7$s" loading="lazy" decoding="async">',
+						esc_url( $sbc_ev . $sbc_small ),
+						esc_url( $sbc_ev . $sbc_large ),
+						(int) $sbc_w,
+						(int) round( $sbc_w * 1.6 ),
+						0 === $sbc_bi ? '50vw' : '25vw',
+						(int) $sbc_h,
+						esc_attr( $sbc_tile['alt'] )
+					);
 				}
-			}
-			?>
+				if ( ! $sbc_img ) {
+					continue;
+				}
+				?>
+				<figure class="bento__item bento__item--<?php echo (int) $sbc_bi + 1; ?>">
+					<?php echo $sbc_img; // phpcs:ignore WordPress.Security.EscapeOutput -- built from escaped parts / wp_get_attachment_image. ?>
+					<?php if ( ! empty( $sbc_tile['tag'] ) ) : ?>
+						<span class="bento__tag"><?php echo esc_html( $sbc_tile['tag'] ); ?></span>
+					<?php endif; ?>
+				</figure>
+			<?php endforeach; ?>
 		</div>
 		<p class="more-link"><a class="btn btn--line" href="<?php echo esc_url( home_url( '/gallery/' ) ); ?>"><?php esc_html_e( 'See the full gallery', 'socialboothco' ); ?></a></p>
 	</div>
