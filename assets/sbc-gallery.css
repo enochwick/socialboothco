@@ -4,12 +4,12 @@
 	--sbcg-berry: #9d1a4f;
 	--sbcg-berry-dark: #750e40;
 	--sbcg-berry-tint: #f5a3c2;
-	--sbcg-navy: #1a2c37;
-	--sbcg-navy-deep: #12212a;
+	--sbcg-navy: #222225;
+	--sbcg-navy-deep: #1a1a1d;
 	--sbcg-blush: #f7f2f2;
 	--sbcg-line: #e7e7e7;
-	--sbcg-ink: #1a2c37;
-	--sbcg-muted: #56636c;
+	--sbcg-ink: #222225;
+	--sbcg-muted: #5f5f67;
 	--sbcg-white: #fff;
 	--sbcg-radius: 14px;
 	--sbcg-head: "Urbanist", system-ui, sans-serif;
@@ -272,7 +272,7 @@
 	bottom: 10px;
 	padding: 6px 12px;
 	border-radius: 999px;
-	background: rgba(18, 33, 42, .78);
+	background: rgba(26, 26, 29, .78);
 	color: var(--sbcg-white);
 	font-size: 12px;
 	font-weight: 500;
@@ -314,7 +314,7 @@
 	padding: 20px;
 	border-radius: var(--sbcg-radius);
 	background: var(--sbcg-white);
-	box-shadow: 0 1px 2px rgba(26, 44, 55, .06);
+	box-shadow: 0 1px 2px rgba(34, 34, 37, .06);
 }
 .sbcg-includes__icon {
 	flex: none;
@@ -343,11 +343,11 @@
 	margin: 0;
 	padding: 0;
 	border: 0;
-	background: rgba(12, 20, 26, .96);
+	background: rgba(16, 16, 18, .96);
 	color: var(--sbcg-white);
 	overscroll-behavior: contain;
 }
-.sbcg-lightbox::backdrop { background: rgba(12, 20, 26, .6); }
+.sbcg-lightbox::backdrop { background: rgba(16, 16, 18, .6); }
 .sbcg-lightbox[open] { display: grid; grid-template-rows: 1fr auto; animation: sbcg-fade .2s ease both; }
 @keyframes sbcg-fade { from { opacity: 0; } }
 .sbcg-lightbox__stage {
