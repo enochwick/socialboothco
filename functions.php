@@ -19,15 +19,6 @@ function sbc_setup() {
 	add_theme_support( 'post-thumbnails' );
 	add_theme_support( 'html5', array( 'search-form', 'gallery', 'caption', 'style', 'script', 'navigation-widgets' ) );
 	add_theme_support( 'responsive-embeds' );
-	add_theme_support(
-		'custom-logo',
-		array(
-			'height'      => 100,
-			'width'       => 520,
-			'flex-height' => true,
-			'flex-width'  => true,
-		)
-	);
 
 	register_nav_menus(
 		array(

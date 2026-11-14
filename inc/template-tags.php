@@ -26,13 +26,12 @@ function sbc_image( $id, $size = 'large', $attr = array() ) {
 	return wp_get_attachment_image( $id, $size, false, $attr );
 }
 
+/**
+ * The original Social Booth Co logo (booth mark + "socialbooth" wordmark), bundled with the theme.
+ * Always used, so an old "Site logo" setting (e.g. the SOCIAL BOOTH CO wordmark) can't replace it.
+ */
 function sbc_logo( $variant = 'dark' ) {
-	if ( 'dark' === $variant && has_custom_logo() ) {
-		$id = (int) get_theme_mod( 'custom_logo' );
-		echo wp_get_attachment_image( $id, 'medium', false, array( 'class' => 'logo-img', 'alt' => get_bloginfo( 'name' ), 'loading' => 'eager' ) );
-		return;
-	}
-	// Bundled brand files: black wordmark for light backgrounds, white for dark.
+	// Black version for light backgrounds, white version for dark.
 	$src = get_template_directory_uri() . '/assets/img/' . ( 'light' === $variant ? 'logo-light.png' : 'logo-dark.png' );
 	printf( '<img class="logo-img" src="%s" alt="%s" width="168" height="32">', esc_url( $src ), esc_attr( get_bloginfo( 'name' ) ) );
 }
