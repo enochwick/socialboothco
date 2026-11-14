@@ -71,7 +71,6 @@
 	--ink-a80: rgba(34, 34, 37, .8);
 	--ink-deep-a85: rgba(20, 20, 22, .85);
 	--mask-solid: #000;
-	--peach-a55: rgba(253, 206, 170, .55);
 	--white-a12: rgba(255, 255, 255, .12);
 	--white-a14: rgba(255, 255, 255, .14);
 	--white-a16: rgba(255, 255, 255, .16);
@@ -603,12 +602,9 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 	width: 180px;
 	height: 180px;
 	border-radius: 50%;
-	background: var(--feat-glow, var(--berry-tint-a45));
+	background: var(--grey-a70); /* the same soft grey glow on every card */
 	filter: blur(40px);
 }
-.feat-card--2 { --feat-glow: var(--peach-a55); }
-.feat-card--3 { --feat-glow: var(--grey-a70); }
-.feat-card--4 { --feat-glow: var(--berry-a25); }
 .feat-icon {
 	display: grid;
 	place-items: center;
@@ -844,3 +840,117 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 
 /* Display heads wrap evenly and never overflow narrow screens. */
 .sbc h1, .sbc .h2, .sbc .closing h2, .sbc .reviews-title { text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
+
+/* City landing pages: a "greetings from" hero on the brand gradient. The city name sits behind
+   as a giant outline, a photo-booth print carries the city on its caption, and a stamp spins slowly. */
+.city-hero {
+	position: relative;
+	overflow: hidden;
+	margin-top: calc(var(--header-h) * -1);
+	padding: calc(var(--header-h) + 32px) 0 56px;
+	color: var(--white);
+	background:
+		radial-gradient(50% 60% at 88% 18%, var(--berry-tint-a35), transparent 70%),
+		radial-gradient(55% 60% at 4% 92%, var(--ink-a65), transparent 70%),
+		linear-gradient(135deg, var(--grad-1) 0%, var(--berry) 38%, var(--grad-3) 72%, var(--grad-4) 100%);
+}
+@media (min-width: 1000px) { .city-hero { padding: calc(var(--header-h) + 56px) 0 88px; } }
+.city-hero__ghost {
+	position: absolute;
+	left: 50%;
+	bottom: -.18em;
+	transform: translateX(-50%);
+	margin: 0;
+	font-family: var(--head);
+	font-weight: 800;
+	font-size: clamp(6rem, 22vw, 20rem);
+	line-height: 1;
+	letter-spacing: -.04em;
+	white-space: nowrap;
+	color: transparent;
+	-webkit-text-stroke: 1.5px var(--white-a16);
+	pointer-events: none;
+	user-select: none;
+}
+.city-hero__grid { position: relative; display: grid; gap: 40px; align-items: center; }
+@media (min-width: 1000px) { .city-hero__grid { grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); gap: 56px; } }
+.sbc .city-hero__tag { display: inline-flex; align-items: center; gap: 8px; border-color: var(--white-a28); background: var(--white-a12); color: var(--white-a92); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.sbc .city-hero__title {
+	max-width: 13ch;
+	font-weight: 700;
+	font-size: clamp(2.6rem, 1.2rem + 5vw, 5.25rem);
+	line-height: 1;
+	letter-spacing: -.05em;
+	color: var(--white);
+	text-wrap: balance;
+}
+.sbc .city-hero__title .is-city { color: var(--berry-tint); font-style: italic; padding-right: .06em; }
+.sbc .city-hero__lede { margin-top: 20px; max-width: 46ch; color: var(--white-a84); animation: sbc-rise .7s .5s var(--ease) both; }
+.city-hero__actions { margin-top: 28px; animation: sbc-rise .7s .6s var(--ease) both; }
+.sbc .city-hero .btn--berry { background: var(--white); color: var(--berry); }
+.sbc .city-hero .btn--line { border-color: var(--white-a70); color: var(--white); }
+.sbc .city-hero .btn--berry:hover { background: var(--berry-deep); color: var(--white); box-shadow: inset 0 0 0 1.5px var(--white-a55); }
+.sbc .city-hero .btn--line:hover { background: var(--berry-deep); border-color: var(--berry-deep); color: var(--white); }
+.sbc .city-hero :focus-visible { outline-color: var(--white); }
+
+.city-hero__spots { margin-top: 36px; animation: sbc-rise .7s .7s var(--ease) both; }
+.sbc .city-hero__spots-label { margin: 0 0 12px; font-size: 13px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--white-a70); }
+.sbc .city-hero__spots ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.sbc .city-hero__spots li {
+	padding: 7px 14px;
+	border: 1px dashed var(--white-a35);
+	border-radius: 999px;
+	font-size: 14px;
+	color: var(--white-a92);
+	background: var(--white-a12);
+	animation: sbc-rise .6s var(--ease) both;
+	animation-delay: calc(var(--i) * 60ms + 800ms);
+}
+
+/* The print: three shots on white paper with the city in the caption, like the strips guests take home. */
+.city-hero__art { position: relative; display: flex; justify-content: center; padding: 8px 0 24px; }
+.city-strip {
+	position: relative;
+	width: min(230px, 58vw);
+	padding: 10px 10px 0;
+	border-radius: 6px;
+	background: var(--white);
+	box-shadow: 0 30px 60px -24px var(--black-a60), 0 2px 0 var(--white-a25) inset;
+	transform: rotate(4deg);
+	animation: city-print .9s .25s var(--ease) both;
+}
+@media (min-width: 1000px) { .city-strip { width: 260px; } }
+.city-strip__shot { aspect-ratio: 4 / 3; overflow: hidden; border-radius: 2px; background: var(--line); }
+.city-strip__shot + .city-strip__shot { margin-top: 8px; }
+.city-strip__shot img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.city-strip__caption { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 0 14px; text-align: center; }
+.city-strip__city { font-family: var(--head); font-weight: 800; font-size: 1.35rem; letter-spacing: .14em; line-height: 1.1; color: var(--berry); }
+.city-strip__brand { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.city-stamp {
+	position: absolute;
+	top: -6px;
+	left: calc(50% - min(230px, 58vw) / 2 - 44px);
+	width: 112px;
+	height: 112px;
+	color: var(--white);
+	opacity: .9;
+	transform: rotate(-12deg);
+	animation: city-spin 24s linear infinite;
+}
+@media (min-width: 1000px) { .city-stamp { left: calc(50% - 130px - 64px); width: 128px; height: 128px; } }
+.city-stamp__ring { font-family: var(--head); font-weight: 700; font-size: 11px; letter-spacing: .12em; fill: currentColor; }
+@keyframes city-print { from { opacity: 0; transform: translateY(40px) rotate(-2deg); } }
+@keyframes city-spin { to { transform: rotate(348deg); } }
+@media (max-width: 999px) {
+	.city-hero__grid { gap: 32px; }
+	.city-hero__art { padding: 8px 0 8px; }
+	.city-strip { width: 190px; padding: 8px 8px 0; }
+	.city-strip__shot + .city-strip__shot { margin-top: 6px; }
+	.city-strip__caption { padding: 10px 0 12px; }
+	.city-strip__city { font-size: 1.1rem; }
+	.city-strip__brand { font-size: 10px; }
+	.city-stamp { top: 0; left: calc(50% - 95px - 62px); width: 96px; height: 96px; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.city-strip, .city-stamp, .city-hero__spots, .city-hero__spots li, .city-hero__lede, .city-hero__actions { animation: none !important; }
+}

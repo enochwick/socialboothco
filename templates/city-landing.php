@@ -15,10 +15,36 @@ get_header();
 $sbc_city = sbc_city_name();
 ?>
 
-<header class="page-intro city-intro">
-	<div class="wrap">
-		<?php sbc_animated_title( get_the_title() ); ?>
-		<p class="lede">
+<?php
+$sbc_title  = get_the_title();
+$sbc_spots  = sbc_city_spots( $sbc_city );
+$sbc_strip  = sbc_city_photos( $sbc_city, 3 );
+$sbc_short  = trim( preg_replace( '/–.*$/u', '', $sbc_city ) ); // "Dallas–Fort Worth" → "Dallas" for the stamp.
+$sbc_letter = function_exists( 'mb_strtoupper' ) ? mb_strtoupper( $sbc_short ) : strtoupper( $sbc_short );
+?>
+
+<header class="city-hero">
+	<p class="city-hero__ghost" aria-hidden="true"><?php echo esc_html( $sbc_letter ); ?></p>
+	<div class="wrap city-hero__grid">
+		<div class="city-hero__copy">
+			<p class="mq-tag city-hero__tag">
+				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
+				<?php
+				/* translators: %s: city */
+				printf( esc_html__( 'Now booking in %s, TX', 'socialboothco' ), esc_html( $sbc_city ) );
+				?>
+			</p>
+			<h1 class="city-hero__title" aria-label="<?php echo esc_attr( $sbc_title ); ?>">
+				<?php
+				// The city name gets the accent color.
+				$sbc_city_words = preg_split( '/\s+/u', $sbc_city );
+				foreach ( preg_split( '/\s+/u', trim( $sbc_title ) ) as $sbc_i => $sbc_word ) {
+					$sbc_is_city = in_array( trim( $sbc_word, ',.' ), $sbc_city_words, true );
+					printf( '<span class="mq-word%s" style="--i:%d" aria-hidden="true">%s</span> ', $sbc_is_city ? ' is-city' : '', (int) $sbc_i, esc_html( $sbc_word ) );
+				}
+				?>
+			</h1>
+			<p class="lede city-hero__lede">
 			<?php
 			$sbc_lede = false !== stripos( $sbc_city, 'dallas' )
 				/* translators: %s: city */
@@ -27,11 +53,45 @@ $sbc_city = sbc_city_name();
 				: __( 'Modern photo booth experiences for weddings, parties and corporate events in %s and across Dallas–Fort Worth. Instant sharing, custom overlays and an attendant at every event.', 'socialboothco' );
 			printf( esc_html( $sbc_lede ), esc_html( $sbc_city ) );
 			?>
-		</p>
-		<div class="actions">
-			<?php sbc_button( __( 'Check your date', 'socialboothco' ), 'book', 'berry' ); ?>
-			<a class="btn btn--line" href="#pricing"><?php esc_html_e( 'Compare packages', 'socialboothco' ); ?></a>
+			</p>
+			<div class="actions city-hero__actions">
+				<?php sbc_button( __( 'Check your date', 'socialboothco' ), 'book', 'berry' ); ?>
+				<a class="btn btn--line" href="#pricing"><?php esc_html_e( 'Compare packages', 'socialboothco' ); ?></a>
+			</div>
+			<?php if ( $sbc_spots ) : ?>
+				<div class="city-hero__spots">
+					<p class="city-hero__spots-label"><?php esc_html_e( 'Booths popping up around', 'socialboothco' ); ?></p>
+					<ul>
+						<?php foreach ( $sbc_spots as $sbc_n => $sbc_spot ) : ?>
+							<li style="--i:<?php echo (int) $sbc_n; ?>"><?php echo esc_html( $sbc_spot ); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+			<?php endif; ?>
 		</div>
+
+		<?php if ( $sbc_strip ) : ?>
+			<div class="city-hero__art" aria-hidden="true">
+				<div class="city-strip">
+					<?php foreach ( $sbc_strip as $sbc_n => $sbc_id ) : ?>
+						<div class="city-strip__shot">
+							<?php echo sbc_image( $sbc_id, 'medium_large', array( 'alt' => '', 'sizes' => '(min-width: 1000px) 260px, 180px', 'loading' => 'eager', 'fetchpriority' => 0 === $sbc_n ? 'high' : 'auto' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+						</div>
+					<?php endforeach; ?>
+					<div class="city-strip__caption">
+						<span class="city-strip__city"><?php echo esc_html( $sbc_letter ); ?></span>
+						<span class="city-strip__brand"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span>
+					</div>
+				</div>
+				<svg class="city-stamp" viewBox="0 0 120 120">
+					<defs><path id="city-stamp-path" d="M60 60 m-44 0 a44 44 0 1 1 88 0 a44 44 0 1 1 -88 0"/></defs>
+					<circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" stroke-width="1.5"/>
+					<circle cx="60" cy="60" r="31" fill="none" stroke="currentColor" stroke-width="1"/>
+					<text class="city-stamp__ring"><textPath href="#city-stamp-path" textLength="270"><?php echo esc_html( $sbc_letter . ' · TEXAS · PHOTO BOOTH · ' ); ?></textPath></text>
+					<path d="M60 42 l4.6 9.4 10.4 1.5 -7.5 7.3 1.8 10.3 -9.3 -4.9 -9.3 4.9 1.8 -10.3 -7.5 -7.3 10.4 -1.5z" fill="currentColor"/>
+				</svg>
+			</div>
+		<?php endif; ?>
 	</div>
 </header>
 

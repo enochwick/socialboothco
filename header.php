@@ -10,7 +10,7 @@
 <?php wp_body_open(); ?>
 <a class="skip-link" href="#content"><?php esc_html_e( 'Skip to content', 'socialboothco' ); ?></a>
 
-<header class="site-header<?php echo is_front_page() ? ' site-header--on-dark' : ''; ?>" data-site-header>
+<header class="site-header<?php echo ( is_front_page() || sbc_is_city_page() ) ? ' site-header--on-dark' : ''; ?>" data-site-header>
 	<div class="wrap">
 		<a class="logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" aria-label="<?php echo esc_attr( get_bloginfo( 'name' ) . ' ' . __( 'home', 'socialboothco' ) ); ?>"><?php sbc_logo( 'dark' ); ?><?php sbc_logo( 'light' ); ?></a>
 

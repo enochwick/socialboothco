@@ -297,3 +297,66 @@ function sbc_city_name( $post_id = 0 ) {
 	}
 	return 'Dallas–Fort Worth';
 }
+
+/**
+ * Local neighborhoods and landmarks shown as chips in a city page's hero. Add a city by
+ * extending this list (key = lowercase city name). Unknown cities fall back to the other
+ * cities in "Areas served".
+ */
+function sbc_city_spots( $city ) {
+	$spots = array(
+		'frisco'      => array( 'The Star', 'Frisco Square', 'Stonebriar', 'Starwood', 'Phillips Creek Ranch' ),
+		'plano'       => array( 'Legacy West', 'Historic Downtown Plano', 'Willow Bend', 'Shops at Legacy', 'Granite Park' ),
+		'mckinney'    => array( 'Historic Downtown', 'Adriatica Village', 'Craig Ranch', 'Stonebridge Ranch', 'Tucker Hill' ),
+		'dallas'      => array( 'Uptown', 'Deep Ellum', 'Bishop Arts', 'Design District', 'Downtown' ),
+		'fort worth'  => array( 'Sundance Square', 'The Stockyards', 'Near Southside', 'Cultural District', 'Clearfork' ),
+		'arlington'   => array( 'Entertainment District', 'Downtown Arlington', 'Viridian', 'UT Arlington' ),
+		'irving'      => array( 'Las Colinas', 'Mandalay Canal', 'Valley Ranch', 'Irving Convention Center' ),
+		'richardson'  => array( 'CityLine', 'Galatyn Park', 'Canyon Creek', 'Downtown Richardson' ),
+		'denton'      => array( 'Denton Square', 'Rayzor Ranch', 'UNT', 'TWU' ),
+		'allen'       => array( 'Watters Creek', 'Twin Creeks', 'Allen Station', 'Montgomery Farm' ),
+		'prosper'     => array( 'Windsong Ranch', 'Downtown Prosper', 'Star Trail', 'Gates of Prosper' ),
+		'southlake'   => array( 'Southlake Town Square', 'Timarron', 'Carillon', 'Westlake' ),
+		'carrollton'  => array( 'Downtown Carrollton', 'Castle Hills', 'Josey Ranch', 'Indian Creek' ),
+		'garland'     => array( 'Downtown Garland', 'Firewheel', 'Lake Ray Hubbard', 'Duck Creek' ),
+	);
+	$key = strtolower( trim( $city ) );
+	if ( isset( $spots[ $key ] ) ) {
+		$list = $spots[ $key ];
+	} else {
+		$areas = array_filter( array_map( 'trim', preg_split( '/,|\band\b/', str_replace( '.', '', sbc_mod( 'areas' ) ) ) ) );
+		$list  = array_values(
+			array_filter(
+				$areas,
+				function ( $a ) use ( $key ) {
+					return strtolower( $a ) !== $key;
+				}
+			)
+		);
+		$list = array_slice( $list, 0, 6 );
+	}
+	return apply_filters( 'sbc_city_spots', $list, $city );
+}
+
+/**
+ * Photos for a city page's photo-strip print: the page's featured image first (if set), then
+ * homepage hero photos, rotated by city so each city page shows a different set.
+ */
+function sbc_city_photos( $city, $count = 3 ) {
+	$pool = array();
+	foreach ( array_filter( array_map( 'absint', explode( ',', (string) sbc_mod( 'hero_photos' ) ) ) ) as $id ) {
+		if ( wp_attachment_is_image( $id ) && ! in_array( $id, sbc_removed_photo_ids(), true ) ) {
+			$pool[] = $id;
+		}
+	}
+	if ( $pool ) {
+		$offset = abs( crc32( strtolower( $city ) ) ) % count( $pool );
+		$pool   = array_merge( array_slice( $pool, $offset ), array_slice( $pool, 0, $offset ) );
+	}
+	$thumb = get_post_thumbnail_id();
+	if ( $thumb ) {
+		$pool = array_values( array_diff( $pool, array( $thumb ) ) );
+		array_unshift( $pool, (int) $thumb );
+	}
+	return array_slice( $pool, 0, $count );
+}
