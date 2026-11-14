@@ -1,92 +1,83 @@
 <?php
 /**
- * Packages: comparison table on wide screens, one card per package on phones.
- * Both are built from the same Customizer data.
+ * Packages as cards: a soft colored top (blurred color blobs + film grain) with name,
+ * description, price and booking button, then the feature list and a footer note.
+ * Content comes from Appearance → Customize → Social Booth Co → Packages and prices.
  */
 
 defined( 'ABSPATH' ) || exit;
 
 $sbc_packages = sbc_packages();
-$sbc_rows     = sbc_lines( 'compare', 4 );
-
-$sbc_cell_class = function ( $value ) {
-	if ( 0 === stripos( $value, 'included' ) ) {
-		return 'yes';
-	}
-	if ( in_array( $value, array( '—', '-', '–', '' ), true ) ) {
-		return 'no';
-	}
-	return '';
-};
-$sbc_cell = function ( $value ) {
-	if ( in_array( $value, array( '—', '-', '–', '' ), true ) ) {
-		return '<span aria-hidden="true">—</span><span class="screen-reader-text">' . esc_html__( 'Not included', 'socialboothco' ) . '</span>';
-	}
-	return esc_html( $value );
-};
+$sbc_palettes = array( 'blush', 'berry', 'navy' );
+$sbc_label    = sbc_mod( 'pkg_price_label' );
 ?>
 
-<div class="compare">
-	<table>
-		<caption class="screen-reader-text"><?php esc_html_e( 'Photo booth packages compared', 'socialboothco' ); ?></caption>
-		<thead>
-			<tr>
-				<td><p class="compare-note"><?php echo esc_html( sbc_mod( 'packages_note' ) ); ?></p></td>
-				<?php foreach ( $sbc_packages as $sbc_p ) : ?>
-					<th scope="col" class="<?php echo $sbc_p['popular'] ? 'hot' : ''; ?>">
-						<?php if ( $sbc_p['popular'] ) : ?>
-							<span class="tag"><?php esc_html_e( 'Most popular', 'socialboothco' ); ?></span>
-						<?php endif; ?>
-						<span class="pkg-name"><?php echo esc_html( $sbc_p['name'] ); ?></span>
-						<span class="pkg-price"><?php echo esc_html( $sbc_p['price'] ); ?></span>
-						<span class="pkg-best"><?php echo esc_html( $sbc_p['best'] ); ?></span>
-					</th>
-				<?php endforeach; ?>
-			</tr>
-		</thead>
-		<tbody>
-			<?php foreach ( $sbc_rows as $sbc_row ) : ?>
-				<tr>
-					<th scope="row"><?php echo esc_html( $sbc_row[0] ); ?></th>
-					<?php for ( $sbc_c = 1; $sbc_c <= 3; $sbc_c++ ) : ?>
-						<td class="<?php echo esc_attr( trim( $sbc_cell_class( $sbc_row[ $sbc_c ] ) . ( $sbc_packages[ $sbc_c - 1 ]['popular'] ? ' hot' : '' ) ) ); ?>"><?php echo $sbc_cell( $sbc_row[ $sbc_c ] ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in closure. ?></td>
-					<?php endfor; ?>
-				</tr>
-			<?php endforeach; ?>
-		</tbody>
-		<tfoot>
-			<tr>
-				<td></td>
-				<?php foreach ( $sbc_packages as $sbc_p ) : ?>
-					<td class="<?php echo $sbc_p['popular'] ? 'hot' : ''; ?>"><?php sbc_button( __( 'Check your date', 'socialboothco' ), 'book', $sbc_p['popular'] ? 'berry' : 'line' ); ?></td>
-				<?php endforeach; ?>
-			</tr>
-		</tfoot>
-	</table>
-</div>
-
-<div class="pkg-cards">
-	<p class="compare-note"><?php echo esc_html( sbc_mod( 'packages_note' ) ); ?></p>
+<div class="plans">
 	<?php foreach ( $sbc_packages as $sbc_i => $sbc_p ) : ?>
-		<article class="pkg-card<?php echo $sbc_p['popular'] ? ' is-hot' : ''; ?>">
-			<?php if ( $sbc_p['popular'] ) : ?>
-				<span class="tag"><?php esc_html_e( 'Most popular', 'socialboothco' ); ?></span>
-			<?php endif; ?>
-			<h3 class="pkg-name"><?php echo esc_html( $sbc_p['name'] ); ?></h3>
-			<p class="pkg-price"><?php echo esc_html( $sbc_p['price'] ); ?></p>
-			<p class="pkg-best"><?php echo esc_html( $sbc_p['best'] ); ?></p>
-			<dl>
-				<?php foreach ( $sbc_rows as $sbc_row ) : ?>
-					<div class="<?php echo esc_attr( $sbc_cell_class( $sbc_row[ $sbc_i + 1 ] ) ); ?>">
-						<dt><?php echo esc_html( $sbc_row[0] ); ?></dt>
-						<dd><?php echo $sbc_cell( $sbc_row[ $sbc_i + 1 ] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></dd>
+		<?php
+		$sbc_palette = $sbc_palettes[ $sbc_i % 3 ];
+		$sbc_grain   = 'sbc-grain-' . ( $sbc_i + 1 );
+		?>
+		<article class="plan plan--<?php echo esc_attr( $sbc_palette ); ?><?php echo $sbc_p['popular'] ? ' is-popular' : ''; ?>">
+			<div class="plan-top">
+				<span class="plan-blob plan-blob--a" aria-hidden="true"></span>
+				<span class="plan-blob plan-blob--b" aria-hidden="true"></span>
+				<svg class="plan-grain" aria-hidden="true" focusable="false">
+					<filter id="<?php echo esc_attr( $sbc_grain ); ?>">
+						<feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="3" stitchTiles="stitch" />
+						<feColorMatrix type="saturate" values="0" />
+					</filter>
+					<rect width="100%" height="100%" filter="url(#<?php echo esc_attr( $sbc_grain ); ?>)" />
+				</svg>
+
+				<div class="plan-body">
+					<div class="plan-badges">
+						<span class="plan-mark" aria-hidden="true">
+							<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><rect x="5" y="5" width="11" height="17" rx="5.5"/><rect x="8" y="9" width="5" height="8" rx="2.5" fill="#fff" opacity=".9"/><path d="M19 1.5c.3 1.9 1.6 3.2 3.5 3.5-1.9.3-3.2 1.6-3.5 3.5-.3-1.9-1.6-3.2-3.5-3.5 1.9-.3 3.2-1.6 3.5-3.5z"/></svg>
+						</span>
+						<?php if ( $sbc_p['popular'] ) : ?>
+							<span class="plan-flag"><?php esc_html_e( 'Most popular', 'socialboothco' ); ?></span>
+						<?php endif; ?>
 					</div>
-				<?php endforeach; ?>
-			</dl>
-			<?php sbc_button( __( 'Check your date', 'socialboothco' ), 'book', $sbc_p['popular'] ? 'berry' : 'line' ); ?>
+
+					<div>
+						<h3 class="plan-name"><?php echo esc_html( $sbc_p['name'] ); ?></h3>
+						<p class="plan-desc"><?php echo esc_html( $sbc_p['best'] ); ?></p>
+					</div>
+
+					<div>
+						<?php if ( $sbc_label ) : ?>
+							<p class="plan-price-label"><?php echo esc_html( $sbc_label ); ?></p>
+						<?php endif; ?>
+						<p class="plan-price"><?php echo esc_html( $sbc_p['price'] ); ?></p>
+					</div>
+
+					<?php sbc_button( __( 'Check your date', 'socialboothco' ), 'book', $sbc_p['popular'] || 'navy' === $sbc_palette ? 'dark' : 'soft', 'plan-cta' ); ?>
+				</div>
+			</div>
+
+			<div class="plan-details">
+				<?php if ( $sbc_p['features'] ) : ?>
+					<ul class="plan-features">
+						<?php foreach ( $sbc_p['features'] as $sbc_feature ) : ?>
+							<li>
+								<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
+								<?php echo esc_html( $sbc_feature ); ?>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
+				<?php if ( $sbc_p['note'] ) : ?>
+					<p class="plan-note"><?php echo esc_html( $sbc_p['note'] ); ?></p>
+				<?php endif; ?>
+			</div>
 		</article>
 	<?php endforeach; ?>
 </div>
+
+<?php if ( sbc_mod( 'packages_note' ) ) : ?>
+	<p class="plans-note"><?php echo esc_html( sbc_mod( 'packages_note' ) ); ?></p>
+<?php endif; ?>
 
 <?php $sbc_upgrades = sbc_lines( 'upgrades', 3 ); ?>
 <?php if ( $sbc_upgrades ) : ?>

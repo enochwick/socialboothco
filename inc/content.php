@@ -41,17 +41,23 @@ function sbc_defaults() {
 		'packages_title'   => 'Choose your photo booth experience.',
 		'packages_intro'   => 'Simple packages, elevated experiences. Check your date and we’ll send a custom quote for your celebration.',
 		'packages_note'    => 'Every package includes an attendant, professional lighting, a custom overlay, setup and breakdown.',
+		'pkg_price_label'  => 'Starting at',
 		'pkg1_name'        => 'The Social Booth',
-		'pkg1_price'       => 'From $450',
-		'pkg1_best'        => 'Intimate events, birthdays, showers',
+		'pkg1_price'       => '$450',
+		'pkg1_best'        => 'Best for intimate events, birthday parties, showers and casual celebrations.',
+		'pkg1_features'    => "2 hours of booth experience\nPhotos, GIFs and boomerangs\nInstant share by email, SMS and AirDrop\nLive event gallery\nCustom photo overlay (names, date, branding)\nProfessional lighting\nBooth attendant\nSetup and breakdown",
+		'pkg1_note'        => 'Prints available as an add-on.',
 		'pkg2_name'        => 'The Party Booth',
-		'pkg2_price'       => 'From $650',
-		'pkg2_best'        => 'Weddings and larger parties',
+		'pkg2_price'       => '$650',
+		'pkg2_best'        => 'Best for weddings, larger parties and events where guests want instant prints.',
+		'pkg2_features'    => "Everything in The Social Booth\n3 hours of booth experience\nPrint package (limited prints)\nFully custom-branded photo and print design\nVideo capture\nProp collection",
+		'pkg2_note'        => 'Add-ons available.',
 		'pkg3_name'        => 'Premier Experience',
-		'pkg3_price'       => 'From $950',
-		'pkg3_best'        => 'Weddings, corporate, premium events',
+		'pkg3_price'       => '$950',
+		'pkg3_best'        => 'Best for weddings, corporate events and premium celebrations.',
+		'pkg3_features'    => "Everything in The Party Booth\n5 hours of booth experience\nUnlimited instant prints\nSlow-motion video\nPremium backdrop (sequin or arch)\nPremium event customization\nPriority planning support",
+		'pkg3_note'        => 'Add-ons available.',
 		'pkg_popular'      => '2',
-		'compare'          => "Booth time | 2 hours | 3 hours | 5 hours\nPhotos, GIFs and boomerangs | Included | Included | Included\nInstant share and live gallery | Included | Included | Included\nInstant prints | Add-on | Limited prints | Unlimited\nCustom-branded photo and print design | Overlay only | Included | Included\nVideo capture | — | Included | Plus slow-motion\nProp collection | — | Included | Included\nPremium backdrop (sequin or arch) | From $95 | From $95 | Included\nPriority planning support | — | — | Included",
 		'upgrades'         => "Premium backdrop | From $95 | Sequin walls, arches and luxury textures.\nExtra booth time | $120/hr | Keep the booth running so guests can capture even more.\nGuest book experience | $125 | Guests add prints and messages to a keepsake book you take home.\nCustom event branding | Ask us | Fully customized overlays, templates and screen experiences.\nGuest survey insights | Ask us | Collect guest feedback and engagement data at corporate activations.",
 
 		// Home: events.
@@ -121,11 +127,14 @@ function sbc_faq_items() {
 function sbc_packages() {
 	$packages = array();
 	for ( $i = 1; $i <= 3; $i++ ) {
+		$features = array_filter( array_map( 'trim', preg_split( '/\R/', (string) sbc_mod( "pkg{$i}_features" ) ) ) );
 		$packages[] = array(
-			'name'    => sbc_mod( "pkg{$i}_name" ),
-			'price'   => sbc_mod( "pkg{$i}_price" ),
-			'best'    => sbc_mod( "pkg{$i}_best" ),
-			'popular' => (string) $i === (string) sbc_mod( 'pkg_popular' ),
+			'name'     => sbc_mod( "pkg{$i}_name" ),
+			'price'    => sbc_mod( "pkg{$i}_price" ),
+			'best'     => sbc_mod( "pkg{$i}_best" ),
+			'features' => array_values( $features ),
+			'note'     => sbc_mod( "pkg{$i}_note" ),
+			'popular'  => (string) $i === (string) sbc_mod( 'pkg_popular' ),
 		);
 	}
 	return $packages;

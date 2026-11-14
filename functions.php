@@ -36,6 +36,15 @@ function sbc_setup() {
 	);
 }
 
+/**
+ * Header Footer Elementor would replace this theme's header.php/footer.php with the old
+ * Elementor header and footer (white logo on a light background, misaligned button).
+ * This theme draws its own, so switch that off. The old templates stay saved in Elementor.
+ */
+add_filter( 'hfe_header_enabled', '__return_false', 99 );
+add_filter( 'hfe_footer_enabled', '__return_false', 99 );
+add_filter( 'hfe_before_footer_enabled', '__return_false', 99 );
+
 add_action( 'wp_enqueue_scripts', 'sbc_assets' );
 function sbc_assets() {
 	$dir = get_template_directory();
