@@ -21,6 +21,7 @@ To edit content, go to **Appearance → Customize → Social Booth Co**. Changes
 
 - **Homepage: hero:** the tagline, headline, intro text, and the scrolling photos (a comma-separated list of Media Library IDs).
 - **Packages and prices:** names, prices, descriptions, features, footer notes, "Most popular" and upgrades.
+- **Homepage: backdrops:** the "Choose your backdrop" scroller below the event types. Heading, intro, and the photos as a comma-separated list of Media Library IDs, in scroll order. It ships with the 123 backdrops from the old homepage carousel. Leave the photo list empty to hide the section.
 - **Event types**, **FAQ**, and **Contact, footer and booking**.
 
 List fields take one item per line, with parts separated by `|`. Menus can be assigned under **Appearance → Menus** (Main menu and Footer menu). Until a menu is assigned, the theme shows the standard links.
@@ -33,13 +34,16 @@ Every "Check your date" button has the class `sbc-book` and opens Amelia's booki
 
 An "Ask us" button (bottom right, every page) opens a chat that answers questions from the site's own content: packages, upgrades, offers, FAQ, event types, the Experience steps, city pages and other published pages such as the Agreement. It never makes up prices or availability. For dates it points to "Check your date", which opens the Amelia popup from inside the chat. Questions it can't answer get handed to the team's email and phone.
 
-**Turning it on.** The chat runs on Google Gemini (`gemini-3.8-flash`). Create a key in [Google AI Studio](https://aistudio.google.com/apikey) and add it to `wp-config.php`, above "That's all, stop editing!". Never put it in the theme or in git. The key is only read on the server and sent to Google in a request header. It never reaches the browser.
+**Turning it on.** The chat runs on Google Gemini (`gemini-3.8-flash`). Create a key in [Google AI Studio](https://aistudio.google.com/apikey), then either:
+
+- **From the dashboard (easiest):** go to **Settings → Chat assistant**, paste the key and click **Save key**. Then click **Send a test question** to confirm Gemini answers. The saved key is never shown again (only its last 4 characters), only admins can see the page, and it's used server-side only. Saving it clears the LiteSpeed cache so the chat button appears.
+- **Or in `wp-config.php`** (above "That's all, stop editing!"). This keeps the key out of the database and takes priority over the dashboard:
 
 ```php
 define( 'SBC_GEMINI_API_KEY', 'your-key' );
 ```
 
-Without the key, the button doesn't show. Optional settings in the same file: `SBC_CHAT_MODEL` (default `gemini-3.8-flash`; must be a `gemini-` model) and `SBC_CHAT_EMAIL` (default `memories@socialboothco.com`, also where alerts go).
+Never put the key in the theme or in git. Without a key, the button doesn't show. Optional settings in `wp-config.php`: `SBC_CHAT_MODEL` (default `gemini-3.8-flash`; must be a `gemini-` model) and `SBC_CHAT_EMAIL` (default `memories@socialboothco.com`, also where alerts go).
 
 **Turn on billing for the key's Google Cloud project.** On Google's free tier, Google may use chats to improve its products, and human reviewers may read them. Chats here include visitors' names, emails and phone numbers. With billing on (paid tier), Google doesn't use them for that. Then set a budget alert in Google Cloud Billing.
 

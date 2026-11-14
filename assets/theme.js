@@ -164,6 +164,32 @@
 		if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
 	}
 
+	/* Backdrop scroller: the round buttons page through it; they hide when everything fits and
+	   dim at either end. Swiping, trackpads and arrow keys use the browser's own scrolling. */
+	document.querySelectorAll('[data-scroller]').forEach(function (track) {
+		var section = track.closest('section');
+		var nav = section && section.querySelector('[data-scroller-nav]');
+		if (!nav) return;
+		var prev = nav.querySelector('[data-scroller-prev]');
+		var next = nav.querySelector('[data-scroller-next]');
+		var page = function () { return Math.max(track.clientWidth * 0.8, 200); };
+		var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		var sync = function () {
+			var max = track.scrollWidth - track.clientWidth;
+			nav.hidden = max < 8;
+			prev.disabled = track.scrollLeft < 8;
+			next.disabled = track.scrollLeft > max - 8;
+		};
+		prev.addEventListener('click', function () { track.scrollBy({ left: -page(), behavior: still ? 'auto' : 'smooth' }); });
+		next.addEventListener('click', function () { track.scrollBy({ left: page(), behavior: still ? 'auto' : 'smooth' }); });
+		var raf = 0;
+		track.addEventListener('scroll', function () {
+			if (!raf) raf = window.requestAnimationFrame(function () { raf = 0; sync(); });
+		}, { passive: true });
+		window.addEventListener('resize', sync);
+		sync();
+	});
+
 	/* Booking links are real links to the fallback page. When Amelia's popup is on the page,
 	   it opens from the same click, so stop the browser from also navigating away. */
 	document.addEventListener('click', function (e) {

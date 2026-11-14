@@ -28,8 +28,18 @@ const SBC_CHAT_NEW_PER_IP    = 5;    // New conversations per visitor per hour (
 const SBC_CHAT_ALERT_AFTER   = 3;    // Failed replies in a row before the team gets an alert email.
 const SBC_CHAT_TOP_K         = 6;    // Knowledge chunks retrieved per question.
 
+/**
+ * The Gemini key: wp-config.php wins if set, otherwise the one saved under Settings → Chat assistant.
+ */
 function sbc_chat_api_key() {
-	return defined( 'SBC_GEMINI_API_KEY' ) && SBC_GEMINI_API_KEY ? (string) SBC_GEMINI_API_KEY : '';
+	if ( sbc_chat_key_in_config() ) {
+		return (string) SBC_GEMINI_API_KEY;
+	}
+	return trim( (string) get_option( 'sbc_gemini_api_key', '' ) );
+}
+
+function sbc_chat_key_in_config() {
+	return defined( 'SBC_GEMINI_API_KEY' ) && SBC_GEMINI_API_KEY;
 }
 
 /**
@@ -818,6 +828,154 @@ function sbc_chat_markup() {
 				<span><?php esc_html_e( 'Quotes and dates are confirmed by our team. Chats are saved so we can follow up.', 'socialboothco' ); ?></span>
 			</p>
 		</section>
+	</div>
+	<?php
+}
+
+/* -------------------------------------------------------------------------
+ * Settings → Chat assistant: paste the Gemini key from the dashboard.
+ * The saved key is never printed back (only its last 4 characters), only admins can see the
+ * page, and it is used server-side only. A key in wp-config.php takes priority.
+ * ---------------------------------------------------------------------- */
+
+add_action( 'admin_menu', 'sbc_chat_settings_menu' );
+function sbc_chat_settings_menu() {
+	add_options_page( __( 'Chat assistant', 'socialboothco' ), __( 'Chat assistant', 'socialboothco' ), 'manage_options', 'sbc-chat', 'sbc_chat_settings_page' );
+}
+
+add_action( 'admin_init', 'sbc_chat_settings_register' );
+function sbc_chat_settings_register() {
+	register_setting(
+		'sbc_chat',
+		'sbc_gemini_api_key',
+		array(
+			'type'              => 'string',
+			'default'           => '',
+			'show_in_rest'      => false,
+			'sanitize_callback' => 'sbc_chat_sanitize_key',
+		)
+	);
+}
+
+/**
+ * The key field is always shown empty, so an empty submit keeps the saved key.
+ * "Remove the saved key" clears it. (options.php has already checked the nonce and capability.)
+ */
+function sbc_chat_sanitize_key( $value ) {
+	if ( ! empty( $_POST['sbc_gemini_api_key_remove'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification -- verified by options.php.
+		return '';
+	}
+	$value = preg_replace( '/\s+/', '', sanitize_text_field( (string) $value ) );
+	return '' === $value ? (string) get_option( 'sbc_gemini_api_key', '' ) : $value;
+}
+
+// The chat button only shows once there's a key, and pages are cached: refresh LiteSpeed's cache when the key changes.
+add_action( 'add_option_sbc_gemini_api_key', 'sbc_chat_key_changed' );
+add_action( 'update_option_sbc_gemini_api_key', 'sbc_chat_key_changed' );
+add_action( 'delete_option_sbc_gemini_api_key', 'sbc_chat_key_changed' );
+function sbc_chat_key_changed() {
+	do_action( 'litespeed_purge_all' );
+}
+
+add_action( 'admin_post_sbc_chat_test', 'sbc_chat_test_connection' );
+function sbc_chat_test_connection() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'socialboothco' ), 403 );
+	}
+	check_admin_referer( 'sbc_chat_test' );
+	if ( ! sbc_chat_enabled() ) {
+		$result = array( 'ok' => false, 'text' => __( 'There’s no Gemini key yet. Save one above first.', 'socialboothco' ) );
+	} else {
+		$reply  = sbc_chat_ask( array( array( 'role' => 'user', 'text' => 'Hi! What packages do you offer?', 'time' => time() ) ) );
+		$result = is_wp_error( $reply ) ? array( 'ok' => false, 'text' => $reply->get_error_message() ) : array( 'ok' => true, 'text' => $reply );
+	}
+	set_transient( 'sbc_chat_test_' . get_current_user_id(), $result, 5 * MINUTE_IN_SECONDS );
+	wp_safe_redirect( admin_url( 'options-general.php?page=sbc-chat' ) );
+	exit;
+}
+
+function sbc_chat_settings_page() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$saved     = trim( (string) get_option( 'sbc_gemini_api_key', '' ) );
+	$in_config = sbc_chat_key_in_config();
+	$test      = get_transient( 'sbc_chat_test_' . get_current_user_id() );
+	if ( $test ) {
+		delete_transient( 'sbc_chat_test_' . get_current_user_id() );
+	}
+	?>
+	<div class="wrap">
+		<h1><?php esc_html_e( 'Chat assistant', 'socialboothco' ); ?></h1>
+
+		<?php if ( is_array( $test ) ) : ?>
+			<div class="notice <?php echo $test['ok'] ? 'notice-success' : 'notice-error'; ?>">
+				<p><strong><?php echo $test['ok'] ? esc_html__( 'Connection works. Gemini replied:', 'socialboothco' ) : esc_html__( 'The test failed:', 'socialboothco' ); ?></strong></p>
+				<p style="white-space:pre-wrap"><?php echo esc_html( $test['text'] ); ?></p>
+			</div>
+		<?php endif; ?>
+
+		<p>
+			<?php if ( sbc_chat_enabled() ) : ?>
+				<?php esc_html_e( 'Status: on. The “Ask us” chat button shows on every page.', 'socialboothco' ); ?>
+			<?php else : ?>
+				<?php esc_html_e( 'Status: off. Add a Gemini API key to turn the chat on.', 'socialboothco' ); ?>
+			<?php endif; ?>
+		</p>
+
+		<form method="post" action="options.php" autocomplete="off">
+			<?php settings_fields( 'sbc_chat' ); ?>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><label for="sbc-gemini-key"><?php esc_html_e( 'Gemini API key', 'socialboothco' ); ?></label></th>
+					<td>
+						<input type="password" id="sbc-gemini-key" name="sbc_gemini_api_key" value="" class="regular-text" autocomplete="new-password" spellcheck="false"
+							placeholder="<?php echo esc_attr( $saved ? sprintf( /* translators: %s: last 4 characters */ __( 'Saved key ending in %s', 'socialboothco' ), substr( $saved, -4 ) ) : __( 'Paste your key', 'socialboothco' ) ); ?>"
+							<?php disabled( $in_config ); ?>>
+						<p class="description">
+							<?php if ( $in_config ) : ?>
+								<?php esc_html_e( 'A key is set in wp-config.php (SBC_GEMINI_API_KEY), which takes priority over this field. Remove that line to manage the key here.', 'socialboothco' ); ?>
+							<?php else : ?>
+								<?php
+								printf(
+									/* translators: %s: Google AI Studio link */
+									esc_html__( 'Create a key in %s. For privacy, turn on billing for its Google Cloud project: on the free tier, Google may use chats to improve its products. Leave this empty to keep the saved key.', 'socialboothco' ),
+									'<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a>'
+								);
+								?>
+							<?php endif; ?>
+						</p>
+						<?php if ( $saved && ! $in_config ) : ?>
+							<p><label><input type="checkbox" name="sbc_gemini_api_key_remove" value="1"> <?php esc_html_e( 'Remove the saved key (turns the chat off)', 'socialboothco' ); ?></label></p>
+						<?php endif; ?>
+					</td>
+				</tr>
+			</table>
+			<?php
+			if ( ! $in_config ) {
+				submit_button( __( 'Save key', 'socialboothco' ) );
+			}
+			?>
+		</form>
+
+		<h2><?php esc_html_e( 'Test the connection', 'socialboothco' ); ?></h2>
+		<p><?php esc_html_e( 'Sends one sample question (“What packages do you offer?”) to Gemini and shows the reply here.', 'socialboothco' ); ?></p>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+			<input type="hidden" name="action" value="sbc_chat_test">
+			<?php wp_nonce_field( 'sbc_chat_test' ); ?>
+			<?php submit_button( __( 'Send a test question', 'socialboothco' ), 'secondary', 'submit', false ); ?>
+		</form>
+
+		<p style="margin-top:24px">
+			<?php
+			printf(
+				/* translators: 1: email address, 2: link to Chats */
+				esc_html__( 'Transcripts go to %1$s and are saved under %2$s.', 'socialboothco' ),
+				esc_html( sbc_chat_email() ),
+				'<a href="' . esc_url( admin_url( 'edit.php?post_type=sbc_chat' ) ) . '">' . esc_html__( 'Chats', 'socialboothco' ) . '</a>'
+			);
+			?>
+		</p>
 	</div>
 	<?php
 }

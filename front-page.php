@@ -84,6 +84,8 @@ foreach ( array_filter( array_map( 'absint', explode( ',', (string) sbc_mod( 'he
 
 <?php get_template_part( 'parts/events' ); ?>
 
+<?php get_template_part( 'parts/backdrops' ); ?>
+
 <?php get_template_part( 'parts/faq-preview' ); ?>
 
 <?php

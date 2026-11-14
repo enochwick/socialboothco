@@ -77,6 +77,14 @@ function sbc_customize_register( $wp_customize ) {
 				'moments_photos' => array( 'textarea', __( 'Moments photos (Media Library IDs)', 'socialboothco' ), __( 'Comma-separated attachment IDs. Shown as a grid on desktop and a swipeable carousel on phones.', 'socialboothco' ) ),
 			),
 		),
+		'sbc_backdrops' => array(
+			'title'  => __( 'Homepage: backdrops', 'socialboothco' ),
+			'fields' => array(
+				'backdrops_title' => array( 'text', __( 'Heading', 'socialboothco' ) ),
+				'backdrops_intro' => array( 'textarea', __( 'Intro', 'socialboothco' ) ),
+				'backdrop_photos' => array( 'textarea', __( 'Backdrop photos (Media Library IDs)', 'socialboothco' ), __( 'Comma-separated attachment IDs, in the order they scroll. Leave empty to hide the section.', 'socialboothco' ) ),
+			),
+		),
 		'sbc_reviews'  => array(
 			'title'  => __( 'Reviews (Thumbtack)', 'socialboothco' ),
 			'fields' => array(
