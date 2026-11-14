@@ -73,7 +73,11 @@ function sbcg_get_items() {
 	}
 	ksort( $curated );
 
-	return array_merge( $fresh, array_values( $curated ) );
+	/**
+	 * Filter the gallery photos (e.g. to hide specific attachments site-wide).
+	 * The front end shuffles the order on every visit.
+	 */
+	return apply_filters( 'sbcg_items', array_merge( $fresh, array_values( $curated ) ) );
 }
 
 function sbcg_build_item( $post ) {
