@@ -22,6 +22,17 @@
 		});
 	}
 
+	/* Hero photo strip: pause/play (moving content must be stoppable). */
+	var marquee = document.querySelector('[data-marquee]');
+	var toggle = marquee && marquee.querySelector('[data-marquee-toggle]');
+	if (toggle) {
+		toggle.addEventListener('click', function () {
+			var paused = marquee.classList.toggle('is-paused');
+			toggle.querySelector('[data-label-pause]').hidden = paused;
+			toggle.querySelector('[data-label-play]').hidden = !paused;
+		});
+	}
+
 	/* Booking links are real links to the fallback page. When Amelia's popup is on the page,
 	   it opens from the same click, so stop the browser from also navigating away. */
 	document.addEventListener('click', function (e) {

@@ -24,14 +24,10 @@ function sbc_defaults() {
 		'booking_fallback' => '/check-availability/',
 
 		// Home: hero.
-		'hero_title'       => 'The photo booth {1} your guests won’t stop {2} talking about.',
+		'hero_tagline'     => 'Serving the Dallas–Fort Worth Metroplex',
+		'hero_title'       => 'The photo booth your guests won’t stop talking about.',
 		'hero_lede'        => 'Interactive photo booth experiences for Dallas–Fort Worth events, with instant sharing, custom designs and studio lighting. Packages from $450.',
-		'hero_photo_1'     => 2312,
-		'hero_photo_2'     => 2915,
-		'reel_1'           => 2916,
-		'reel_2'           => 2877,
-		'reel_3'           => 2400,
-		'reel_4'           => 2507,
+		'hero_photos'      => '2915, 2916, 2877, 2400, 2507, 2882, 2883, 2856, 2540, 2881, 2861, 2876',
 
 		// Home: features.
 		'features_title'   => 'A photo booth experience, not just a booth.',

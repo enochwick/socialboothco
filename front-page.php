@@ -7,36 +7,67 @@ defined( 'ABSPATH' ) || exit;
 
 get_header();
 
-// Headline with up to two inline photos at {1} and {2}.
-$sbc_title = esc_html( sbc_mod( 'hero_title' ) );
-foreach ( array( 1 => 'pill', 2 => 'pill pill--tall' ) as $sbc_n => $sbc_class ) {
-	$sbc_img   = sbc_image( sbc_mod( "hero_photo_{$sbc_n}" ), 'medium', array( 'alt' => '', 'loading' => 'eager', 'sizes' => '160px' ) );
-	$sbc_pill  = $sbc_img ? '<span class="' . $sbc_class . '" aria-hidden="true">' . $sbc_img . '</span>' : '';
-	$sbc_title = str_replace( '{' . $sbc_n . '}', $sbc_pill, $sbc_title );
+// Headline words animate in one by one. {1}/{2} were photo markers in an earlier version; drop them if still saved.
+$sbc_title = trim( preg_replace( '/\s+/', ' ', str_replace( array( '{1}', '{2}' ), '', sbc_mod( 'hero_title' ) ) ) );
+$sbc_words = '' === $sbc_title ? array() : explode( ' ', $sbc_title );
+
+// Scrolling photo strip: valid images only, in the order given.
+$sbc_photos = array();
+foreach ( array_filter( array_map( 'absint', explode( ',', (string) sbc_mod( 'hero_photos' ) ) ) ) as $sbc_id ) {
+	if ( wp_attachment_is_image( $sbc_id ) ) {
+		$sbc_photos[] = $sbc_id;
+	}
 }
-$sbc_title = trim( preg_replace( '/\s+/', ' ', $sbc_title ) );
 ?>
 
-<section class="hero">
-	<div class="wrap">
-		<h1 class="hero-title"><?php echo $sbc_title; // phpcs:ignore WordPress.Security.EscapeOutput -- escaped above; images from wp_get_attachment_image. ?></h1>
-		<div class="hero-foot">
-			<p class="lede"><?php echo esc_html( sbc_mod( 'hero_lede' ) ); ?></p>
-			<div class="actions">
-				<?php sbc_button( __( 'Check your date', 'socialboothco' ), 'book', 'berry' ); ?>
-				<a class="btn btn--line" href="#pricing"><?php esc_html_e( 'Compare packages', 'socialboothco' ); ?></a>
-			</div>
+<section class="mq-hero" data-marquee>
+	<div class="wrap mq-hero__content">
+		<?php if ( sbc_mod( 'hero_tagline' ) ) : ?>
+			<p class="mq-tag"><?php echo esc_html( sbc_mod( 'hero_tagline' ) ); ?></p>
+		<?php endif; ?>
+		<h1 class="mq-title" aria-label="<?php echo esc_attr( $sbc_title ); ?>">
+			<?php foreach ( $sbc_words as $sbc_i => $sbc_word ) : ?>
+				<span class="mq-word" style="--i:<?php echo (int) $sbc_i; ?>" aria-hidden="true"><?php echo esc_html( $sbc_word ); ?></span>
+			<?php endforeach; ?>
+		</h1>
+		<p class="lede mq-lede"><?php echo esc_html( sbc_mod( 'hero_lede' ) ); ?></p>
+		<div class="actions mq-actions">
+			<?php sbc_button( __( 'Check your date', 'socialboothco' ), 'book', 'berry' ); ?>
+			<a class="btn btn--line" href="#pricing"><?php esc_html_e( 'Compare packages', 'socialboothco' ); ?></a>
 		</div>
 	</div>
-</section>
 
-<div class="wrap reel">
-	<?php
-	for ( $sbc_i = 1; $sbc_i <= 4; $sbc_i++ ) {
-		echo sbc_image( sbc_mod( "reel_{$sbc_i}" ), 'medium_large', array( 'sizes' => '(min-width: 900px) 25vw, 50vw', 'loading' => 'eager' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
-	}
-	?>
-</div>
+	<?php if ( $sbc_photos ) : ?>
+		<div class="mq-strip" aria-hidden="true">
+			<div class="mq-track">
+				<?php
+				// Two identical sets make the loop seamless; the second set is purely visual.
+				for ( $sbc_set = 0; $sbc_set < 2; $sbc_set++ ) {
+					foreach ( $sbc_photos as $sbc_n => $sbc_id ) {
+						echo '<div class="mq-card' . ( $sbc_n % 2 ? ' mq-card--alt' : '' ) . '">'; // Tilt by position within the set, so both copies match.
+						echo sbc_image( // phpcs:ignore WordPress.Security.EscapeOutput
+							$sbc_id,
+							'medium_large',
+							array(
+								'alt'     => '',
+								'sizes'   => '200px',
+								'loading' => 0 === $sbc_set && $sbc_n < 6 ? 'eager' : 'lazy',
+							)
+						);
+						echo '</div>';
+					}
+				}
+				?>
+			</div>
+		</div>
+		<button class="mq-toggle" type="button" data-marquee-toggle>
+			<span class="screen-reader-text" data-label-pause><?php esc_html_e( 'Pause photo animation', 'socialboothco' ); ?></span>
+			<span class="screen-reader-text" data-label-play hidden><?php esc_html_e( 'Play photo animation', 'socialboothco' ); ?></span>
+			<svg class="mq-ico-pause" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+			<svg class="mq-ico-play" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+		</button>
+	<?php endif; ?>
+</section>
 
 <section class="sec sec--white">
 	<div class="wrap">

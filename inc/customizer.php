@@ -20,14 +20,10 @@ function sbc_customize_register( $wp_customize ) {
 		'sbc_hero'     => array(
 			'title'  => __( 'Homepage: hero', 'socialboothco' ),
 			'fields' => array(
-				'hero_title'   => array( 'textarea', __( 'Headline', 'socialboothco' ), __( 'Put {1} and {2} where the two small photos sit inside the headline. Remove them to show text only.', 'socialboothco' ) ),
-				'hero_photo_1' => array( 'image', __( 'Headline photo {1} (landscape)', 'socialboothco' ) ),
-				'hero_photo_2' => array( 'image', __( 'Headline photo {2} (portrait)', 'socialboothco' ) ),
+				'hero_tagline' => array( 'text', __( 'Tagline (small pill above the headline)', 'socialboothco' ) ),
+				'hero_title'   => array( 'textarea', __( 'Headline', 'socialboothco' ) ),
 				'hero_lede'    => array( 'textarea', __( 'Intro text', 'socialboothco' ) ),
-				'reel_1'       => array( 'image', __( 'Photo row: 1', 'socialboothco' ) ),
-				'reel_2'       => array( 'image', __( 'Photo row: 2', 'socialboothco' ) ),
-				'reel_3'       => array( 'image', __( 'Photo row: 3', 'socialboothco' ) ),
-				'reel_4'       => array( 'image', __( 'Photo row: 4', 'socialboothco' ) ),
+				'hero_photos'  => array( 'textarea', __( 'Scrolling photos (Media Library IDs)', 'socialboothco' ), __( 'Comma-separated attachment IDs, in order. Find an ID in Media → Library: open the photo and look for “item=” in the address bar. Portrait photos look best; 8–14 is ideal.', 'socialboothco' ) ),
 			),
 		),
 		'sbc_features' => array(
