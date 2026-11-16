@@ -14,6 +14,7 @@ require get_template_directory() . '/inc/template-tags.php';
 require get_template_directory() . '/inc/performance.php';
 require get_template_directory() . '/inc/seo.php';
 require get_template_directory() . '/inc/chat.php';
+require get_template_directory() . '/inc/legal.php';
 
 add_action( 'after_setup_theme', 'sbc_setup' );
 function sbc_setup() {

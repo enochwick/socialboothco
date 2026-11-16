@@ -62,6 +62,7 @@
 	<div class="mobile-menu__cta">
 		<?php sbc_button( __( 'Check your date', 'socialboothco' ), 'book', 'berry' ); ?>
 		<a class="mobile-menu__contact" href="tel:<?php echo esc_attr( preg_replace( '/[^\d+]/', '', sbc_mod( 'phone' ) ) ); ?>"><?php echo esc_html( sbc_mod( 'phone' ) ); ?></a>
+		<a class="mobile-menu__contact" href="mailto:<?php echo esc_attr( antispambot( sbc_mod( 'email' ) ) ); ?>"><?php echo esc_html( antispambot( sbc_mod( 'email' ) ) ); ?></a>
 	</div>
 </dialog>
 

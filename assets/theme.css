@@ -157,6 +157,9 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 	border: 1.5px solid currentColor; border-radius: 999px; background: none; color: inherit; cursor: pointer;
 	transition: background-color .2s var(--ease), color .2s var(--ease);
 }
+/* Elementor-built pages (Agreement, forms) style every <button> with white text, a pink gradient,
+   padding and a shadow. Keep that off the hamburger and close buttons. */
+.sbc .menu-btn { padding: 0; color: inherit; background-image: none; box-shadow: none; }
 .menu-btn:hover { background: var(--navy); color: var(--white); }
 .menu-btn:active { transform: scale(.95); }
 @media (min-width: 960px) {
@@ -772,7 +775,10 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 		display: flex;
 		gap: var(--gutter);
 		margin-inline: calc(var(--gutter) * -1);
-		padding: 4px var(--gutter) 12px;
+		/* A sideways-scrolling row clips everything outside its box, so leave room below the cards
+		   for their shadow (it reaches ~28px down) and pull the next content back up by the same amount. */
+		padding: 4px var(--gutter) 36px;
+		margin-bottom: -24px;
 		overflow-x: auto;
 		scroll-snap-type: x mandatory;
 		scroll-padding-inline: var(--gutter);
@@ -1063,3 +1069,60 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 	.sbc .backdrops-track { scroll-behavior: auto; }
 	.backdrops-item img { transition: none; }
 }
+
+/* Phones and tablets: iOS zooms the page in when a form field under 16px is tapped (the Amelia
+   booking popup's dropdowns, Forminator forms). 16px fields keep the page where it is. */
+@media (pointer: coarse) {
+	input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+	select,
+	textarea { font-size: 16px !important; }
+}
+
+/* Agreement (Elementor-built): the FAQ page's title style and a readable legal column.
+   inc/legal.php turns its headings into real h2/h3 and links the table of contents. */
+.sbc-legal .builder-content { max-width: calc(820px + 2 * var(--gutter)); padding-top: 40px; padding-bottom: 96px; }
+@media (min-width: 1000px) { .sbc-legal .builder-content { padding-top: 72px; } }
+.sbc-legal .builder-content .e-con { --padding-top: 0px !important; --padding-bottom: 0px !important; --margin-top: 0px !important; }
+.sbc-legal .builder-content h1.elementor-heading-title {
+	max-width: 16ch;
+	margin: 0 0 40px;
+	font: 700 clamp(2.5rem, 1.2rem + 5vw, 4.5rem)/1.02 var(--head) !important;
+	letter-spacing: -.05em;
+	color: var(--navy);
+	text-align: left;
+}
+.sbc-legal .elementor-widget-text-editor .elementor-widget-container > * { margin: 0; }
+.sbc-legal .elementor-widget-text-editor .elementor-widget-container > * + * { margin-top: 1em; }
+.sbc-legal .elementor-widget-text-editor :is(p, li) { margin: 0; font: 400 17px/1.7 var(--body); color: var(--navy); }
+.sbc-legal .elementor-widget-text-editor :is(b, strong) { font-weight: 600; }
+.sbc-legal .elementor-widget-text-editor ul { margin-top: .6em; padding-left: 1.3em; list-style: disc; }
+.sbc-legal .elementor-widget-text-editor ul li + li { margin-top: .35em; }
+.sbc-legal .elementor-widget-text-editor li::marker { color: var(--berry); }
+.sbc .legal-h2 {
+	margin-top: 64px !important;
+	padding-top: 32px;
+	border-top: 1px solid var(--line);
+	font: 700 clamp(1.7rem, 1.25rem + 1.6vw, 2.4rem)/1.12 var(--head);
+	letter-spacing: -.035em;
+	color: var(--navy);
+	scroll-margin-top: calc(var(--header-h, 84px) + 24px);
+}
+.sbc .legal-h3 { margin-top: 32px !important; font: 700 20px/1.3 var(--head); letter-spacing: -.01em; color: var(--navy); }
+.sbc .legal-h3 + * { margin-top: 8px !important; }
+/* "Important: Non-Refundable Deposit" as a callout card. */
+.sbc-legal .elementor-widget-text-editor:has(.legal-callout-title) {
+	padding: 28px;
+	border: 1px solid var(--berry-a25);
+	border-radius: 24px;
+	background: var(--plan-berry);
+}
+.sbc .legal-callout-title { font: 700 22px/1.25 var(--head); letter-spacing: -.02em; color: var(--berry-deep); }
+/* Table of contents: a linked list in a card. */
+.sbc .legal-toc { margin-top: 40px !important; padding: 26px 28px; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); }
+.sbc .legal-toc-title { font: 700 20px/1.2 var(--head); color: var(--navy); }
+.sbc .legal-toc ol { margin: 14px 0 0; padding-left: 1.4em; list-style: decimal; }
+@media (min-width: 700px) { .sbc .legal-toc ol { columns: 2; column-gap: 40px; } }
+.sbc .legal-toc li { padding: 4px 0; break-inside: avoid; }
+.sbc .legal-toc li::marker { color: var(--berry); font-weight: 600; }
+.sbc .legal-toc a { color: var(--navy); text-decoration: none; border-bottom: 1px solid transparent; transition: color .2s var(--ease), border-color .2s var(--ease); }
+.sbc .legal-toc a:hover { color: var(--berry); border-color: currentColor; }

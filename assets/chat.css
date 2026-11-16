@@ -12,6 +12,8 @@
 .sbc-chat *, .sbc-chat *::before, .sbc-chat *::after { box-sizing: border-box; }
 .sbc-chat p { margin: 0; }
 .sbc-chat button { font: inherit; }
+/* Elementor pages give every <button> a pink gradient and shadow; not in here. */
+.sbc-chat .chat-panel button { background-image: none; box-shadow: none; }
 .sbc-chat :focus-visible { outline: 3px solid var(--berry); outline-offset: 3px; }
 
 /* Launcher */
@@ -25,7 +27,7 @@
 	cursor: pointer;
 	transition: background-color .2s var(--ease), transform .15s var(--ease), opacity .2s var(--ease);
 }
-.sbc-chat .chat-launcher:hover { background: var(--berry-deep); }
+.sbc-chat .chat-launcher:hover { background: var(--berry-deep); color: var(--white); }
 .sbc-chat .chat-launcher:active { transform: scale(.96); }
 .sbc-chat.is-open .chat-launcher { opacity: 0; transform: scale(.9); pointer-events: none; }
 
@@ -67,7 +69,7 @@
 	cursor: pointer;
 	transition: background-color .2s var(--ease), transform .15s var(--ease);
 }
-.sbc-chat .chat-close:hover { background: var(--white-a14); }
+.sbc-chat .chat-close:hover { background: var(--white-a14); color: var(--white); }
 .sbc-chat .chat-close:active { transform: scale(.92); }
 .sbc-chat .chat-close:focus-visible { outline-color: var(--berry-tint); }
 
@@ -122,7 +124,7 @@
 	cursor: pointer;
 	transition: background-color .2s var(--ease), border-color .2s var(--ease), transform .15s var(--ease);
 }
-.sbc-chat .chat-chip:hover { border-color: var(--berry); background: var(--plan-berry); }
+.sbc-chat .chat-chip:hover { border-color: var(--berry); background: var(--plan-berry); color: var(--berry); }
 .sbc-chat .chat-chip:active { transform: scale(.97); }
 
 /* Composer */
@@ -149,7 +151,7 @@
 	cursor: pointer;
 	transition: background-color .2s var(--ease), transform .15s var(--ease), opacity .2s var(--ease);
 }
-.sbc-chat .chat-send:hover { background: var(--berry-deep); }
+.sbc-chat .chat-send:hover { background: var(--berry-deep); color: var(--white); }
 .sbc-chat .chat-send:active { transform: scale(.92); }
 .sbc-chat .chat-form.is-busy .chat-send { opacity: .5; pointer-events: none; }
 
