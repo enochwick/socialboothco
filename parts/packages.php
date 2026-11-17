@@ -9,6 +9,10 @@ defined( 'ABSPATH' ) || exit;
 
 $sbc_packages = sbc_packages();
 $sbc_label    = sbc_mod( 'pkg_price_label' );
+$sbc_any_flag = false;
+foreach ( $sbc_packages as $sbc_p ) {
+	$sbc_any_flag = $sbc_any_flag || ( ! $sbc_p['wide'] && ( $sbc_p['popular'] || $sbc_p['sale'] ) );
+}
 ?>
 
 <div class="plans">
@@ -30,22 +34,22 @@ $sbc_label    = sbc_mod( 'pkg_price_label' );
 				</svg>
 
 				<div class="plan-body">
-					<div class="plan-badges">
-						<span class="plan-mark" aria-hidden="true">
-							<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><rect x="5" y="5" width="11" height="17" rx="5.5"/><rect x="8" y="9" width="5" height="8" rx="2.5" fill="#fff" opacity=".9"/><path d="M19 1.5c.3 1.9 1.6 3.2 3.5 3.5-1.9.3-3.2 1.6-3.5 3.5-.3-1.9-1.6-3.2-3.5-3.5 1.9-.3 3.2-1.6 3.5-3.5z"/></svg>
-						</span>
-						<?php if ( $sbc_p['popular'] || $sbc_p['sale'] ) : ?>
-							<span class="plan-flags">
-								<?php if ( $sbc_p['popular'] ) : ?>
-									<span class="plan-flag"><?php esc_html_e( 'Most popular', 'socialboothco' ); ?></span>
-								<?php endif; ?>
-								<?php if ( $sbc_p['sale'] ) : ?>
-									<?php /* translators: %d: percent off. */ ?>
-									<span class="plan-flag plan-flag--sale"><?php echo esc_html( sprintf( __( 'Holiday %d%% off', 'socialboothco' ), sbc_sale_percent() ) ); ?></span>
-								<?php endif; ?>
-							</span>
-						<?php endif; ?>
-					</div>
+					<?php // Pill row: on any main card when one of them has a pill (keeps titles level), never empty on the wide card. ?>
+					<?php if ( $sbc_p['popular'] || $sbc_p['sale'] || ( ! $sbc_p['wide'] && $sbc_any_flag ) ) : ?>
+						<div class="plan-badges">
+							<?php if ( $sbc_p['popular'] || $sbc_p['sale'] ) : ?>
+								<span class="plan-flags">
+									<?php if ( $sbc_p['popular'] ) : ?>
+										<span class="plan-flag"><?php esc_html_e( 'Most popular', 'socialboothco' ); ?></span>
+									<?php endif; ?>
+									<?php if ( $sbc_p['sale'] ) : ?>
+										<?php /* translators: %d: percent off. */ ?>
+										<span class="plan-flag plan-flag--sale"><?php echo esc_html( sprintf( __( 'Holiday %d%% off', 'socialboothco' ), sbc_sale_percent() ) ); ?></span>
+									<?php endif; ?>
+								</span>
+							<?php endif; ?>
+						</div>
+					<?php endif; ?>
 
 					<div>
 						<h3 class="plan-name"><?php echo esc_html( $sbc_p['name'] ); ?></h3>
