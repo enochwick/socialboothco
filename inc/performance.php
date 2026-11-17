@@ -23,6 +23,7 @@ function sbc_unneeded_asset_patterns() {
 		'/plugins/header-footer-elementor/',
 		'/plugins/sticky-header-effects-for-elementor/',
 		'/uploads/elementor/',
+		'/uploads/premium-addons-elementor/', // Premium Addons' per-page CSS/JS (pafe-*), which also pulls in jQuery UI.
 		'fonts.googleapis.com',
 	);
 }
@@ -49,8 +50,9 @@ function sbc_prune_assets() {
 			if ( 0 === strpos( $handle, 'sbc-' ) ) {
 				continue;
 			}
-			// Amelia's icon font for its Elementor editor widget; the booking popup doesn't use it.
-			if ( 'amelia-elementor-widget-font' === $handle ) {
+			// Amelia's icon font for its Elementor editor widget, and a stylesheet it loads from
+			// developers.google.com for its Google sign-in button. The booking popup uses neither.
+			if ( in_array( $handle, array( 'amelia-elementor-widget-font', 'amelia_google_button_style' ), true ) ) {
 				wp_dequeue_style( $handle );
 				continue;
 			}
@@ -111,3 +113,24 @@ add_action(
 		);
 	}
 );
+
+
+/**
+ * Amelia adds the PayPal, Stripe and Square SDKs as plain blocking scripts on every page with the
+ * booking popup, which holds up the page (and the hero animation) until all three download.
+ * Deferring them keeps their order, and Amelia's own script is a module, which always runs after
+ * deferred scripts, so the SDKs are still ready when the booking form needs them.
+ * Turning off unused gateways in Amelia → Settings → Payments removes them entirely.
+ */
+add_filter( 'script_loader_tag', 'sbc_defer_payment_sdks', 10, 2 );
+function sbc_defer_payment_sdks( $tag, $handle ) {
+	if ( is_admin() || ! in_array( $handle, array( 'amelia_paypal_script', 'amelia_stripe_script', 'amelia_square_js' ), true ) ) {
+		return $tag;
+	}
+	// Leave it alone if Amelia attached inline code that expects the SDK to exist straight away.
+	if ( preg_match( '/<script\b[^>]*\b(defer|async)\b/', $tag ) || false !== strpos( $tag, $handle . '-js-after' ) ) {
+		return $tag;
+	}
+	// Only the SDK's own tag (the one with src), not any inline script printed with it.
+	return preg_replace( '/<script\b(?=[^>]*\bsrc=)/', '<script defer', $tag, 1 );
+}

@@ -30,30 +30,50 @@
 		setScrolled();
 	}
 
-	/* Hero photo strip: plays on its own, pauses on hover/touch, and can be dragged
-	   left or right with a mouse or finger. The pause button stops it for good. */
+	/* Hero photo strip: plays on its own, pauses on mouse hover, and can be dragged left or right
+	   with a mouse or finger. The pause button stops it for good.
+	   The motion is a Web Animation, so the browser runs it on the compositor: it stays smooth
+	   while the page scrolls on phones (a script-driven loop stutters and flickers there). */
 	var marquee = document.querySelector('[data-marquee]');
 	var strip = marquee && marquee.querySelector('.mq-strip');
 	var track = strip && strip.querySelector('.mq-track');
-	if (track) {
+	if (track && typeof track.animate === 'function') {
 		var toggle = marquee.querySelector('[data-marquee-toggle]');
 		var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		var SPEED = 32; // px per second
-		var setW = 0, x = 0, last = 0, hover = false, drag = null, stopped = reduce;
+		var setW = 0, anim = null, hover = false, drag = null, stopped = reduce, offscreen = false;
 
-		var measure = function () {
-			var cards = track.children, half = cards.length / 2;
-			setW = half >= 1 ? cards[half].offsetLeft - cards[0].offsetLeft : 0;
-			if (!x) x = -setW * 0.25;
-			wrap();
-			paint();
+		var duration = function () { return setW / SPEED * 1000; };
+		var running = function () { return !stopped && !hover && !offscreen && !(drag && drag.axis === 'x'); };
+		var sync = function () {
+			if (!anim) return;
+			if (running()) { if (anim.playState !== 'running') anim.play(); }
+			else if (anim.playState === 'running') anim.pause();
 		};
-		var wrap = function () {
-			if (setW <= 0) return;
+		// Position in px (-setW..0) <-> animation time. Moves right, like the original marquee.
+		var getX = function () { var d = duration(); return -setW + ((anim.currentTime || 0) % d) / d * setW; };
+		var setX = function (x) {
 			while (x > 0) x -= setW;
 			while (x <= -setW) x += setW;
+			anim.currentTime = (x + setW) / setW * duration();
 		};
-		var paint = function () { track.style.transform = 'translate3d(' + x.toFixed(2) + 'px,0,0)'; };
+		var measure = function () {
+			var cards = track.children, half = cards.length / 2;
+			var w = half >= 1 ? cards[half].offsetLeft - cards[0].offsetLeft : 0;
+			// Phones fire resize while the address bar slides; only rebuild when the loop length really changes.
+			if (w <= 0 || Math.abs(w - setW) < 1) return;
+			var progress = anim ? ((anim.currentTime || 0) % duration()) / duration() : 0.75;
+			setW = w;
+			var frames = [{ transform: 'translate3d(' + (-setW) + 'px,0,0)' }, { transform: 'translate3d(0,0,0)' }];
+			if (!anim) {
+				anim = track.animate(frames, { duration: duration(), iterations: Infinity, easing: 'linear' });
+			} else {
+				anim.effect.setKeyframes(frames);
+				anim.effect.updateTiming({ duration: duration() });
+			}
+			anim.currentTime = progress * duration();
+			sync();
+		};
 		var setStopped = function (v) {
 			stopped = v;
 			marquee.classList.toggle('is-paused', v);
@@ -61,52 +81,51 @@
 				toggle.querySelector('[data-label-pause]').hidden = v;
 				toggle.querySelector('[data-label-play]').hidden = !v;
 			}
-		};
-		var frame = function (t) {
-			var dt = last ? Math.min(0.05, (t - last) / 1000) : 0;
-			last = t;
-			if (!stopped && !hover && !drag && setW > 0 && !document.hidden) {
-				x += SPEED * dt; // moves right, like the original marquee
-				wrap();
-				paint();
-			}
-			window.requestAnimationFrame(frame);
+			sync();
 		};
 
-		strip.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') hover = true; });
-		strip.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') hover = false; });
+		strip.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { hover = true; sync(); } });
+		strip.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { hover = false; sync(); } });
 		strip.addEventListener('pointerdown', function (e) {
-			if (e.button > 0) return;
-			drag = { id: e.pointerId, startX: e.clientX, startY: e.clientY, x0: x, moved: false, axis: '' };
+			if (e.button > 0 || !anim) return;
+			drag = { id: e.pointerId, startX: e.clientX, startY: e.clientY, x0: 0, axis: '' };
 		});
 		strip.addEventListener('pointermove', function (e) {
 			if (!drag || e.pointerId !== drag.id) return;
 			var dx = e.clientX - drag.startX, dy = e.clientY - drag.startY;
 			if (!drag.axis && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
 				drag.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
-				if (drag.axis === 'x') { try { strip.setPointerCapture(e.pointerId); } catch (err) { /* pointer already gone */ } strip.classList.add('is-dragging'); }
+				if (drag.axis === 'y') { drag = null; return; } // a vertical swipe scrolls the page; the strip keeps moving
+				try { strip.setPointerCapture(e.pointerId); } catch (err) { /* pointer already gone */ }
+				strip.classList.add('is-dragging');
+				sync(); // pause, then read where it stopped
+				drag.x0 = getX() - dx;
 			}
-			if (drag.axis === 'y') { drag = null; return; } // let the page scroll vertically
-			if (drag.axis === 'x') { x = drag.x0 + dx; wrap(); paint(); }
+			if (drag && drag.axis === 'x') setX(drag.x0 + dx);
 		});
 		var endDrag = function (e) {
 			if (!drag || (e && e.pointerId !== drag.id)) return;
 			drag = null;
 			strip.classList.remove('is-dragging');
-			last = 0;
+			sync();
 		};
 		strip.addEventListener('pointerup', endDrag);
 		strip.addEventListener('pointercancel', endDrag);
 		strip.addEventListener('lostpointercapture', endDrag);
 
 		if (toggle) toggle.addEventListener('click', function () { setStopped(!stopped); });
-		setStopped(stopped);
 
-		window.addEventListener('resize', measure);
+		// No work while the hero is scrolled out of view.
+		if ('IntersectionObserver' in window) {
+			new IntersectionObserver(function (entries) { offscreen = !entries[0].isIntersecting; sync(); }).observe(strip);
+		}
+
+		var resizeT;
+		window.addEventListener('resize', function () { clearTimeout(resizeT); resizeT = setTimeout(measure, 150); });
 		window.addEventListener('load', measure);
 		if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
 		measure();
-		window.requestAnimationFrame(frame);
+		setStopped(stopped);
 	}
 
 	/* Experience "How it works": lock the section while scrolling moves only the timeline,

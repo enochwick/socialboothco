@@ -49,3 +49,35 @@ function sbc_booking_url() {
 function sbc_consult_url() {
 	return 'mailto:' . antispambot( sbc_mod( 'email' ) ) . '?subject=' . rawurlencode( 'Photo booth consultation' );
 }
+
+/**
+ * One-time Amelia update (November 2026). The homepage moved The Social Booth to $495 for 3 hours,
+ * but Amelia keeps its own copy of each package, so the booking popup still offered it at $450 for
+ * 2 hours. This brings Amelia in line once. Only rows still on the old values are touched, so
+ * anything changed in Amelia → Services afterwards is never overwritten.
+ */
+add_action( 'init', 'sbc_sync_amelia_pricing_2026' );
+function sbc_sync_amelia_pricing_2026() {
+	if ( get_option( 'sbc_amelia_pricing_2026_11' ) ) {
+		return;
+	}
+	global $wpdb;
+	$services  = $wpdb->prefix . 'amelia_services';
+	$providers = $wpdb->prefix . 'amelia_providers_to_services';
+	if ( $services !== $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $services ) ) ) {
+		return; // Amelia isn't installed (yet); try again on a later request.
+	}
+	$name = sbc_mod( 'pkg1_name' ) ? sbc_mod( 'pkg1_name' ) : 'The Social Booth';
+
+	// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table names come from $wpdb->prefix.
+	$wpdb->query( $wpdb->prepare( "UPDATE {$services} SET price = %f WHERE name = %s AND price = %f", 495, $name, 450 ) );
+	$wpdb->query( $wpdb->prepare( "UPDATE {$services} SET duration = %d WHERE name = %s AND duration = %d", 3 * HOUR_IN_SECONDS, $name, 2 * HOUR_IN_SECONDS ) );
+	// Amelia can also hold a per-employee price for each service, which wins in the booking form.
+	if ( $providers === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $providers ) ) ) {
+		$wpdb->query( $wpdb->prepare( "UPDATE {$providers} p INNER JOIN {$services} s ON s.id = p.serviceId SET p.price = %f WHERE s.name = %s AND p.price = %f", 495, $name, 450 ) );
+	}
+	// phpcs:enable
+
+	update_option( 'sbc_amelia_pricing_2026_11', 1, false );
+	do_action( 'litespeed_purge_all' ); // Cached pages pick up the new price straight away.
+}

@@ -11,13 +11,16 @@ get_header();
 $sbc_title = trim( preg_replace( '/\s+/', ' ', str_replace( array( '{1}', '{2}' ), '', sbc_mod( 'hero_title' ) ) ) );
 $sbc_words = '' === $sbc_title ? array() : explode( ' ', $sbc_title );
 
-// Scrolling photo strip: valid images only, in the order given.
+// Scrolling photo strip: valid images only, in the order given. The strip is drawn twice for a
+// seamless loop, so it's capped: 16 photos already run wider than any screen, and more just
+// makes one huge moving layer that phones can't keep in memory (photos blank out and flicker).
 $sbc_photos = array();
 foreach ( array_filter( array_map( 'absint', explode( ',', (string) sbc_mod( 'hero_photos' ) ) ) ) as $sbc_id ) {
 	if ( wp_attachment_is_image( $sbc_id ) ) {
 		$sbc_photos[] = $sbc_id;
 	}
 }
+$sbc_photos = array_slice( $sbc_photos, 0, (int) apply_filters( 'sbc_hero_photo_limit', 16 ) );
 ?>
 
 <section class="mq-hero" data-marquee>
@@ -46,13 +49,19 @@ foreach ( array_filter( array_map( 'absint', explode( ',', (string) sbc_mod( 'he
 				for ( $sbc_set = 0; $sbc_set < 2; $sbc_set++ ) {
 					foreach ( $sbc_photos as $sbc_n => $sbc_id ) {
 						echo '<div class="mq-card' . ( $sbc_n % 2 ? ' mq-card--alt' : '' ) . '">'; // Tilt by position within the set, so both copies match.
+						// Cards are ~250px wide on phones, ~330px on desktop. All load up front (the second
+						// set reuses the same files, so it costs nothing): lazy photos inside a moving strip
+						// pop in late. Only the first few on screen get priority; sync decoding stops Safari
+						// from flashing them blank when the layer repaints.
 						echo sbc_image( // phpcs:ignore WordPress.Security.EscapeOutput
 							$sbc_id,
 							'medium_large',
 							array(
-								'alt'     => '',
-								'sizes'   => '200px',
-								'loading' => 0 === $sbc_set && $sbc_n < 6 ? 'eager' : 'lazy',
+								'alt'           => '',
+								'sizes'         => '(max-width: 700px) 250px, 330px',
+								'loading'       => 'eager',
+								'decoding'      => 'sync',
+								'fetchpriority' => 0 === $sbc_set && $sbc_n < 4 ? 'high' : 'low',
 							)
 						);
 						echo '</div>';

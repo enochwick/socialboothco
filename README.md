@@ -19,7 +19,7 @@ All URLs stay the same, including `/#pricing`.
 
 To edit content, go to **Appearance → Customize → Social Booth Co**. Changes show in the live preview before you publish.
 
-- **Homepage: hero:** the tagline, headline, intro text, and the scrolling photos (a comma-separated list of Media Library IDs).
+- **Homepage: hero:** the tagline, headline, intro text, and the scrolling photos (a comma-separated list of Media Library IDs). The strip shows the first 16 photos in that list; more would make one huge moving layer that phones can't keep in memory, and the photos flicker. (Change the cap with the `sbc_hero_photo_limit` filter.)
 - **Packages and prices:** names, prices, descriptions, features, footer notes, "Most popular" and upgrades.
 - **Homepage: backdrops:** the "Choose your backdrop" scroller below the event types. Heading, intro, and the photos as a comma-separated list of Media Library IDs, in scroll order. It ships with the 123 backdrops from the old homepage carousel. Leave the photo list empty to hide the section.
 - **Event types**, **FAQ**, and **Contact, footer and booking**.
@@ -29,6 +29,8 @@ List fields take one item per line, with parts separated by `|`. Menus can be as
 ## Booking
 
 Every "Check your date" button has the class `sbc-book` and opens Amelia's booking popup for category **1** (changeable in the Customizer). If Amelia is off, it links to `/check-availability/`. There are no consultation buttons; the theme also strips any left in page content.
+
+**Prices in the popup come from Amelia, not the Customizer.** Amelia keeps its own copy of each package under **Amelia → Services**, so when you change a price or length on the site, change it there too. (The theme brought The Social Booth to $495 / 3 hours in Amelia once, in November 2026; it only touched rows still on the old $450 / 2 hours.) The theme colours the popup's dropdowns in the brand berry; set Amelia → Customize's primary colour to `#9d1a4f` to match the rest of the form.
 
 ## Chat assistant
 
@@ -94,6 +96,8 @@ The theme already does the following:
 - It serves Urbanist and Poppins from the theme, preloaded, instead of from Google Fonts.
 - It removes the emoji script, and the block-editor CSS on templates that don't use it.
 - Images lazy-load with responsive sizes, and the theme script is deferred.
+- The hero photo strip runs as a browser (compositor) animation, so it stays smooth while phones scroll, and it stops while scrolled out of view.
+- It drops Premium Addons' leftover per-page files and Amelia's Google button stylesheet, and defers Amelia's PayPal, Stripe and Square scripts so they don't hold up the page.
 
 ## Cleanup in WordPress (do these in order)
 
