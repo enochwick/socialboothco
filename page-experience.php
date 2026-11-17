@@ -41,7 +41,7 @@ $sbc_step_icons = array(
 			<h2 class="h2"><?php esc_html_e( 'How it works.', 'socialboothco' ); ?></h2>
 			<p class="intro"><?php esc_html_e( 'A seamless experience from booking to breakdown. You enjoy the party; we handle every step.', 'socialboothco' ); ?></p>
 			<ul class="hiw-facts">
-				<li><?php esc_html_e( 'Availability confirmed within 24 hours', 'socialboothco' ); ?></li>
+				<li><?php esc_html_e( 'Availability confirmed within a couple of hours', 'socialboothco' ); ?></li>
 				<li><?php esc_html_e( 'Setup done before guests arrive', 'socialboothco' ); ?></li>
 				<li><?php esc_html_e( 'Online gallery after every event', 'socialboothco' ); ?></li>
 			</ul>

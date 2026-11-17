@@ -101,7 +101,7 @@ function sbc_defaults() {
 
 		// Closing call to action (all pages).
 		'closing_title'    => 'Secure your date before it’s gone.',
-		'closing_text'     => 'Tell us about your event and we’ll confirm availability within 24 hours.',
+		'closing_text'     => 'Tell us about your event and we’ll confirm availability within a couple of hours.',
 	);
 }
 
@@ -225,7 +225,7 @@ function sbc_sale_offer() {
  */
 function sbc_experience_steps() {
 	return array(
-		array( __( 'Secure your date', 'socialboothco' ), __( 'Send your inquiry and we’ll confirm availability within 24 hours. Once approved, your date is officially reserved.', 'socialboothco' ), __( 'Within 24 hours', 'socialboothco' ), 'calendar' ),
+		array( __( 'Secure your date', 'socialboothco' ), __( 'Send your inquiry and we’ll confirm availability within a couple of hours. Once approved, your date is officially reserved.', 'socialboothco' ), __( 'Within a couple of hours', 'socialboothco' ), 'calendar' ),
 		array( __( 'Design and planning', 'socialboothco' ), __( 'We create a custom overlay for your event style. You review and approve, and we finalize every detail, including the print layout if selected.', 'socialboothco' ), __( 'Before your event', 'socialboothco' ), 'pen' ),
 		array( __( 'Event setup', 'socialboothco' ), __( 'We arrive early for full setup, calibration and testing, so everything is ready before guests arrive.', 'socialboothco' ), __( '45–60 min before', 'socialboothco' ), 'tool' ),
 		array( __( 'Event time', 'socialboothco' ), __( 'Guests tap, pose and share. Photos are delivered instantly, and printed on site if your package includes prints.', 'socialboothco' ), __( 'During your event', 'socialboothco' ), 'camera' ),
