@@ -55,6 +55,8 @@ function sbc_customize_register( $wp_customize ) {
 				'pkg3_features'   => array( 'textarea', __( 'Package 3 features', 'socialboothco' ), __( 'One per line.', 'socialboothco' ) ),
 				'pkg3_note'       => array( 'text', __( 'Package 3 footer note', 'socialboothco' ) ),
 				'pkg_popular'     => array( 'select', __( '“Most popular” package', 'socialboothco' ), '', array( '0' => __( 'None', 'socialboothco' ), '1' => '1', '2' => '2', '3' => '3' ) ),
+				'sale_percent'    => array( 'text', __( 'Holiday sale: percent off every package', 'socialboothco' ), __( 'Shows each price crossed out next to the sale price, plus a “Holiday special” offer. Use 0 to turn it off.', 'socialboothco' ) ),
+				'sale_ends'       => array( 'text', __( 'Holiday sale: last day to book (YYYY-MM-DD)', 'socialboothco' ), __( 'The sale switches off by itself after this date.', 'socialboothco' ) ),
 				'packages_note'   => array( 'textarea', __( 'Note below the packages', 'socialboothco' ) ),
 				'upgrades'       => array( 'textarea', __( 'Upgrades', 'socialboothco' ), __( 'One per line: Name | Price | Description', 'socialboothco' ) ),
 				'offers'         => array( 'textarea', __( 'Offers', 'socialboothco' ), __( 'One per line: Title | Details. {holiday_year} becomes the upcoming holiday season’s year.', 'socialboothco' ) ),

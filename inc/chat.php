@@ -94,7 +94,8 @@ function sbc_chat_chunks() {
 	foreach ( sbc_packages() as $pkg ) {
 		$add(
 			'Package: ' . $pkg['name'],
-			$pkg['name'] . ' package. Price: ' . sbc_mod( 'pkg_price_label' ) . ' ' . $pkg['price'] . ".\n"
+			$pkg['name'] . ' package. Price: ' . sbc_mod( 'pkg_price_label' ) . ' ' . $pkg['price']
+			. ( $pkg['sale'] ? '. Holiday special price right now: ' . $pkg['sale'] . ' (' . sbc_sale_offer()[1] . ')' : '' ) . ".\n"
 			. $pkg['best'] . "\nIncludes:\n- " . implode( "\n- ", $pkg['features'] ) . "\n"
 			. $pkg['note'] . ( $pkg['popular'] ? "\nOur most popular package." : '' ),
 			home_url( '/#pricing' )
@@ -102,7 +103,11 @@ function sbc_chat_chunks() {
 	}
 	$add( 'Packages overview', sbc_mod( 'packages_intro' ) . ' ' . sbc_mod( 'packages_note' ), home_url( '/#pricing' ) );
 
-	foreach ( sbc_lines( 'offers', 2 ) as $row ) {
+	$offers = sbc_lines( 'offers', 2 );
+	if ( sbc_sale_offer() ) {
+		array_unshift( $offers, sbc_sale_offer() );
+	}
+	foreach ( $offers as $row ) {
 		$add( 'Offer: ' . $row[0], $row[0] . ' (discount offer, price saving): ' . str_replace( '{holiday_year}', (string) sbc_holiday_year(), $row[1] ), home_url( '/#pricing' ) );
 	}
 
@@ -226,7 +231,7 @@ function sbc_chat_terms( $text ) {
  */
 function sbc_chat_index() {
 	$index = get_transient( 'sbc_chat_index' );
-	if ( is_array( $index ) && isset( $index['v'] ) && SBC_THEME_VERSION === $index['v'] ) {
+	if ( is_array( $index ) && isset( $index['v'] ) && SBC_THEME_VERSION . '-' . sbc_sale_percent() === $index['v'] ) {
 		return $index;
 	}
 	$docs = array();
@@ -241,7 +246,7 @@ function sbc_chat_index() {
 		$len   += array_sum( $tf );
 	}
 	$index = array(
-		'v'    => SBC_THEME_VERSION,
+		'v'    => SBC_THEME_VERSION . '-' . sbc_sale_percent(),
 		'docs' => $docs,
 		'df'   => $df,
 		'avg'  => $docs ? $len / count( $docs ) : 1,

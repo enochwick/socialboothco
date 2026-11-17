@@ -38,6 +38,10 @@ $sbc_label    = sbc_mod( 'pkg_price_label' );
 						<?php if ( $sbc_p['popular'] ) : ?>
 							<span class="plan-flag"><?php esc_html_e( 'Most popular', 'socialboothco' ); ?></span>
 						<?php endif; ?>
+						<?php if ( $sbc_p['sale'] ) : ?>
+							<?php /* translators: %d: percent off. */ ?>
+							<span class="plan-flag plan-flag--sale"><?php echo esc_html( sprintf( __( 'Holiday %d%% off', 'socialboothco' ), sbc_sale_percent() ) ); ?></span>
+						<?php endif; ?>
 					</div>
 
 					<div>
@@ -46,10 +50,23 @@ $sbc_label    = sbc_mod( 'pkg_price_label' );
 					</div>
 
 					<div>
-						<?php if ( $sbc_label ) : ?>
-							<p class="plan-price-label"><?php echo esc_html( $sbc_label ); ?></p>
+						<?php if ( $sbc_label || $sbc_p['sale'] ) : ?>
+							<p class="plan-price-label">
+								<?php echo esc_html( $sbc_label ); ?>
+								<?php if ( $sbc_p['sale'] ) : ?>
+									<span class="screen-reader-text"><?php esc_html_e( 'regular price', 'socialboothco' ); ?></span>
+									<s class="plan-price-was"><?php echo esc_html( $sbc_p['price'] ); ?></s>
+								<?php endif; ?>
+							</p>
 						<?php endif; ?>
-						<p class="plan-price"><?php echo esc_html( $sbc_p['price'] ); ?></p>
+						<p class="plan-price">
+							<?php if ( $sbc_p['sale'] ) : ?>
+								<span class="screen-reader-text"><?php esc_html_e( 'holiday price', 'socialboothco' ); ?></span>
+								<?php echo esc_html( $sbc_p['sale'] ); ?>
+							<?php else : ?>
+								<?php echo esc_html( $sbc_p['price'] ); ?>
+							<?php endif; ?>
+						</p>
 					</div>
 
 					<?php sbc_button( __( 'Check your date', 'socialboothco' ), 'book', $sbc_p['popular'] || 'navy' === $sbc_palette ? 'dark' : 'soft', 'plan-cta' ); ?>
@@ -83,7 +100,12 @@ $sbc_label    = sbc_mod( 'pkg_price_label' );
 	<p class="plans-note"><?php echo esc_html( sbc_mod( 'packages_note' ) ); ?></p>
 <?php endif; ?>
 
-<?php $sbc_offers = sbc_lines( 'offers', 2 ); ?>
+<?php
+$sbc_offers = sbc_lines( 'offers', 2 );
+if ( sbc_sale_offer() ) {
+	array_unshift( $sbc_offers, sbc_sale_offer() );
+}
+?>
 <?php if ( $sbc_offers ) : ?>
 	<ul class="offers">
 		<?php foreach ( $sbc_offers as $sbc_o ) : ?>

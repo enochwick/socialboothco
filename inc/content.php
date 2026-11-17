@@ -54,6 +54,10 @@ function sbc_defaults() {
 		'pkg3_features'    => "Everything in The Party Booth, plus:\n5 Hours of Booth Experience\nPremium Backdrop Upgrade (Sequin or Arch)\nGuest Book Experience\nSlow-motion Video\nPremium Event Customization\nPriority Planning Support",
 		'pkg3_note'        => '*Add-ons Available.',
 		'pkg_popular'      => '2',
+		// Holiday sale: every package price is shown crossed out with the discounted price, through
+		// the end date (inclusive). Set the percent to 0 to turn it off early.
+		'sale_percent'     => '10',
+		'sale_ends'        => '2026-12-31',
 		// Offers shown below the packages. One per line: Title | Details. {holiday_year} becomes the
 		// upcoming holiday season's year (this year until October 1, then next year).
 		'offers'           => "Weekday & Sunday events | 10% off any package for events Monday–Thursday or Sunday.\nHoliday party early bird | Book your {holiday_year} holiday party by October 1 and save 10%.",
@@ -146,6 +150,7 @@ function sbc_packages() {
 		$packages[] = array(
 			'name'     => sbc_mod( "pkg{$i}_name" ),
 			'price'    => sbc_mod( "pkg{$i}_price" ),
+			'sale'     => sbc_sale_price( sbc_mod( "pkg{$i}_price" ) ),
 			'best'     => sbc_mod( "pkg{$i}_best" ),
 			'features' => array_values( $features ),
 			'note'     => sbc_mod( "pkg{$i}_note" ),
@@ -153,6 +158,47 @@ function sbc_packages() {
 		);
 	}
 	return $packages;
+}
+
+/**
+ * Holiday sale percent while it's running, otherwise 0.
+ */
+function sbc_sale_percent() {
+	$percent = (int) sbc_mod( 'sale_percent' );
+	$ends    = trim( (string) sbc_mod( 'sale_ends' ) );
+	if ( $percent <= 0 || $percent >= 100 || ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $ends ) ) {
+		return 0;
+	}
+	return wp_date( 'Y-m-d' ) <= $ends ? $percent : 0;
+}
+
+/**
+ * Discounted price for a price string like "$495", rounded down to whole dollars so the saving
+ * is never less than advertised. Empty when no sale is running or the price has no number.
+ */
+function sbc_sale_price( $price ) {
+	$percent = sbc_sale_percent();
+	if ( ! $percent || ! preg_match( '/\d[\d,]*(?:\.\d+)?/', (string) $price, $m ) ) {
+		return '';
+	}
+	$amount = (float) str_replace( ',', '', $m[0] );
+	return '$' . number_format( floor( $amount * ( 100 - $percent ) / 100 ) );
+}
+
+/**
+ * The sale as an offer line (Title, Details), or null when no sale is running.
+ */
+function sbc_sale_offer() {
+	$percent = sbc_sale_percent();
+	if ( ! $percent ) {
+		return null;
+	}
+	$ends = wp_date( 'F j', strtotime( sbc_mod( 'sale_ends' ) . ' 12:00:00' ) );
+	return array(
+		__( 'Holiday special', 'socialboothco' ),
+		/* translators: 1: percent off, 2: last booking date. */
+		sprintf( __( '%1$d%% off any package when you book by %2$s. Can’t be combined with other offers.', 'socialboothco' ), $percent, $ends ),
+	);
 }
 
 /**
