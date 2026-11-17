@@ -263,7 +263,7 @@ add_action(
 			'email'       => sbc_mod( 'email' ),
 			'image'       => get_template_directory_uri() . '/screenshot.png',
 			'logo'        => get_template_directory_uri() . '/assets/img/logo-dark.png',
-			'priceRange'  => '$495–$950',
+			'priceRange'  => '$350–$950',
 			'address'     => array(
 				'@type'           => 'PostalAddress',
 				'addressRegion'   => 'TX',

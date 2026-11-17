@@ -25,7 +25,7 @@ function sbc_defaults() {
 		// Home: hero.
 		'hero_tagline'     => 'Serving the Dallas–Fort Worth Metroplex',
 		'hero_title'       => 'The photo booth your guests won’t stop talking about.',
-		'hero_lede'        => 'Interactive photo booth experiences for Dallas–Fort Worth events, with instant sharing, custom designs and studio lighting. Packages from $495.',
+		'hero_lede'        => 'Interactive photo booth experiences for Dallas–Fort Worth events, with instant sharing, custom designs and studio lighting. Packages from $350.',
 		'hero_photos'      => '2915, 2916, 2877, 2400, 2507, 2882, 2883, 2856, 2540, 2881, 2861, 2876',
 
 		// Home: features.
@@ -66,7 +66,7 @@ function sbc_defaults() {
 		'sale_ends'        => '2026-12-31',
 		// Offers shown below the packages. One per line: Title | Details. {holiday_year} becomes the
 		// upcoming holiday season's year (this year until October 1, then next year).
-		'offers'           => "Weekday & Sunday events | 10% off any package for events Monday–Thursday or Sunday.\nHoliday party early bird | Book your {holiday_year} holiday party by October 1 and save 10%.",
+		'offers'           => "Weekday & Sunday events | 10% off for events Monday–Thursday or Sunday. Doesn’t apply to The Weekday Booth.\nHoliday party early bird | Book your {holiday_year} holiday party by October 1 and save 10%.",
 		'upgrades'         => "Instant prints | $150 | Unlimited instant prints for The Social Booth.\nPremium backdrop | From $95 | Sequin walls, arches and luxury textures.\nExtra booth time | $120/hr | Keep the booth running so guests can capture even more.\nGuest book experience | $125 | Guests add prints and messages to a keepsake book you take home. Included with Premier Experience.\nCustom event branding | Ask us | Fully customized overlays, templates and screen experiences.\nGuest survey insights | Ask us | Collect guest feedback and engagement data at corporate activations.",
 
 		// Home: events.
@@ -151,9 +151,10 @@ function sbc_faq_items() {
 
 function sbc_packages() {
 	$packages = array();
-	// Weekday card (4) first as the entry price, then 1-3. Palette per package keeps the old card colors.
+	// Packages 1-3 as the main cards, then the weekday card (4) as a wide card below them.
+	// Palette per package keeps the old card colors.
 	$palettes = array( 1 => 'navy', 2 => 'berry', 3 => 'navy', 4 => 'navy' );
-	foreach ( array( 4, 1, 2, 3 ) as $i ) {
+	foreach ( array( 1, 2, 3, 4 ) as $i ) {
 		if ( 4 === $i && '' === trim( (string) sbc_mod( 'pkg4_name' ) ) ) {
 			continue;
 		}
@@ -167,6 +168,7 @@ function sbc_packages() {
 			'note'     => sbc_mod( "pkg{$i}_note" ),
 			'popular'  => (string) $i === (string) sbc_mod( 'pkg_popular' ),
 			'palette'  => $palettes[ $i ],
+			'wide'     => 4 === $i,
 		);
 	}
 	return $packages;
@@ -206,10 +208,14 @@ function sbc_sale_offer() {
 		return null;
 	}
 	$ends = wp_date( 'F j', strtotime( sbc_mod( 'sale_ends' ) . ' 12:00:00' ) );
+	// Name the packages on sale (1-3) rather than saying "any package": the weekday card is excluded.
+	$names = array_values( array_filter( array( sbc_mod( 'pkg1_name' ), sbc_mod( 'pkg2_name' ), sbc_mod( 'pkg3_name' ) ) ) );
+	$last  = array_pop( $names );
+	$list  = $names ? implode( ', ', $names ) . ' ' . __( 'and', 'socialboothco' ) . ' ' . $last : $last;
 	return array(
 		__( 'Holiday special', 'socialboothco' ),
-		/* translators: 1: percent off, 2: last booking date. */
-		sprintf( __( '%1$d%% off any package when you book by %2$s. Can’t be combined with other offers.', 'socialboothco' ), $percent, $ends ),
+		/* translators: 1: percent off, 2: package names, 3: last booking date. */
+		sprintf( __( '%1$d%% off %2$s when you book by %3$s. Can’t be combined with other offers.', 'socialboothco' ), $percent, $list, $ends ),
 	);
 }
 
@@ -267,6 +273,27 @@ function sbc_migrate_pricing_2026() {
 		set_theme_mod( 'sbc_hero_lede', str_replace( '$450', '$495', $lede ) );
 	}
 	update_option( 'sbc_pricing_2026_11', 1, false );
+}
+
+/**
+ * One-time update for the Weekday Booth (November 2026): saved Customizer copy that still says
+ * "from $495" or offers the weekday 10% on "any package" is updated to match. Other edits are kept.
+ */
+add_action( 'after_setup_theme', 'sbc_migrate_weekday_2026' );
+function sbc_migrate_weekday_2026() {
+	if ( get_option( 'sbc_weekday_2026_11' ) ) {
+		return;
+	}
+	$lede = get_theme_mod( 'sbc_hero_lede' );
+	if ( is_string( $lede ) && false !== strpos( $lede, 'from $495' ) ) {
+		set_theme_mod( 'sbc_hero_lede', str_replace( 'from $495', 'from $350', $lede ) );
+	}
+	$offers = get_theme_mod( 'sbc_offers' );
+	$old    = '10% off any package for events Monday–Thursday or Sunday.';
+	if ( is_string( $offers ) && false !== strpos( $offers, $old ) ) {
+		set_theme_mod( 'sbc_offers', str_replace( $old, '10% off for events Monday–Thursday or Sunday. Doesn’t apply to The Weekday Booth.', $offers ) );
+	}
+	update_option( 'sbc_weekday_2026_11', 1, false );
 }
 
 /**

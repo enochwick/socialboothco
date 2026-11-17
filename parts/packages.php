@@ -11,13 +11,13 @@ $sbc_packages = sbc_packages();
 $sbc_label    = sbc_mod( 'pkg_price_label' );
 ?>
 
-<div class="plans<?php echo 4 === count( $sbc_packages ) ? ' plans--4' : ''; ?>">
+<div class="plans">
 	<?php foreach ( $sbc_packages as $sbc_i => $sbc_p ) : ?>
 		<?php
 		$sbc_palette = $sbc_p['palette'];
 		$sbc_grain   = 'sbc-grain-' . ( $sbc_i + 1 );
 		?>
-		<article class="plan plan--<?php echo esc_attr( $sbc_palette ); ?><?php echo $sbc_p['popular'] ? ' is-popular' : ''; ?>">
+		<article class="plan plan--<?php echo esc_attr( $sbc_palette ); ?><?php echo $sbc_p['popular'] ? ' is-popular' : ''; ?><?php echo $sbc_p['wide'] ? ' plan--wide' : ''; ?>">
 			<div class="plan-top">
 				<span class="plan-blob plan-blob--a" aria-hidden="true"></span>
 				<span class="plan-blob plan-blob--b" aria-hidden="true"></span>

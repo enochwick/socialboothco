@@ -293,9 +293,6 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 /* Packages: cards with a soft colored top (blobs + grain), then features */
 .plans { display: grid; gap: 20px; margin-top: 56px; }
 @media (min-width: 960px) { .plans { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: stretch; } }
-/* Four cards (weekday card added): two by two, then one row on wide screens. */
-@media (min-width: 700px) { .plans--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: stretch; } }
-@media (min-width: 1200px) { .plans--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; } .plans--4 .plan-top { padding: 20px; } .plans--4 .plan-details { padding: 20px 10px 8px; } }
 .plan {
 	--plan-base: var(--plan-blush); --plan-a: var(--berry-tint); --plan-b: var(--plan-peach); --plan-mark: var(--berry);
 	display: flex; flex-direction: column; min-width: 0;
@@ -325,7 +322,7 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 .plan-flag--sale { background: var(--berry); color: var(--white); }
 /* Pills stack ("Most popular" above "Holiday % off"); every card's badge row matches so names line up. */
 .plan-flags { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
-.plans:has(.plan-flag + .plan-flag) .plan-badges { min-height: 56px; }
+.plans:has(.plan-flag + .plan-flag) .plan:not(.plan--wide) .plan-badges { min-height: 56px; }
 .sbc .plan-price-label { font-size: 12px; color: var(--ink-a78); }
 .plan-price-was { margin-left: 4px; font-size: 14px; font-weight: 500; color: var(--ink-a66); text-decoration-thickness: 1.5px; }
 .sbc .plan-price { margin-top: 2px; font: 700 40px/1 var(--head); letter-spacing: -.03em; }
@@ -343,6 +340,15 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 .plan-features { display: grid; gap: 11px; }
 .plan-features li { display: flex; align-items: flex-start; gap: 10px; font-size: 14.5px; line-height: 1.45; }
 .plan-features svg { flex: none; margin-top: 3px; color: var(--plan-mark); opacity: .7; }
+/* Weekday card: full width below the three main cards; price on the left, features on the right. */
+.plan--wide { grid-column: 1 / -1; }
+.sbc .plan--wide .plan-price { font-size: 34px; }
+@media (min-width: 600px) { .plan--wide .plan-features { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; align-content: start; } }
+@media (min-width: 960px) {
+	.plan--wide { display: grid; grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); }
+	.plan--wide .plan-details { padding: 22px 26px 10px; }
+}
+@media (min-width: 1200px) { .plan--wide .plan-features { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .sbc .plan-note { margin-top: auto; padding: 12px 4px 4px; border-top: 1px solid var(--line); font-size: 13px; font-weight: 500; color: var(--muted); }
 .sbc .plans-note { margin-top: 24px; font-size: 14px; color: var(--muted); }
 
