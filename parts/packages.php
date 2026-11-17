@@ -8,14 +8,13 @@
 defined( 'ABSPATH' ) || exit;
 
 $sbc_packages = sbc_packages();
-$sbc_palettes = array( 'navy', 'berry', 'navy' ); // The first and last cards share the grey look.
 $sbc_label    = sbc_mod( 'pkg_price_label' );
 ?>
 
-<div class="plans">
+<div class="plans<?php echo 4 === count( $sbc_packages ) ? ' plans--4' : ''; ?>">
 	<?php foreach ( $sbc_packages as $sbc_i => $sbc_p ) : ?>
 		<?php
-		$sbc_palette = $sbc_palettes[ $sbc_i % 3 ];
+		$sbc_palette = $sbc_p['palette'];
 		$sbc_grain   = 'sbc-grain-' . ( $sbc_i + 1 );
 		?>
 		<article class="plan plan--<?php echo esc_attr( $sbc_palette ); ?><?php echo $sbc_p['popular'] ? ' is-popular' : ''; ?>">

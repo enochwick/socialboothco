@@ -53,6 +53,12 @@ function sbc_defaults() {
 		'pkg3_best'        => 'Best for: Weddings, corporate events, and premium celebrations',
 		'pkg3_features'    => "Everything in The Party Booth, plus:\n5 Hours of Booth Experience\nPremium Backdrop Upgrade (Sequin or Arch)\nGuest Book Experience\nSlow-motion Video\nPremium Event Customization\nPriority Planning Support",
 		'pkg3_note'        => '*Add-ons Available.',
+		// Package 4: weekday-only card, shown first. Clear its name to hide it. No holiday sale on it.
+		'pkg4_name'        => 'The Weekday Booth',
+		'pkg4_price'       => '$350',
+		'pkg4_best'        => 'Best for: Monday to Thursday events, office parties, and weeknight celebrations',
+		'pkg4_features'    => "Monday to Thursday Events Only\n2 Hours of Booth Experience\nPhotos, GIFs, and Boomerangs\nInstant share via Email, SMS, and AirDrop\nLive Event Gallery\nCustom Photo Overlay (Names, Date, Branding)\nProfessional Lighting\nBooth Attendant\nSetup and Breakdown",
+		'pkg4_note'        => '*Available Monday to Thursday only',
 		'pkg_popular'      => '2',
 		// Holiday sale: every package price is shown crossed out with the discounted price, through
 		// the end date (inclusive). Set the percent to 0 to turn it off early.
@@ -145,16 +151,22 @@ function sbc_faq_items() {
 
 function sbc_packages() {
 	$packages = array();
-	for ( $i = 1; $i <= 3; $i++ ) {
+	// Weekday card (4) first as the entry price, then 1-3. Palette per package keeps the old card colors.
+	$palettes = array( 1 => 'navy', 2 => 'berry', 3 => 'navy', 4 => 'navy' );
+	foreach ( array( 4, 1, 2, 3 ) as $i ) {
+		if ( 4 === $i && '' === trim( (string) sbc_mod( 'pkg4_name' ) ) ) {
+			continue;
+		}
 		$features = array_filter( array_map( 'trim', preg_split( '/\R/', (string) sbc_mod( "pkg{$i}_features" ) ) ) );
 		$packages[] = array(
 			'name'     => sbc_mod( "pkg{$i}_name" ),
 			'price'    => sbc_mod( "pkg{$i}_price" ),
-			'sale'     => sbc_sale_price( sbc_mod( "pkg{$i}_price" ) ),
+			'sale'     => 4 === $i ? '' : sbc_sale_price( sbc_mod( "pkg{$i}_price" ) ),
 			'best'     => sbc_mod( "pkg{$i}_best" ),
 			'features' => array_values( $features ),
 			'note'     => sbc_mod( "pkg{$i}_note" ),
 			'popular'  => (string) $i === (string) sbc_mod( 'pkg_popular' ),
+			'palette'  => $palettes[ $i ],
 		);
 	}
 	return $packages;

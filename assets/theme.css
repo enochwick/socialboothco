@@ -293,6 +293,9 @@ body.sbc:not(.sbc-layout) { background: var(--paper); }
 /* Packages: cards with a soft colored top (blobs + grain), then features */
 .plans { display: grid; gap: 20px; margin-top: 56px; }
 @media (min-width: 960px) { .plans { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: stretch; } }
+/* Four cards (weekday card added): two by two, then one row on wide screens. */
+@media (min-width: 700px) { .plans--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: stretch; } }
+@media (min-width: 1200px) { .plans--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; } .plans--4 .plan-top { padding: 20px; } .plans--4 .plan-details { padding: 20px 10px 8px; } }
 .plan {
 	--plan-base: var(--plan-blush); --plan-a: var(--berry-tint); --plan-b: var(--plan-peach); --plan-mark: var(--berry);
 	display: flex; flex-direction: column; min-width: 0;
