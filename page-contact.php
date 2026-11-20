@@ -96,8 +96,7 @@ $sbc_notices = array(
 					</div>
 					<div class="field">
 						<label for="sbc-c-date"><?php esc_html_e( 'Event date', 'socialboothco' ); ?> <span class="opt"><?php esc_html_e( '(optional)', 'socialboothco' ); ?></span></label>
-						<input type="date" id="sbc-c-date" name="event_date" min="<?php echo esc_attr( sbc_contact_min_date() ); ?>" aria-describedby="sbc-c-date-hint" data-contact-min-days="3">
-						<span class="field-hint" id="sbc-c-date-hint"><?php esc_html_e( 'At least 3 days from today. Sooner? Give us a call.', 'socialboothco' ); ?></span>
+						<input type="date" id="sbc-c-date" name="event_date" min="<?php echo esc_attr( sbc_contact_min_date() ); ?>" data-contact-min-days="3">
 					</div>
 					<div class="field field--full">
 						<label for="sbc-c-message"><?php esc_html_e( 'Message', 'socialboothco' ); ?></label>
