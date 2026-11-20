@@ -249,6 +249,12 @@
 		}, delay);
 	});
 
+	/* Contact form: send how long the visitor was on the page. Bots that post instantly are dropped. */
+	document.querySelectorAll('[data-contact-time]').forEach(function (input) {
+		var opened = Date.now();
+		input.form.addEventListener('submit', function () { input.value = Math.round((Date.now() - opened) / 1000); });
+	});
+
 	/* Booking links are real links to the fallback page. When Amelia's popup is on the page,
 	   it opens from the same click, so stop the browser from also navigating away. */
 	document.addEventListener('click', function (e) {

@@ -31,6 +31,10 @@ function sbc_seo_pages() {
 			'title'       => 'Photo Booth Rental FAQs | Social Booth Co Dallas–Fort Worth',
 			'description' => 'Answers about booking a photo booth in DFW: space needed, deposits, setup time, prints, online galleries and the areas we serve.',
 		),
+		'contact'                   => array(
+			'title'       => 'Contact Us | Social Booth Co Photo Booth Dallas–Fort Worth',
+			'description' => 'Get in touch with Social Booth Co about booking a photo booth or renting our gear in Dallas–Fort Worth. Call, email or send us a message.',
+		),
 		'corporate-holiday-parties' => array(
 			'description' => 'Photo booth for office holiday parties in Dallas–Fort Worth. Your logo on every photo, instant sharing and hands-off setup. Packages from $350.',
 		),

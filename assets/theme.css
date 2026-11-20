@@ -1086,6 +1086,30 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 	.backdrops-item img { transition: none; }
 }
 
+/* Contact page form (page-contact.php). Sits in the FAQ page's two-column layout. */
+.contact-form-wrap { scroll-margin-top: 24px; }
+.contact-form { display: grid; grid-template-columns: 1fr; gap: 18px; padding: 28px; border-radius: 20px; background: var(--paper); }
+@media (min-width: 700px) { .contact-form { grid-template-columns: 1fr 1fr; padding: 36px; } .contact-form .field--full { grid-column: 1 / -1; } }
+.contact-form .field { display: grid; gap: 7px; min-width: 0; }
+.contact-form label { font-size: 14px; font-weight: 600; color: var(--navy); }
+.contact-form .opt { font-weight: 400; color: var(--muted); }
+.contact-form input, .contact-form select, .contact-form textarea {
+	width: 100%; min-height: 50px;
+	padding: 12px 14px;
+	border: 1.5px solid var(--line); border-radius: 12px;
+	background: var(--white); color: var(--navy);
+	font: inherit; font-size: 16px;
+	transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+.contact-form textarea { min-height: 150px; resize: vertical; }
+.contact-form input:hover, .contact-form select:hover, .contact-form textarea:hover { border-color: var(--muted); }
+.sbc .contact-form input:focus-visible, .sbc .contact-form select:focus-visible, .sbc .contact-form textarea:focus-visible { outline: none; border-color: var(--berry); box-shadow: 0 0 0 3px rgba(157, 26, 79, .18); }
+.contact-form button { cursor: pointer; border: 0; }
+.contact-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.sbc .contact-error { margin-bottom: 16px !important; padding: 14px 18px; border-radius: 12px; background: rgba(157, 26, 79, .08); color: var(--berry); font-weight: 500; }
+.contact-done { padding: 36px; border-radius: 20px; background: var(--paper); }
+.sbc .contact-done p { margin: 10px 0 22px; color: var(--muted); }
+
 /* Homepage: "Our gear" scroller below the backdrops. Same track and buttons; cards carry a name and a line. */
 .sbc .gear { padding-top: 48px; padding-bottom: 40px; } /* Backdrops above and the FAQ below share the blush background. */
 .gear-item {

@@ -10,6 +10,7 @@ This is the custom WordPress theme for socialboothco.com. It's deployed with **D
 | /experience/ | `page-experience.php` |
 | /faq/ | `page-faq.php`. Includes FAQ structured data for Google |
 | /gallery/ | `page-gallery.php`. Uses the gallery plugin's `[sbc_gallery]` |
+| /contact/ | `page-contact.php`. Contact form that emails the Customizer contact email (`inc/contact.php`). The page is created automatically the first time an admin opens the dashboard. Links can preselect the topic with `?topic=booking`, `rental` or `other` |
 | Agreement, Thank you, any other page | `page.php`. Elementor-built pages keep rendering their own content |
 | Check Availability, event forms | Elementor Canvas pages, unchanged |
 

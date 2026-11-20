@@ -15,6 +15,7 @@ require get_template_directory() . '/inc/performance.php';
 require get_template_directory() . '/inc/seo.php';
 require get_template_directory() . '/inc/chat.php';
 require get_template_directory() . '/inc/legal.php';
+require get_template_directory() . '/inc/contact.php';
 
 add_action( 'after_setup_theme', 'sbc_setup' );
 function sbc_setup() {
@@ -88,7 +89,7 @@ function sbc_is_theme_layout() {
 	if ( is_front_page() || is_404() || is_search() || is_home() || is_archive() ) {
 		return true;
 	}
-	if ( is_page( array( 'experience', 'faq', 'gallery' ) ) || 'templates/city-landing.php' === get_page_template_slug( get_queried_object_id() ) ) {
+	if ( is_page( array( 'experience', 'faq', 'gallery', 'contact' ) ) || 'templates/city-landing.php' === get_page_template_slug( get_queried_object_id() ) ) {
 		return true;
 	}
 	return is_singular() && ! sbc_is_elementor_page();
@@ -111,7 +112,7 @@ function sbc_menu_fallback( $args = array() ) {
 		home_url( '/faq/' )        => __( 'FAQ', 'socialboothco' ),
 	);
 	if ( ! empty( $args['sbc_footer'] ) ) {
-		$links = array( home_url( '/' ) => __( 'Home', 'socialboothco' ) ) + $links + array( home_url( '/agreement/' ) => __( 'Agreement', 'socialboothco' ) );
+		$links = array( home_url( '/' ) => __( 'Home', 'socialboothco' ) ) + $links + array( home_url( '/contact/' ) => __( 'Contact', 'socialboothco' ), home_url( '/agreement/' ) => __( 'Agreement', 'socialboothco' ) );
 	}
 	echo '<ul class="' . esc_attr( isset( $args['menu_class'] ) ? $args['menu_class'] : 'menu' ) . '">';
 	foreach ( $links as $url => $label ) {

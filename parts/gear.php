@@ -60,7 +60,7 @@ $sbc_gear_uri = get_template_directory_uri() . '/assets/img/gear/';
 		</ul>
 		<p class="backdrops-count gear-note">
 			<?php esc_html_e( 'Planning your own setup?', 'socialboothco' ); ?>
-			<a href="<?php echo esc_url( 'mailto:' . antispambot( sbc_mod( 'email' ) ) . '?subject=' . rawurlencode( 'Gear rental' ) ); ?>"><?php esc_html_e( 'Ask about renting our gear', 'socialboothco' ); ?></a>
+			<a href="<?php echo esc_url( sbc_contact_url( 'rental' ) ); ?>"><?php esc_html_e( 'Ask about renting our gear', 'socialboothco' ); ?></a>
 		</p>
 	</div>
 </section>
