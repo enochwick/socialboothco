@@ -95,6 +95,8 @@ $sbc_photos = array_slice( $sbc_photos, 0, (int) apply_filters( 'sbc_hero_photo_
 
 <?php get_template_part( 'parts/backdrops' ); ?>
 
+<?php get_template_part( 'parts/gear' ); ?>
+
 <?php get_template_part( 'parts/faq-preview' ); ?>
 
 <?php

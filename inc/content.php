@@ -91,6 +91,11 @@ function sbc_defaults() {
 		'backdrops_intro'  => 'Choose from our curated backdrops, or let us customize one using your colors, theme or inspiration.',
 		'backdrop_photos'  => '4165, 4187, 4184, 4229, 4214, 4180, 4173, 4135, 4169, 4163, 4127, 4189, 4190, 4160, 4155, 4133, 4130, 4138, 4139, 4185, 4182, 4156, 4204, 4159, 4157, 4251, 4250, 4249, 4247, 4246, 4245, 4243, 4242, 4241, 4240, 4239, 4238, 4237, 4236, 4235, 4234, 4233, 4232, 4231, 4230, 4228, 4227, 4226, 4225, 4224, 4223, 4222, 4221, 4220, 4219, 4218, 4217, 4216, 4215, 4213, 4212, 4211, 4210, 4209, 4208, 4207, 4206, 4205, 4203, 4202, 4201, 4200, 4199, 4198, 4197, 4196, 4195, 4194, 4193, 4192, 4191, 4188, 4186, 4183, 4181, 4179, 4178, 4177, 4176, 4175, 4174, 4172, 4171, 4170, 4168, 4167, 4166, 4164, 4162, 4161, 4158, 4154, 4153, 4152, 4151, 4150, 4149, 4148, 4147, 4146, 4145, 4144, 4143, 4142, 4141, 4140, 4137, 4136, 4134, 4132, 4131, 4129, 4128',
 
+		// Home: "Our gear" scroller below the backdrops. One per line: Name | Description | Photo (Media Library ID or a file in assets/img/gear/).
+		'gear_title'       => 'Our gear.',
+		'gear_intro'       => 'The pro equipment we bring to every event. Hosting your own setup? Most of it is available to rent on its own.',
+		'gear_items'       => "iPad photo booth | Our sleek booth with a fabric backdrop and a padded travel case. | ipad-booth.webp\nPrint booth | A print kiosk that hands guests their photos in seconds. | print-booth.webp\nDNP photo printer | Lab-quality prints, packed in a road-ready flight case. | dnp-printer.webp\nRed carpet and stanchions | A VIP entrance that gets guests in the mood. | red-carpet.webp\nPipe and drape kit | Adjustable stands and drapes to frame any backdrop. | pipe-drape.webp\nArch backdrops | A set of three arches with fitted covers. | arches.webp\nProps and signs | A trunk full of props plus signs that point guests to the fun. | props.webp",
+
 		// Reviews (Thumbtack). Shown below the packages on the homepage and on pages that list packages.
 		'reviews_title'    => 'Want to hear from past clients?',
 		'reviews_text'     => 'See our reviews on Thumbtack.',
