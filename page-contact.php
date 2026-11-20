@@ -39,7 +39,7 @@ $sbc_notices = array(
 			<?php if ( '1' === $sbc_sent ) : ?>
 				<div class="contact-done" role="status">
 					<h2 class="h3"><?php esc_html_e( 'Thanks, your message is on its way.', 'socialboothco' ); ?></h2>
-					<p><?php esc_html_e( 'We’ll reply to the email you gave us, usually within a day.', 'socialboothco' ); ?></p>
+					<p><?php esc_html_e( 'We’ll reply to the email you gave us, usually within hours.', 'socialboothco' ); ?></p>
 					<a class="btn btn--line" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Back to home', 'socialboothco' ); ?></a>
 				</div>
 			<?php else : ?>
