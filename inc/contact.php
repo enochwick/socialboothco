@@ -19,6 +19,28 @@ function sbc_contact_topics() {
 	);
 }
 
+/** Package names for the booking menu, from Customizer → Packages and prices (the weekday card only if it's on). */
+function sbc_contact_packages() {
+	return array_values( array_filter( array_map( 'trim', array( sbc_mod( 'pkg1_name' ), sbc_mod( 'pkg2_name' ), sbc_mod( 'pkg3_name' ), sbc_mod( 'pkg4_name' ) ) ) ) );
+}
+
+/** Gear names for the rental menu, from Customizer → Homepage: gear. */
+function sbc_contact_gear() {
+	$names = array();
+	foreach ( preg_split( '/\r\n|\r|\n/', (string) sbc_mod( 'gear_items' ) ) as $line ) {
+		$name = trim( strtok( $line, '|' ) );
+		if ( '' !== $name ) {
+			$names[] = $name;
+		}
+	}
+	return $names;
+}
+
+/** "Not sure" choices at the end of each menu. */
+function sbc_contact_unsure( $topic ) {
+	return 'rental' === $topic ? __( 'Not sure yet, help me choose', 'socialboothco' ) : __( 'Not sure yet, help me pick a package', 'socialboothco' );
+}
+
 /** Link to the contact page, optionally with a topic picked in the form. */
 function sbc_contact_url( $topic = '' ) {
 	$url = home_url( '/contact/' );
@@ -71,9 +93,17 @@ function sbc_contact_submit() {
 	$phone   = mb_substr( $field( 'phone' ), 0, 40 );
 	$date    = mb_substr( $field( 'event_date' ), 0, 40 );
 	$message = mb_substr( $field( 'message', true ), 0, 5000 );
+
+	// Which package or gear they're asking about. Only values from the menus are kept.
+	$choice = '';
+	if ( 'booking' === $topic || 'rental' === $topic ) {
+		$options = array_merge( 'rental' === $topic ? sbc_contact_gear() : sbc_contact_packages(), array( sbc_contact_unsure( $topic ) ) );
+		$picked  = $field( 'booking' === $topic ? 'package' : 'gear' );
+		$choice  = in_array( $picked, $options, true ) ? $picked : '';
+	}
 	// phpcs:enable
 
-	if ( '' === $name || ! is_email( $email ) || '' === trim( $message ) ) {
+	if ( '' === $name || ! is_email( $email ) || strlen( preg_replace( '/\D/', '', $phone ) ) < 7 || '' === trim( $message ) ) {
 		$back( 'missing' );
 	}
 
@@ -91,7 +121,8 @@ function sbc_contact_submit() {
 				'Topic: ' . $topics[ $topic ],
 				'Name: ' . $name,
 				'Email: ' . $email,
-				$phone ? 'Phone: ' . $phone : null,
+				'Phone: ' . $phone,
+				$choice ? ( 'rental' === $topic ? 'Gear: ' : 'Package: ' ) . $choice : null,
 				$date ? 'Event date: ' . $date : null,
 				'',
 				$message,

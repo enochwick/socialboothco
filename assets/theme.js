@@ -249,6 +249,20 @@
 		}, delay);
 	});
 
+	/* Contact form: show the package menu for bookings and the gear menu for rentals. The hidden one is
+	   disabled so it isn't sent. */
+	document.querySelectorAll('[data-contact-topic]').forEach(function (topic) {
+		var sync = function () {
+			topic.form.querySelectorAll('[data-contact-for]').forEach(function (field) {
+				var on = field.getAttribute('data-contact-for') === topic.value;
+				field.hidden = !on;
+				field.querySelector('select').disabled = !on;
+			});
+		};
+		topic.addEventListener('change', sync);
+		sync(); // The browser may restore a different topic on back/forward.
+	});
+
 	/* Contact form: send how long the visitor was on the page. Bots that post instantly are dropped. */
 	document.querySelectorAll('[data-contact-time]').forEach(function (input) {
 		var opened = Date.now();

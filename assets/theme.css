@@ -1091,6 +1091,7 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 .contact-form { display: grid; grid-template-columns: 1fr; gap: 18px; padding: 28px; border-radius: 20px; background: var(--paper); }
 @media (min-width: 700px) { .contact-form { grid-template-columns: 1fr 1fr; padding: 36px; } .contact-form .field--full { grid-column: 1 / -1; } }
 .contact-form .field { display: grid; gap: 7px; min-width: 0; }
+.contact-form .field[hidden] { display: none; }
 .contact-form label { font-size: 14px; font-weight: 600; color: var(--navy); }
 .contact-form .opt { font-weight: 400; color: var(--muted); }
 .contact-form input, .contact-form select, .contact-form textarea {

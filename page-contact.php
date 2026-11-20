@@ -15,7 +15,7 @@ $sbc_topic = isset( $sbc_topics[ $sbc_topic ] ) ? $sbc_topic : 'booking';
 $sbc_sent  = isset( $_GET['sent'] ) ? sanitize_key( wp_unslash( $_GET['sent'] ) ) : '';
 // phpcs:enable
 $sbc_notices = array(
-	'missing' => __( 'Please add your name, a valid email and a message, then send it again.', 'socialboothco' ),
+	'missing' => __( 'Please add your name, a valid email, your phone number and a message, then send it again.', 'socialboothco' ),
 	'limit'   => __( 'You’ve sent a few messages already. Give us a call or email us directly and we’ll get right back to you.', 'socialboothco' ),
 	'error'   => __( 'Something went wrong sending your message. Please email or call us directly.', 'socialboothco' ),
 );
@@ -56,12 +56,31 @@ $sbc_notices = array(
 
 					<div class="field field--full">
 						<label for="sbc-c-topic"><?php esc_html_e( 'What’s this about?', 'socialboothco' ); ?></label>
-						<select id="sbc-c-topic" name="topic">
+						<select id="sbc-c-topic" name="topic" data-contact-topic>
 							<?php foreach ( $sbc_topics as $sbc_key => $sbc_label ) : ?>
 								<option value="<?php echo esc_attr( $sbc_key ); ?>" <?php selected( $sbc_topic, $sbc_key ); ?>><?php echo esc_html( $sbc_label ); ?></option>
 							<?php endforeach; ?>
 						</select>
 					</div>
+					<?php
+					// Follow-up menu for the chosen topic. The other one stays hidden and disabled, so it isn't sent; theme.js swaps them.
+					$sbc_menus = array(
+						'booking' => array( 'package', __( 'Which package?', 'socialboothco' ), sbc_contact_packages() ),
+						'rental'  => array( 'gear', __( 'Which gear?', 'socialboothco' ), sbc_contact_gear() ),
+					);
+					foreach ( $sbc_menus as $sbc_key => $sbc_menu ) :
+						$sbc_on = $sbc_key === $sbc_topic;
+						?>
+						<div class="field field--full" data-contact-for="<?php echo esc_attr( $sbc_key ); ?>"<?php echo $sbc_on ? '' : ' hidden'; ?>>
+							<label for="sbc-c-<?php echo esc_attr( $sbc_menu[0] ); ?>"><?php echo esc_html( $sbc_menu[1] ); ?></label>
+							<select id="sbc-c-<?php echo esc_attr( $sbc_menu[0] ); ?>" name="<?php echo esc_attr( $sbc_menu[0] ); ?>"<?php echo $sbc_on ? '' : ' disabled'; ?>>
+								<?php foreach ( $sbc_menu[2] as $sbc_option ) : ?>
+									<option value="<?php echo esc_attr( $sbc_option ); ?>"><?php echo esc_html( $sbc_option ); ?></option>
+								<?php endforeach; ?>
+								<option value="<?php echo esc_attr( sbc_contact_unsure( $sbc_key ) ); ?>"><?php echo esc_html( sbc_contact_unsure( $sbc_key ) ); ?></option>
+							</select>
+						</div>
+					<?php endforeach; ?>
 					<div class="field">
 						<label for="sbc-c-name"><?php esc_html_e( 'Name', 'socialboothco' ); ?></label>
 						<input type="text" id="sbc-c-name" name="name" autocomplete="name" required maxlength="120">
@@ -71,8 +90,8 @@ $sbc_notices = array(
 						<input type="email" id="sbc-c-email" name="email" autocomplete="email" required>
 					</div>
 					<div class="field">
-						<label for="sbc-c-phone"><?php esc_html_e( 'Phone', 'socialboothco' ); ?> <span class="opt"><?php esc_html_e( '(optional)', 'socialboothco' ); ?></span></label>
-						<input type="tel" id="sbc-c-phone" name="phone" autocomplete="tel" maxlength="40">
+						<label for="sbc-c-phone"><?php esc_html_e( 'Phone', 'socialboothco' ); ?></label>
+						<input type="tel" id="sbc-c-phone" name="phone" autocomplete="tel" required minlength="7" maxlength="40">
 					</div>
 					<div class="field">
 						<label for="sbc-c-date"><?php esc_html_e( 'Event date', 'socialboothco' ); ?> <span class="opt"><?php esc_html_e( '(optional)', 'socialboothco' ); ?></span></label>
