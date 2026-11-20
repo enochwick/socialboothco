@@ -38,17 +38,29 @@ $sbc_gear_uri = get_template_directory_uri() . '/assets/img/gear/';
 		</div>
 
 		<ul class="backdrops-track gear-track" id="sbc-gear-track" role="list" tabindex="0" aria-label="<?php esc_attr_e( 'Our gear. Scroll sideways to see more.', 'socialboothco' ); ?>" data-scroller>
-			<?php foreach ( $sbc_gear as $sbc_item ) : ?>
+			<?php foreach ( $sbc_gear as $sbc_n => $sbc_item ) : ?>
+				<?php
+				// One photo, or several separated by commas that crossfade. Only the first is described
+				// for screen readers; the rest show the same item.
+				$sbc_imgs = array();
+				foreach ( array_filter( array_map( 'trim', explode( ',', $sbc_item[2] ) ) ) as $sbc_src ) {
+					$sbc_alt = $sbc_imgs ? '' : $sbc_item[0];
+					if ( ctype_digit( $sbc_src ) ) {
+						$sbc_img = sbc_image( $sbc_src, 'medium_large', array( 'alt' => $sbc_alt, 'sizes' => '(min-width: 1200px) 290px, (min-width: 700px) 30vw, 70vw' ) );
+					} elseif ( is_file( $sbc_gear_dir . basename( $sbc_src ) ) ) {
+						$sbc_img = sprintf( '<img src="%s" alt="%s" loading="lazy" decoding="async">', esc_url( $sbc_gear_uri . basename( $sbc_src ) ), esc_attr( $sbc_alt ) );
+					} else {
+						$sbc_img = '';
+					}
+					if ( $sbc_img ) {
+						$sbc_imgs[] = $sbc_img;
+					}
+				}
+				$sbc_imgs = array_slice( $sbc_imgs, 0, 2 ); // The crossfade is built for two.
+				?>
 				<li class="gear-item">
-					<div class="gear-photo">
-						<?php
-						$sbc_alt = $sbc_item[0];
-						if ( ctype_digit( $sbc_item[2] ) ) {
-							echo sbc_image( $sbc_item[2], 'medium_large', array( 'alt' => $sbc_alt, 'sizes' => '(min-width: 1200px) 290px, (min-width: 700px) 30vw, 70vw' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
-						} elseif ( '' !== $sbc_item[2] && is_file( $sbc_gear_dir . basename( $sbc_item[2] ) ) ) {
-							printf( '<img src="%s" alt="%s" loading="lazy" decoding="async">', esc_url( $sbc_gear_uri . basename( $sbc_item[2] ) ), esc_attr( $sbc_alt ) );
-						}
-						?>
+					<div class="gear-photo<?php echo count( $sbc_imgs ) > 1 ? ' gear-photo--swap' : ''; ?>" style="--n:<?php echo (int) $sbc_n; ?>">
+						<?php echo implode( '', $sbc_imgs ); // phpcs:ignore WordPress.Security.EscapeOutput -- built and escaped above. ?>
 						<span class="gear-tag"><?php esc_html_e( 'Rental available', 'socialboothco' ); ?></span>
 					</div>
 					<h3><?php echo esc_html( $sbc_item[0] ); ?></h3>

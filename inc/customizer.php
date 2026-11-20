@@ -97,7 +97,7 @@ function sbc_customize_register( $wp_customize ) {
 			'fields' => array(
 				'gear_title' => array( 'text', __( 'Heading', 'socialboothco' ) ),
 				'gear_intro' => array( 'textarea', __( 'Intro', 'socialboothco' ) ),
-				'gear_items' => array( 'textarea', __( 'Gear', 'socialboothco' ), __( 'One per line: Name | Description | Photo. The photo is a Media Library ID, or a file name from the theme’s assets/img/gear folder. Leave empty to hide the section.', 'socialboothco' ) ),
+				'gear_items' => array( 'textarea', __( 'Gear', 'socialboothco' ), __( 'One per line: Name | Description | Photo. The photo is a Media Library ID, or a file name from the theme’s assets/img/gear folder. Give two, separated by a comma, and they crossfade. Leave empty to hide the section.', 'socialboothco' ) ),
 			),
 		),
 		'sbc_reviews'  => array(
