@@ -110,9 +110,10 @@ function sbc_menu_fallback( $args = array() ) {
 		home_url( '/#pricing' )    => __( 'Packages', 'socialboothco' ),
 		home_url( '/gallery/' )    => __( 'Gallery', 'socialboothco' ),
 		home_url( '/faq/' )        => __( 'FAQ', 'socialboothco' ),
+		home_url( '/contact/' )    => __( 'Contact', 'socialboothco' ),
 	);
 	if ( ! empty( $args['sbc_footer'] ) ) {
-		$links = array( home_url( '/' ) => __( 'Home', 'socialboothco' ) ) + $links + array( home_url( '/contact/' ) => __( 'Contact', 'socialboothco' ), home_url( '/agreement/' ) => __( 'Agreement', 'socialboothco' ) );
+		$links = array( home_url( '/' ) => __( 'Home', 'socialboothco' ) ) + $links + array( home_url( '/agreement/' ) => __( 'Agreement', 'socialboothco' ) );
 	}
 	echo '<ul class="' . esc_attr( isset( $args['menu_class'] ) ? $args['menu_class'] : 'menu' ) . '">';
 	foreach ( $links as $url => $label ) {

@@ -263,6 +263,15 @@
 		sync(); // The browser may restore a different topic on back/forward.
 	});
 
+	/* Contact form: the earliest event date is N days from the visitor's today. Set here as well as in
+	   the HTML because cached pages carry the date they were cached on. */
+	document.querySelectorAll('[data-contact-min-days]').forEach(function (input) {
+		var d = new Date();
+		d.setDate(d.getDate() + parseInt(input.getAttribute('data-contact-min-days'), 10));
+		var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+		input.min = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+	});
+
 	/* Contact form: send how long the visitor was on the page. Bots that post instantly are dropped. */
 	document.querySelectorAll('[data-contact-time]').forEach(function (input) {
 		var opened = Date.now();

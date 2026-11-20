@@ -41,6 +41,30 @@ function sbc_contact_unsure( $topic ) {
 	return 'rental' === $topic ? __( 'Not sure yet, help me choose', 'socialboothco' ) : __( 'Not sure yet, help me pick a package', 'socialboothco' );
 }
 
+/**
+ * Add "Contact" to the end of the main menu (header and mobile) when the menu assigned under
+ * Appearance → Menus doesn't already link to the contact page. Remove it by adding your own link.
+ */
+add_filter( 'wp_nav_menu_items', 'sbc_contact_menu_item', 10, 2 );
+function sbc_contact_menu_item( $items, $args ) {
+	if ( empty( $args->theme_location ) || 'primary' !== $args->theme_location || false !== strpos( $items, '/contact/' ) ) {
+		return $items;
+	}
+	$current = is_page( 'contact' );
+	return $items . sprintf(
+		'<li class="menu-item menu-item-contact%s"><a href="%s"%s>%s</a></li>',
+		$current ? ' current-menu-item' : '',
+		esc_url( home_url( '/contact/' ) ),
+		$current ? ' aria-current="page"' : '',
+		esc_html__( 'Contact', 'socialboothco' )
+	);
+}
+
+/** Earliest event date the form accepts: three days from today, in the site's time zone. */
+function sbc_contact_min_date() {
+	return wp_date( 'Y-m-d', time() + 3 * DAY_IN_SECONDS );
+}
+
 /** Link to the contact page, optionally with a topic picked in the form. */
 function sbc_contact_url( $topic = '' ) {
 	$url = home_url( '/contact/' );
@@ -105,6 +129,11 @@ function sbc_contact_submit() {
 
 	if ( '' === $name || ! is_email( $email ) || strlen( preg_replace( '/\D/', '', $phone ) ) < 7 || '' === trim( $message ) ) {
 		$back( 'missing' );
+	}
+	// Event date must be at least three days out (the browser enforces it too). One day of slack
+	// covers visitors in other time zones.
+	if ( $date && ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date ) || $date < wp_date( 'Y-m-d', time() + 2 * DAY_IN_SECONDS ) ) ) {
+		$back( 'date' );
 	}
 
 	$ip_key = 'sbc_contact_' . md5( ( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '' ) . wp_salt( 'nonce' ) );

@@ -1093,6 +1093,7 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 .contact-form .field { display: grid; gap: 7px; min-width: 0; }
 .contact-form .field[hidden] { display: none; }
 .contact-form label { font-size: 14px; font-weight: 600; color: var(--navy); }
+.sbc .contact-form .field-hint { font-size: 13px; color: var(--muted); }
 .contact-form .opt { font-weight: 400; color: var(--muted); }
 .contact-form input, .contact-form select, .contact-form textarea {
 	width: 100%; min-height: 50px;

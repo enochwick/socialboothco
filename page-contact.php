@@ -16,6 +16,7 @@ $sbc_sent  = isset( $_GET['sent'] ) ? sanitize_key( wp_unslash( $_GET['sent'] ) 
 // phpcs:enable
 $sbc_notices = array(
 	'missing' => __( 'Please add your name, a valid email, your phone number and a message, then send it again.', 'socialboothco' ),
+	'date'    => __( 'Please pick an event date at least 3 days from today. Need us sooner? Give us a call and we’ll see what we can do.', 'socialboothco' ),
 	'limit'   => __( 'You’ve sent a few messages already. Give us a call or email us directly and we’ll get right back to you.', 'socialboothco' ),
 	'error'   => __( 'Something went wrong sending your message. Please email or call us directly.', 'socialboothco' ),
 );
@@ -95,7 +96,8 @@ $sbc_notices = array(
 					</div>
 					<div class="field">
 						<label for="sbc-c-date"><?php esc_html_e( 'Event date', 'socialboothco' ); ?> <span class="opt"><?php esc_html_e( '(optional)', 'socialboothco' ); ?></span></label>
-						<input type="date" id="sbc-c-date" name="event_date">
+						<input type="date" id="sbc-c-date" name="event_date" min="<?php echo esc_attr( sbc_contact_min_date() ); ?>" aria-describedby="sbc-c-date-hint" data-contact-min-days="3">
+						<span class="field-hint" id="sbc-c-date-hint"><?php esc_html_e( 'At least 3 days from today. Sooner? Give us a call.', 'socialboothco' ); ?></span>
 					</div>
 					<div class="field field--full">
 						<label for="sbc-c-message"><?php esc_html_e( 'Message', 'socialboothco' ); ?></label>
