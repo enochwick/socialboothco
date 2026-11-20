@@ -71,7 +71,7 @@ $sbc_gear_uri = get_template_directory_uri() . '/assets/img/gear/';
 			<?php endforeach; ?>
 		</ul>
 		<p class="backdrops-count gear-note">
-			<?php esc_html_e( 'Planning your own setup?', 'socialboothco' ); ?>
+			<?php esc_html_e( 'Not sure what you need?', 'socialboothco' ); ?>
 			<a href="<?php echo esc_url( sbc_contact_url( 'rental' ) ); ?>"><?php esc_html_e( 'Ask about renting our gear', 'socialboothco' ); ?></a>
 		</p>
 	</div>
