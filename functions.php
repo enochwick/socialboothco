@@ -16,6 +16,7 @@ require get_template_directory() . '/inc/seo.php';
 require get_template_directory() . '/inc/chat.php';
 require get_template_directory() . '/inc/legal.php';
 require get_template_directory() . '/inc/contact.php';
+require get_template_directory() . '/inc/event-forms.php';
 
 add_action( 'after_setup_theme', 'sbc_setup' );
 function sbc_setup() {
@@ -89,7 +90,7 @@ function sbc_is_theme_layout() {
 	if ( is_front_page() || is_404() || is_search() || is_home() || is_archive() ) {
 		return true;
 	}
-	if ( is_page( array( 'experience', 'faq', 'gallery', 'contact' ) ) || 'templates/city-landing.php' === get_page_template_slug( get_queried_object_id() ) ) {
+	if ( is_page( array( 'experience', 'faq', 'gallery', 'contact' ) ) || 'templates/city-landing.php' === get_page_template_slug( get_queried_object_id() ) || sbc_is_event_form_page() ) {
 		return true;
 	}
 	return is_singular() && ! sbc_is_elementor_page();

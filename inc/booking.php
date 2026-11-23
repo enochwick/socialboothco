@@ -15,7 +15,7 @@ function sbc_booking_forms() {
 		return;
 	}
 	// Elementor canvas pages (e.g. Check Availability) already carry their own form.
-	if ( is_page_template( 'elementor_canvas' ) ) {
+	if ( is_page_template( 'elementor_canvas' ) && ! sbc_is_theme_layout() ) {
 		return;
 	}
 
@@ -37,7 +37,7 @@ function sbc_booking_forms() {
  */
 add_action( 'wp_footer', 'sbc_booking_flag', 4 );
 function sbc_booking_flag() {
-	$on = shortcode_exists( 'ameliastepbooking' ) && ! is_page_template( 'elementor_canvas' );
+	$on = shortcode_exists( 'ameliastepbooking' ) && ! ( is_page_template( 'elementor_canvas' ) && ! sbc_is_theme_layout() );
 	echo '<script>window.sbcBooking=' . ( $on ? 'true' : 'false' ) . ';</script>';
 }
 

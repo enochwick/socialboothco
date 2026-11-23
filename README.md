@@ -12,7 +12,8 @@ This is the custom WordPress theme for socialboothco.com. It's deployed with **D
 | /gallery/ | `page-gallery.php`. Uses the gallery plugin's `[sbc_gallery]` |
 | /contact/ | `page-contact.php`. Contact form that emails the Customizer contact email (`inc/contact.php`). The page is created automatically the first time an admin opens the dashboard. Links can preselect the topic with `?topic=booking`, `rental` or `other` |
 | Agreement, Thank you, any other page | `page.php`. Elementor-built pages keep rendering their own content |
-| Check Availability, event forms | Elementor Canvas pages, unchanged |
+| /event-customization-form-premium/ | `templates/event-form.php`, chosen by slug in `inc/event-forms.php`. Site header and footer, with the Forminator form (#4709) restyled to match. The form's fields, emails and entries are still edited in Forminator. The backdrop choice is hidden with CSS (`theme.css`, end of file), not deleted, because deleting the field in Forminator would also erase it from past submissions. To give the Standard form the same look, add `'event-customization-form-standard' => 5042` to `sbc_event_form_pages()` |
+| Check Availability, other event forms | Elementor Canvas pages, unchanged |
 
 All URLs stay the same, including `/#pricing`.
 

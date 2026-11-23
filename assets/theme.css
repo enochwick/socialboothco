@@ -1233,3 +1233,154 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 	--am-c-select-border: var(--berry) !important;
 }
 .amelia-v2-booking .el-select__wrapper.is-focused { box-shadow: 0 0 0 1px var(--berry) inset !important; }
+
+/* Event customization forms (templates/event-form.php). The Forminator form, restyled to match the
+   Contact form. Forminator's own per-form CSS uses an ID selector, so everything here is scoped
+   under #content to win without !important. */
+.event-form-split { gap: 32px; }
+@media (min-width: 900px) { .event-form-split { grid-template-columns: minmax(260px, 1fr) 2fr; gap: 56px; } }
+@media (max-width: 899px) { .event-form-aside { order: 2; } }
+.sbc .event-form-steps { margin: 20px 0 0 !important; display: grid; gap: 18px; }
+.event-form-steps li { display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: start; color: var(--muted); font-size: 15px; line-height: 1.5; }
+.event-form-steps strong { display: block; margin-bottom: 2px; color: var(--navy); font-weight: 600; }
+.event-form-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--plan-berry); color: var(--berry); }
+.event-form-icon svg { width: 20px; height: 20px; }
+.event-form-help { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+.sbc .event-form-help ul { margin: 12px 0 0 !important; }
+
+.event-form { min-width: 0; padding: 24px 20px 28px; border-radius: 20px; background: var(--paper); }
+@media (min-width: 700px) { .event-form { padding: 40px; } }
+
+#content .event-form .forminator-ui.forminator-custom-form { counter-reset: sbc-step; margin: 0; font-family: var(--body); color: var(--navy); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-row { margin-bottom: 20px; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-row .forminator-row:last-child { margin-bottom: 0; } /* Rows nested in name/address fields. */
+#content .event-form .forminator-ui.forminator-custom-form .forminator-row .forminator-row > .forminator-col { margin-bottom: 0; }
+@media (max-width: 782px) { #content .event-form .forminator-ui.forminator-custom-form .forminator-row .forminator-row > .forminator-col:not(:last-child) { margin-bottom: 20px; } }
+
+/* Section headings: numbered steps with a rule above each one after the first. */
+#content .event-form .forminator-ui.forminator-custom-form .forminator-field-section { counter-increment: sbc-step; }
+/* The rule sits on the inner field, so it lines up with the inputs rather than the row's gutters. */
+#content .event-form .forminator-ui.forminator-custom-form .forminator-row:has(> .forminator-field-section) { margin-top: 36px; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-field-section > .forminator-field { padding-top: 32px; border-top: 1px solid var(--line); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-response-message + .forminator-row { margin-top: 0; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-response-message + .forminator-row .forminator-field-section > .forminator-field { padding-top: 0; border-top: 0; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-title {
+	display: flex; align-items: center; gap: 12px; margin: 0;
+	font: 700 22px/1.2 var(--head); letter-spacing: -.02em; color: var(--navy);
+}
+#content .event-form .forminator-ui.forminator-custom-form .forminator-title::before {
+	content: counter(sbc-step, decimal-leading-zero);
+	display: grid; place-items: center; flex: none; width: 34px; height: 34px; border-radius: 999px;
+	background: var(--berry); color: var(--white); font: 600 13px/1 var(--body); letter-spacing: 0;
+}
+#content .event-form .forminator-ui.forminator-custom-form .forminator-subtitle { margin: 8px 0 0; padding-left: 46px; font: 400 15px/1.5 var(--body); color: var(--muted); }
+
+/* Labels and help text */
+#content .event-form .forminator-ui.forminator-custom-form .forminator-label { display: block; margin-bottom: 7px; font: 600 14px/1.4 var(--body); color: var(--navy); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-required { color: var(--berry); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-description { display: block; margin: -2px 0 10px; font: 400 13.5px/1.5 var(--body); color: var(--muted); }
+
+/* Text inputs, textarea, country menu */
+#content .event-form .forminator-ui.forminator-custom-form .forminator-input,
+#content .event-form .forminator-ui.forminator-custom-form .forminator-textarea,
+#content .event-form .forminator-ui.forminator-custom-form .select2-selection--single[role="combobox"] {
+	width: 100%; min-height: 50px; padding: 12px 14px;
+	border: 1.5px solid var(--line); border-radius: 12px;
+	background: var(--white); color: var(--navy); box-shadow: none;
+	font: 400 16px/1.4 var(--body);
+	transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+#content .event-form .forminator-ui.forminator-custom-form .iti input.forminator-input { padding-left: 52px; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-textarea { min-height: 140px; resize: vertical; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-input::placeholder,
+#content .event-form .forminator-ui.forminator-custom-form .forminator-textarea::placeholder { color: var(--ink-a45); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-input:hover,
+#content .event-form .forminator-ui.forminator-custom-form .forminator-textarea:hover,
+#content .event-form .forminator-ui.forminator-custom-form .select2-selection--single[role="combobox"]:hover { border-color: var(--muted); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-input:focus,
+#content .event-form .forminator-ui.forminator-custom-form .forminator-textarea:focus,
+#content .event-form .forminator-ui.forminator-custom-form .select2-container--open .select2-selection--single[role="combobox"] { outline: none; border-color: var(--berry); box-shadow: 0 0 0 3px var(--berry-a14); }
+/* Country menu (select2): Forminator's own selector here is longer, so this adds body.sbc. */
+body.sbc #content .event-form .forminator-ui.forminator-custom-form .forminator-select .selection .select2-selection--single[role="combobox"] {
+	display: flex; align-items: center; height: 50px; min-height: 50px; padding: 0 40px 0 14px;
+	border: 1.5px solid var(--line); border-radius: 12px; background: var(--white);
+}
+body.sbc #content .event-form .forminator-ui.forminator-custom-form .forminator-select .selection .select2-selection--single[role="combobox"]:hover { border-color: var(--muted); }
+body.sbc #content .event-form .forminator-ui.forminator-custom-form .forminator-select.select2-container--open .selection .select2-selection--single[role="combobox"] { border-color: var(--berry); box-shadow: 0 0 0 3px var(--berry-a14); }
+body.sbc #content .event-form .forminator-ui.forminator-custom-form .forminator-select .select2-selection--single .select2-selection__rendered { padding: 0; font-size: 16px; line-height: 1.4; color: var(--navy); }
+body.sbc #content .event-form .forminator-ui.forminator-custom-form .forminator-select .select2-selection--single .select2-selection__arrow { top: 50%; right: 14px; height: auto; transform: translateY(-50%); color: var(--muted); }
+
+/* Field Group wrapper: flatten Forminator's grey box so the group reads like the other sections. */
+#content .event-form .forminator-ui.forminator-custom-form .forminator-all-group-copies { padding: 0; background: none; box-shadow: none; }
+
+/* Option groups (theme, print format, upgrades): full-width rows of tappable chips. */
+#content .event-form .forminator-ui.forminator-custom-form .forminator-row:has(> .forminator-field-checkbox) { flex-wrap: wrap; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-row:has(> .forminator-field-checkbox) > .forminator-col { flex: 0 0 100%; max-width: 100%; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-row:has(> .forminator-field-checkbox) > .forminator-col + .forminator-col { margin-top: 20px; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-field-checkbox .forminator-field { display: flex; flex-wrap: wrap; gap: 10px; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-field-checkbox .forminator-field > :not(.forminator-checkbox) { flex: 0 0 100%; margin-bottom: 0; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-field-checkbox .forminator-checkbox {
+	display: inline-flex; align-items: center; gap: 10px; margin: 0; min-height: 46px; padding: 10px 16px;
+	border: 1.5px solid var(--line); border-radius: 999px; background: var(--white);
+	font-size: 15px; line-height: 1.3; cursor: pointer;
+	transition: border-color .2s var(--ease), background-color .2s var(--ease);
+}
+#content .event-form .forminator-ui.forminator-custom-form .forminator-field-checkbox .forminator-checkbox:hover { border-color: var(--muted); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-field-checkbox .forminator-checkbox:has(input:checked) { border-color: var(--berry); background: var(--plan-berry); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-field-checkbox .forminator-checkbox:has(input:focus-visible) { outline: 3px solid var(--berry); outline-offset: 2px; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-checkbox input { flex: none; width: 18px; height: 18px; margin: 0; accent-color: var(--berry); cursor: pointer; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-checkbox .forminator-checkbox-box ~ span { margin-left: 0; }
+
+/* File uploads */
+#content .event-form .forminator-ui.forminator-custom-form .forminator-multi-upload {
+	padding: 22px 16px; border: 1.5px dashed var(--plan-grey-2); border-radius: 14px;
+	background: var(--card-tint); color: var(--muted); text-align: center; cursor: pointer;
+	transition: border-color .2s var(--ease), background-color .2s var(--ease);
+}
+#content .event-form .forminator-ui.forminator-custom-form .forminator-multi-upload:hover,
+#content .event-form .forminator-ui.forminator-custom-form .forminator-multi-upload.forminator-dragover { border-color: var(--berry); background: var(--plan-blush); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-multi-upload:focus-within { outline: 3px solid var(--berry); outline-offset: 2px; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-multi-upload-message p { margin: 0; font: 400 14px/1.5 var(--body); color: var(--muted); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-multi-upload-message a { color: var(--berry); font-weight: 600; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-multi-upload [class*="forminator-icon-"] { color: var(--berry); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-uploaded-files { margin: 10px 0 0; padding: 0; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-uploaded-files li { font: 400 13.5px/1.5 var(--body); }
+@media (max-width: 782px) {
+	#content .event-form .forminator-ui.forminator-custom-form .forminator-row:has(> .forminator-field-upload) > .forminator-col + .forminator-col { margin-top: 20px; }
+}
+
+/* Consent boxes */
+#content .event-form .forminator-ui.forminator-custom-form .forminator-checkbox__wrapper { display: flex; align-items: flex-start; gap: 12px; padding: 16px 18px; border-radius: 14px; background: var(--blush); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-consent { min-height: 0; margin: 2px 0 0; padding: 0; border: 0; background: none; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-consent__label,
+#content .event-form .forminator-ui.forminator-custom-form .forminator-consent__label p { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--navy); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-consent__label a { color: var(--berry) !important; font-weight: 500; } /* Beats an inline blue colour set in Forminator. */
+
+/* Errors and the result message */
+#content .event-form .forminator-ui.forminator-custom-form .forminator-error-message { margin-top: 6px; padding: 0; background: none; color: var(--berry); font-size: 13.5px; font-weight: 500; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-has_error .forminator-input,
+#content .event-form .forminator-ui.forminator-custom-form .forminator-has_error .forminator-textarea { border-color: var(--berry); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-response-message.forminator-show { margin-bottom: 24px; padding: 18px 20px; border-radius: 14px; box-shadow: none; font-size: 15px; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-response-message.forminator-success { background: var(--plan-berry); color: var(--berry-deep); font-weight: 500; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-response-message.forminator-error { background: var(--berry-a12); color: var(--berry); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-response-message p { color: inherit; }
+
+/* Submit */
+#content .event-form .forminator-ui.forminator-custom-form .forminator-row-last { margin-top: 32px; margin-bottom: 0; }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-button-submit {
+	display: inline-block; width: 100%; padding: 17px 34px; text-align: center; /* Block-level, so ::first-letter works. */
+	border: 0; border-radius: 999px; background: var(--berry); color: var(--white); box-shadow: none;
+	font: 500 16px/1.2 var(--body); letter-spacing: 0; text-transform: lowercase; cursor: pointer;
+	transition: background-color .2s var(--ease), transform .15s var(--ease);
+}
+#content .event-form .forminator-ui.forminator-custom-form .forminator-button-submit::first-letter { text-transform: uppercase; } /* "SUBMIT" in Forminator reads as "Submit". */
+#content .event-form .forminator-ui.forminator-custom-form .forminator-button-submit:hover { background: var(--berry-deep); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-button-submit:active { transform: scale(.98); }
+#content .event-form .forminator-ui.forminator-custom-form .forminator-button-submit:focus-visible { outline: 3px solid var(--berry); outline-offset: 3px; }
+@media (min-width: 700px) { #content .event-form .forminator-ui.forminator-custom-form .forminator-button-submit { width: auto; } }
+
+/* Premium form: the backdrop choice is hidden (asked for in Nov 2026). Hidden rather than deleted in
+   Forminator, because deleting the field would also erase it from past submissions. */
+#content .event-form #forminator-module-4709 .forminator-row:has(> #section-5),
+#content .event-form #forminator-module-4709 .forminator-row:has(> #radio-1),
+#content .event-form #forminator-module-4709 .forminator-row:has(> #html-1) { display: none; }
