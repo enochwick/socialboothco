@@ -79,7 +79,7 @@ function sbc_defaults() {
 		'event3'           => 'Birthday parties | Fun, high-energy, share-worthy.',
 		'event3_photo'     => 2915,
 		'event4'           => 'Graduations and private celebrations | Milestone moments, proud smiles.',
-		'event4_photo'     => 2543,
+		'event4_photo'     => 'graduation-booth-1400.jpg',
 
 		// Home: moments from our events (photo grid; carousel on phones).
 		'moments_title'    => 'Moments from our events',

@@ -18,6 +18,16 @@ function sbc_button( $label, $kind = 'book', $style = 'berry', $extra_class = ''
  * Attachment image by ID with a sensible size; prints nothing if the image is missing.
  */
 function sbc_image( $id, $size = 'large', $attr = array() ) {
+	// A file name (e.g. "graduation-booth-1400.jpg") means a photo bundled in assets/img/events.
+	if ( is_string( $id ) && preg_match( '/^[\w-]+\.(jpe?g|png|webp)$/i', $id ) ) {
+		$attr = wp_parse_args( $attr, array( 'loading' => 'lazy', 'decoding' => 'async' ) );
+		$attr = array_map( 'esc_attr', array_filter( $attr, 'is_scalar' ) );
+		$html = '';
+		foreach ( $attr as $k => $v ) {
+			$html .= sprintf( ' %s="%s"', esc_attr( $k ), $v );
+		}
+		return sprintf( '<img src="%s"%s>', esc_url( get_template_directory_uri() . '/assets/img/events/' . $id ), $html );
+	}
 	$id = (int) $id;
 	if ( ! $id || ! wp_attachment_is_image( $id ) ) {
 		return '';
