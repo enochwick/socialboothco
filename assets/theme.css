@@ -606,27 +606,37 @@ html { scroll-padding-top: calc(var(--header-h) + 16px); }
 /* Feature cards under the hero */
 .feat { gap: 16px; }
 @media (min-width: 800px) { .feat { gap: 20px; } }
+/* Same look as the package cards: white frame (4px border + 1px ring), soft grey panel inside
+   with blurred blobs and film grain. Frame and panel are one element, so older saved markup works too. */
 .feat-card {
 	position: relative;
 	overflow: hidden;
 	isolation: isolate;
-	padding: 28px 24px 26px;
-	border: 1px solid var(--line);
+	padding: 24px 20px 24px;
+	border: 4px solid var(--paper);
 	border-radius: 24px;
-	background: var(--white);
-	box-shadow: 0 1px 2px var(--ink-a04), 0 18px 40px -30px var(--ink-a35);
+	background:
+		radial-gradient(circle 130px at 0 45%, color-mix(in srgb, var(--plan-grey-2) 35%, transparent), transparent) ,
+		var(--plan-grey);
+	box-shadow: 0 0 0 1px var(--line);
 }
+.feat-card::before,
+.feat-card::after { content: ""; position: absolute; z-index: -1; pointer-events: none; }
 .feat-card::before {
-	content: "";
-	position: absolute;
-	z-index: -1;
-	top: -60px;
-	right: -60px;
-	width: 180px;
-	height: 180px;
+	top: -56px;
+	right: -56px;
+	width: 210px;
+	height: 210px;
 	border-radius: 50%;
-	background: var(--grey-a70); /* the same soft grey glow on every card */
-	filter: blur(40px);
+	background: var(--navy);
+	opacity: .22;
+	filter: blur(48px);
+}
+.feat-card::after {
+	inset: 0;
+	opacity: .35;
+	mix-blend-mode: overlay;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.68' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 .feat-icon {
 	display: grid;
